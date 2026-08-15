@@ -1,0 +1,142 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f4f6f8;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --muted: #e8edf2;
+  --muted-foreground: #64748b;
+  --border: #d7dee7;
+  --primary: #0b3a53;
+  --primary-foreground: #f8fafc;
+  --accent: #1f6f8b;
+  --accent-foreground: #f8fafc;
+  --destructive: #b42318;
+  --ring: #1f6f8b;
+  --sidebar: #0b3a53;
+  --sidebar-foreground: #e8f1f5;
+  --success: #0f766e;
+  --warning: #b45309;
+  --mkt-safety: #0f766e;
+  --mkt-hero: #071f2d;
+  --mkt-surface: #ffffff;
+  --mkt-ink-soft: #475569;
+  --radius: 0.5rem;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 8px 24px -12px rgba(11, 58, 83, 0.18);
+  --shadow-lg: 0 24px 64px -28px rgba(7, 31, 45, 0.45);
+  --shadow-header: 0 1px 0 rgba(215, 222, 231, 0.9), 0 8px 24px -16px rgba(11, 58, 83, 0.18);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-warning: var(--warning);
+  --color-success: var(--success);
+  --font-sans: var(--font-sans-face), "IBM Plex Sans", "Segoe UI", sans-serif;
+  --font-display: var(--font-display-face), "Source Serif 4", Georgia, serif;
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 28%, white);
+  color: var(--foreground);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.mkt-grid-fade {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at 50% 30%, black 20%, transparent 75%);
+}
+
+.surface-elevated {
+  background: var(--card);
+  box-shadow: var(--shadow-md);
+}
+
+.app-shell-header {
+  background: color-mix(in srgb, var(--card) 92%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+@keyframes mkt-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mkt-fade-in {
+  animation: mkt-fade-in-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.mkt-reveal {
+  animation: mkt-fade-in-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  html:focus-within {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

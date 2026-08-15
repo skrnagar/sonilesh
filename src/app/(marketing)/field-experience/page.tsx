@@ -1,0 +1,67 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { PageHero } from "@/components/marketing/page-hero";
+import { Container } from "@/components/marketing/container";
+import { SectionHeader } from "@/components/marketing/section-header";
+import { FeatureCard } from "@/components/marketing/feature-card";
+import { MobilePreview } from "@/components/marketing/mobile-preview";
+import { CTASection } from "@/components/marketing/cta-section";
+import { Button } from "@/components/ui/button";
+
+export const metadata: Metadata = {
+  title: "Field Experience",
+  description:
+    "EHS360 field experience for fast incident, hazard, permit, and inspection capture where work happens.",
+};
+
+export default function FieldExperiencePage() {
+  return (
+    <>
+      <PageHero
+        eyebrow="Field"
+        title="Capture that keeps pace with the job"
+        description="A focused field experience for supervisors and crews — quick reports, clear severity, and less form friction. Product field UI remains at /field for signed-in users."
+        secondaryHref="/platform"
+        secondaryLabel="Platform overview"
+      >
+        <div className="flex justify-center">
+          <MobilePreview />
+        </div>
+      </PageHero>
+
+      <section className="py-16 md:py-20">
+        <Container>
+          <SectionHeader
+            eyebrow="Designed for the site"
+            title="What field users need in the first 30 seconds"
+            description="Fewer screens. Strong defaults. Enough structure for investigations later."
+          />
+          <div className="mt-12 grid gap-10 md:grid-cols-3">
+            <FeatureCard
+              title="Quick report paths"
+              body="Incident, near miss, hazard, and related checks without navigating a full desktop IA."
+            />
+            <FeatureCard
+              title="Context that travels"
+              body="Location, severity, and evidence attach early so operations can act without re-keying."
+            />
+            <FeatureCard
+              title="Hands-on ergonomics"
+              body="Large targets, clear status, and a layout that works under time pressure."
+            />
+          </div>
+          <p className="mt-10 text-sm text-muted-foreground">
+            Note: Marketing lives at <code className="text-foreground">/field-experience</code> because{" "}
+            <code className="text-foreground">/field</code> is reserved for the authenticated field app.
+          </p>
+          <div className="mt-6">
+            <Button asChild variant="outline">
+              <Link href="/login">Sign in to field app</Link>
+            </Button>
+          </div>
+        </Container>
+      </section>
+      <CTASection />
+    </>
+  );
+}

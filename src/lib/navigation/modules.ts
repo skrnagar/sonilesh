@@ -1,0 +1,45 @@
+export type AppModuleDef = {
+  key: string;
+  label: string;
+  href: string;
+  featureCode?: string;
+  permission?: string;
+  group: "operations" | "assurance" | "support" | "insights" | "system";
+};
+
+export const APP_MODULES: AppModuleDef[] = [
+  { key: "dashboard", label: "Dashboard", href: "/app/dashboard", permission: "dashboard.view", group: "operations" },
+  { key: "incidents", label: "Incidents", href: "/app/incidents", featureCode: "incident_management", permission: "incidents.view", group: "operations" },
+  { key: "near-misses", label: "Near Misses", href: "/app/near-misses", featureCode: "near_miss", permission: "near_miss.view", group: "operations" },
+  { key: "hazards", label: "Hazards / UA / UC", href: "/app/hazards", featureCode: "hazard_reporting", permission: "hazards.view", group: "operations" },
+  { key: "risk-assessments", label: "Risk Assessments", href: "/app/risk-assessments", featureCode: "risk_assessment", group: "assurance" },
+  { key: "jsa", label: "JSA", href: "/app/jsa", featureCode: "jsa", group: "assurance" },
+  { key: "jha", label: "JHA", href: "/app/jha", featureCode: "jha", group: "assurance" },
+  { key: "permits", label: "Permits", href: "/app/permits", featureCode: "permit_to_work", group: "assurance" },
+  { key: "inspections", label: "Inspections", href: "/app/inspections", featureCode: "inspections", group: "assurance" },
+  { key: "audits", label: "Audits", href: "/app/audits", featureCode: "audits", group: "assurance" },
+  { key: "capa", label: "CAPA", href: "/app/capa", featureCode: "capa", permission: "capa.view", group: "assurance" },
+  { key: "training", label: "Training", href: "/app/training", featureCode: "training", group: "support" },
+  { key: "contractors", label: "Contractors", href: "/app/contractors", featureCode: "contractor_management", group: "support" },
+  { key: "ppe", label: "PPE", href: "/app/ppe", featureCode: "ppe_management", group: "support" },
+  { key: "chemicals", label: "Chemicals / SDS", href: "/app/chemicals", featureCode: "chemical_sds", group: "support" },
+  { key: "documents", label: "Documents", href: "/app/documents", featureCode: "document_control", group: "support" },
+  { key: "moc", label: "MOC", href: "/app/moc", featureCode: "moc", group: "support" },
+  { key: "toolbox-talks", label: "Toolbox Talks", href: "/app/toolbox-talks", featureCode: "toolbox_talks", group: "support" },
+  { key: "action-items", label: "Action Items", href: "/app/action-items", featureCode: "capa", permission: "capa.view", group: "assurance" },
+  { key: "reports", label: "Reports", href: "/app/reports", featureCode: "advanced_reports", permission: "reports.view", group: "insights" },
+  { key: "analytics", label: "Analytics", href: "/app/analytics", featureCode: "advanced_analytics", permission: "analytics.view", group: "insights" },
+  { key: "settings", label: "Settings", href: "/app/settings", permission: "settings.manage", group: "system" },
+];
+
+export const ADMIN_NAV = [
+  { href: "/admin", label: "Dashboard" },
+  { href: "/admin/organizations", label: "Organizations" },
+  { href: "/admin/plans", label: "Plans" },
+  { href: "/admin/features", label: "Features" },
+  { href: "/admin/users", label: "Platform Users" },
+  { href: "/admin/support", label: "Support" },
+  { href: "/admin/audit", label: "Audit Logs" },
+  { href: "/admin/settings", label: "Platform Settings" },
+  { href: "/admin/billing", label: "Billing Config" },
+];
