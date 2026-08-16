@@ -31,9 +31,16 @@ export default async function AppLayout({
     );
   }
 
-  const [enabledFeatures, permissions] = await Promise.all([
+  const [enabledFeatures, permissions, overdueCapa] = await Promise.all([
     listEnabledFeatures(supabase, organization.id),
     getUserPermissions(supabase, organization.id, user.id),
+    supabase
+      .from("capa_items")
+      .select("id", { count: "exact", head: true })
+      .eq("organization_id", organization.id)
+      .lt("due_date", new Date().toISOString().slice(0, 10))
+      .not("status", "in", '("closed","cancelled","verified")')
+      .is("deleted_at", null),
   ]);
 
   const userLabel = profile?.full_name || profile?.email || user.email || "User";
@@ -49,6 +56,7 @@ export default async function AppLayout({
           organizationName={organization.name}
         />
       }
+      notificationCount={overdueCapa.count ?? 0}
       signOut={
         <form action={signOutAction}>
           <Button type="submit" variant="outline" size="sm" className="w-full rounded-xl">

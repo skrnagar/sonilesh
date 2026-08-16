@@ -10,18 +10,21 @@ export function WorkspaceShell({
   title,
   userLabel,
   signOut,
+  notificationCount = 0,
   children,
 }: {
   sidebar: React.ReactNode;
   title: string;
   userLabel: string;
   signOut: React.ReactNode;
+  notificationCount?: number;
   children: React.ReactNode;
 }) {
   const [collapsed, setCollapsed] = useState(false);
   const [notesOpen, setNotesOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
   const searchId = useId();
 
   useEffect(() => {
@@ -37,6 +40,17 @@ export function WorkspaceShell({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (!headerRef.current?.contains(e.target as Node)) {
+        setNotesOpen(false);
+        setUserOpen(false);
+      }
+    };
+    window.addEventListener("mousedown", onClick);
+    return () => window.removeEventListener("mousedown", onClick);
   }, []);
 
   function toggleCollapsed() {
@@ -63,7 +77,10 @@ export function WorkspaceShell({
     >
       {sidebar}
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="app-shell-header sticky top-0 z-20 flex h-[4.25rem] items-center gap-3 border-b border-border px-4 md:px-5">
+        <header
+          ref={headerRef}
+          className="app-shell-header sticky top-0 z-20 flex h-[4.25rem] items-center gap-3 border-b border-border px-4 shadow-[var(--shadow-header)] md:px-5"
+        >
           <button
             type="button"
             className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -78,14 +95,19 @@ export function WorkspaceShell({
             </p>
             <p className="truncate text-xs text-muted-foreground">{userLabel}</p>
           </div>
-          <label
-            htmlFor={searchId}
+          <form
+            action="/app/incidents"
+            method="get"
             className="relative ml-auto hidden min-w-0 flex-1 max-w-md md:block"
           >
+            <label htmlFor={searchId} className="sr-only">
+              Search records
+            </label>
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
               ref={searchRef}
               id={searchId}
+              name="q"
               type="search"
               placeholder="Search records…"
               className="h-10 w-full rounded-xl border border-border bg-card pl-9 pr-12 text-sm outline-none ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
@@ -93,12 +115,12 @@ export function WorkspaceShell({
             <kbd className="pointer-events-none absolute right-2.5 top-1/2 hidden -translate-y-1/2 rounded-md border border-border bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline">
               ⌘K
             </kbd>
-          </label>
+          </form>
           <div className="ml-auto flex items-center gap-2 md:ml-0">
             <div className="relative">
               <button
                 type="button"
-                className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="relative inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 aria-label="Notifications"
                 aria-expanded={notesOpen}
                 onClick={() => {
@@ -107,12 +129,17 @@ export function WorkspaceShell({
                 }}
               >
                 <Bell className="h-4 w-4" />
+                {notificationCount > 0 ? (
+                  <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-destructive" />
+                ) : null}
               </button>
               {notesOpen ? (
-                <div className="absolute right-0 top-[calc(100%+8px)] z-30 w-72 rounded-xl border border-border bg-card p-4 shadow-[var(--shadow-lg)]">
+                <div className="absolute right-0 top-[calc(100%+8px)] z-30 w-80 rounded-xl border border-border bg-card p-4 shadow-[var(--shadow-lg)]">
                   <p className="font-display text-sm font-semibold">Notifications</p>
                   <p className="mt-2 text-sm text-muted-foreground">
-                    No new EHS alerts for this workspace.
+                    {notificationCount > 0
+                      ? `${notificationCount} overdue CAPA item${notificationCount === 1 ? "" : "s"} need attention.`
+                      : "No new EHS alerts for this workspace."}
                   </p>
                 </div>
               ) : null}

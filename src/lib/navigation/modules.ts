@@ -2,34 +2,35 @@ export type AppModuleDef = {
   key: string;
   label: string;
   href: string;
+  icon: string;
   featureCode?: string;
   permission?: string;
   group: "operations" | "assurance" | "support" | "insights" | "system";
 };
 
 export const APP_MODULES: AppModuleDef[] = [
-  { key: "dashboard", label: "Dashboard", href: "/app/dashboard", permission: "dashboard.view", group: "operations" },
-  { key: "incidents", label: "Incidents", href: "/app/incidents", featureCode: "incident_management", permission: "incidents.view", group: "operations" },
-  { key: "near-misses", label: "Near Misses", href: "/app/near-misses", featureCode: "near_miss", permission: "near_miss.view", group: "operations" },
-  { key: "hazards", label: "Hazards / UA / UC", href: "/app/hazards", featureCode: "hazard_reporting", permission: "hazards.view", group: "operations" },
-  { key: "risk-assessments", label: "Risk Assessments", href: "/app/risk-assessments", featureCode: "risk_assessment", group: "assurance" },
-  { key: "jsa", label: "JSA", href: "/app/jsa", featureCode: "jsa", group: "assurance" },
-  { key: "jha", label: "JHA", href: "/app/jha", featureCode: "jha", group: "assurance" },
-  { key: "permits", label: "Permits", href: "/app/permits", featureCode: "permit_to_work", group: "assurance" },
-  { key: "inspections", label: "Inspections", href: "/app/inspections", featureCode: "inspections", group: "assurance" },
-  { key: "audits", label: "Audits", href: "/app/audits", featureCode: "audits", group: "assurance" },
-  { key: "capa", label: "CAPA", href: "/app/capa", featureCode: "capa", permission: "capa.view", group: "assurance" },
-  { key: "training", label: "Training", href: "/app/training", featureCode: "training", group: "support" },
-  { key: "contractors", label: "Contractors", href: "/app/contractors", featureCode: "contractor_management", group: "support" },
-  { key: "ppe", label: "PPE", href: "/app/ppe", featureCode: "ppe_management", group: "support" },
-  { key: "chemicals", label: "Chemicals / SDS", href: "/app/chemicals", featureCode: "chemical_sds", group: "support" },
-  { key: "documents", label: "Documents", href: "/app/documents", featureCode: "document_control", group: "support" },
-  { key: "moc", label: "MOC", href: "/app/moc", featureCode: "moc", group: "support" },
-  { key: "toolbox-talks", label: "Toolbox Talks", href: "/app/toolbox-talks", featureCode: "toolbox_talks", group: "support" },
-  { key: "action-items", label: "Action Items", href: "/app/action-items", featureCode: "capa", permission: "capa.view", group: "assurance" },
-  { key: "reports", label: "Reports", href: "/app/reports", featureCode: "advanced_reports", permission: "reports.view", group: "insights" },
-  { key: "analytics", label: "Analytics", href: "/app/analytics", featureCode: "advanced_analytics", permission: "analytics.view", group: "insights" },
-  { key: "settings", label: "Settings", href: "/app/settings", permission: "settings.manage", group: "system" },
+  { key: "dashboard", label: "Dashboard", href: "/app/dashboard", icon: "LayoutDashboard", permission: "dashboard.view", group: "operations" },
+  { key: "incidents", label: "Incidents", href: "/app/incidents", icon: "AlertTriangle", featureCode: "incident_management", permission: "incidents.view", group: "operations" },
+  { key: "near-misses", label: "Near Misses", href: "/app/near-misses", icon: "ShieldAlert", featureCode: "near_miss", permission: "near_miss.view", group: "operations" },
+  { key: "hazards", label: "Hazards / UA / UC", href: "/app/hazards", icon: "Eye", featureCode: "hazard_reporting", permission: "hazards.view", group: "operations" },
+  { key: "risk-assessments", label: "Risk Assessments", href: "/app/risk-assessments", icon: "Grid2x2", featureCode: "risk_assessment", group: "assurance" },
+  { key: "jsa", label: "JSA", href: "/app/jsa", icon: "ListTree", featureCode: "jsa", group: "assurance" },
+  { key: "jha", label: "JHA", href: "/app/jha", icon: "ClipboardList", featureCode: "jha", group: "assurance" },
+  { key: "permits", label: "Permits", href: "/app/permits", icon: "FileBadge", featureCode: "permit_to_work", group: "assurance" },
+  { key: "inspections", label: "Inspections", href: "/app/inspections", icon: "ClipboardCheck", featureCode: "inspections", group: "assurance" },
+  { key: "audits", label: "Audits", href: "/app/audits", icon: "FileSearch", featureCode: "audits", group: "assurance" },
+  { key: "capa", label: "CAPA", href: "/app/capa", icon: "ListChecks", featureCode: "capa", permission: "capa.view", group: "assurance" },
+  { key: "training", label: "Training", href: "/app/training", icon: "GraduationCap", featureCode: "training", group: "support" },
+  { key: "contractors", label: "Contractors", href: "/app/contractors", icon: "HardHat", featureCode: "contractor_management", group: "support" },
+  { key: "ppe", label: "PPE", href: "/app/ppe", icon: "Shield", featureCode: "ppe_management", group: "support" },
+  { key: "chemicals", label: "Chemicals / SDS", href: "/app/chemicals", icon: "FlaskConical", featureCode: "chemical_sds", group: "support" },
+  { key: "documents", label: "Documents", href: "/app/documents", icon: "Folder", featureCode: "document_control", group: "support" },
+  { key: "moc", label: "MOC", href: "/app/moc", icon: "GitBranch", featureCode: "moc", group: "support" },
+  { key: "toolbox-talks", label: "Toolbox Talks", href: "/app/toolbox-talks", icon: "MessagesSquare", featureCode: "toolbox_talks", group: "support" },
+  { key: "action-items", label: "Action Items", href: "/app/action-items", icon: "CheckSquare", featureCode: "capa", permission: "capa.view", group: "assurance" },
+  { key: "reports", label: "Reports", href: "/app/reports", icon: "FileText", featureCode: "advanced_reports", permission: "reports.view", group: "insights" },
+  { key: "analytics", label: "Analytics", href: "/app/analytics", icon: "BarChart3", featureCode: "advanced_analytics", permission: "analytics.view", group: "insights" },
+  { key: "settings", label: "Settings", href: "/app/settings", icon: "Settings", permission: "settings.manage", group: "system" },
 ];
 
 export const ADMIN_NAV = [

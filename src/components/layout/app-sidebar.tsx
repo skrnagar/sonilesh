@@ -51,7 +51,7 @@ export function AppSidebar({
               <ul className="space-y-0.5">
                 {items.map((item) => (
                   <li key={item.key}>
-                    <SidebarNavLink href={item.href} label={item.label} />
+                    <SidebarNavLink href={item.href} label={item.label} icon={item.icon} />
                   </li>
                 ))}
               </ul>
