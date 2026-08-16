@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 export function WorkflowDiagram({ className }: { className?: string }) {
   return (
-    <ol className={cn("grid gap-px overflow-hidden rounded-lg border border-border bg-border md:grid-cols-5", className)}>
+    <ol className={cn("grid gap-px overflow-hidden rounded-xl border border-border bg-border md:grid-cols-5", className)}>
       {lifecycleSteps.map((step, index) => (
         <li key={step.title} className="relative bg-card p-4 md:p-5">
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">

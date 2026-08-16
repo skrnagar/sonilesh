@@ -23,16 +23,22 @@ export function PricingCard({
   return (
     <div
       className={cn(
-        "flex flex-col rounded-lg border bg-card p-6 transition-shadow",
+        "relative flex flex-col rounded-xl border bg-card p-6 transition-[box-shadow,border-color] duration-200 motion-reduce:transition-none",
         featured
-          ? "border-accent shadow-[0_0_0_1px_var(--accent),var(--shadow-md)]"
-          : "border-border hover:shadow-[var(--shadow-sm)]",
+          ? "border-[var(--mkt-safety)]/50 shadow-[var(--shadow-md)]"
+          : "border-border hover:border-accent/30 hover:shadow-[var(--shadow-sm)]",
       )}
     >
-      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--mkt-safety)]">
+      {featured ? (
+        <div
+          aria-hidden
+          className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,var(--mkt-safety),transparent)]"
+        />
+      ) : null}
+      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--mkt-safety)]">
         {featured ? "Most requested" : "Plan"}
       </p>
-      <h3 className="mt-3 text-2xl font-semibold tracking-tight text-primary">{name}</h3>
+      <h3 className="mt-3 font-display text-2xl font-semibold tracking-tight text-primary">{name}</h3>
       <p className="mt-2 text-sm text-muted-foreground">{audience}</p>
       <p className="mt-6 text-sm font-medium text-primary">Custom commercial packaging</p>
       <ul className="mt-6 flex-1 space-y-3">
@@ -45,11 +51,8 @@ export function PricingCard({
       </ul>
       <Button
         asChild
-        className={cn(
-          "mt-8",
-          featured && "bg-[var(--mkt-safety)] text-white hover:bg-[#0d6b63]",
-        )}
-        variant={featured ? "default" : "outline"}
+        className="mt-8"
+        variant={featured ? "safety" : "outline"}
       >
         <Link href={href}>{cta}</Link>
       </Button>

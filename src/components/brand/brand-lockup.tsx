@@ -4,7 +4,7 @@ import { brand } from "@/lib/marketing/content";
 
 type BrandLockupProps = {
   className?: string;
-  /** Inverse colors for navy / dark chrome */
+  /** Inverse type for navy / dark chrome. Mark stays ink + teal. */
   inverse?: boolean;
   /** Product chrome: follow sidebar tokens */
   chrome?: boolean;
@@ -15,12 +15,11 @@ type BrandLockupProps = {
 };
 
 /**
- * SONIL EHS360 lockup.
- * EHS is the industry acronym (Environment, Health & Safety) — not “ESH”.
+ * SONIL EHS360 mark — nested 360° arcs + control node.
+ * Geometric SaaS tile. Not a shield, helmet, or government crest.
  */
 export function BrandMark({
   className,
-  inverse = false,
 }: {
   className?: string;
   inverse?: boolean;
@@ -33,43 +32,42 @@ export function BrandMark({
       aria-hidden
     >
       <defs>
-        <linearGradient id={`${gid}-fill`} x1="8" y1="4" x2="34" y2="38" gradientUnits="userSpaceOnUse">
-          <stop stopColor={inverse ? "#0f766e" : "#0b3a53"} />
-          <stop offset="1" stopColor={inverse ? "#0b3a53" : "#071f2d"} />
+        <linearGradient id={`${gid}-tile`} x1="6" y1="2" x2="36" y2="38" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#0a1c26" />
+          <stop offset="1" stopColor="#051015" />
         </linearGradient>
       </defs>
-      <rect width="40" height="40" rx="10" fill={`url(#${gid}-fill)`} />
-      {/* 360° orbit — incomplete ring */}
-      <circle
-        cx="20"
-        cy="20"
-        r="12.25"
+      <rect width="40" height="40" rx="8" fill={`url(#${gid}-tile)`} />
+      <rect
+        x="0.75"
+        y="0.75"
+        width="38.5"
+        height="38.5"
+        rx="7.25"
         fill="none"
-        stroke="rgba(255,255,255,0.22)"
-        strokeWidth="1.35"
+        stroke="rgba(255,255,255,0.14)"
+        strokeWidth="0.75"
       />
+      {/* Outer 360 sweep — gap at 12 o’clock */}
       <path
-        d="M20 7.75 A12.25 12.25 0 1 1 7.75 20"
+        d="M27.4 11.2 A11.5 11.5 0 1 1 12.6 11.2"
         fill="none"
-        stroke="#5eead4"
-        strokeWidth="2"
-        strokeLinecap="round"
+        stroke="#2dd4bf"
+        strokeWidth="2.2"
+        strokeLinecap="square"
       />
-      {/* Shield: three EHS layers */}
+      {/* Inner counter-arc */}
       <path
-        d="M20 11.2 L28.2 14.4 V21.4 C28.2 26.1 20 30.1 20 30.1 C20 30.1 11.8 26.1 11.8 21.4 V14.4 Z"
-        fill="rgba(255,255,255,0.08)"
-        stroke="white"
+        d="M13.8 25.6 A7.15 7.15 0 1 1 26.2 25.6"
+        fill="none"
+        stroke="rgba(248,250,252,0.38)"
         strokeWidth="1.45"
-        strokeLinejoin="round"
+        strokeLinecap="square"
       />
-      <path
-        d="M14.6 20.2 H25.4 M16.1 17.15 H23.9 M17.4 23.2 H22.6"
-        stroke="#99f6e4"
-        strokeWidth="1.35"
-        strokeLinecap="round"
-        opacity="0.95"
-      />
+      {/* Control node in the 360 gap */}
+      <rect x="17.15" y="6.35" width="5.7" height="5.7" fill="#f8fafc" />
+      {/* Platform core */}
+      <rect x="18.35" y="18.35" width="3.3" height="3.3" fill="#2dd4bf" />
     </svg>
   );
 }
@@ -84,15 +82,14 @@ export function BrandLockup({
 }: BrandLockupProps) {
   const typeSize =
     size === "lg"
-      ? "text-xl"
+      ? "text-[1.2rem]"
       : size === "sm"
         ? "text-[0.8125rem]"
-        : "text-[0.95rem]";
+        : "text-[0.98rem]";
 
   return (
     <span className={cn("inline-flex items-center gap-2.5", className)}>
       <BrandMark
-        inverse={inverse}
         className={size === "sm" ? "h-8 w-8" : size === "lg" ? "h-11 w-11" : "h-9 w-9"}
       />
       {markOnly ? (
@@ -101,7 +98,7 @@ export function BrandLockup({
         <span className="min-w-0 leading-none">
           <span
             className={cn(
-              "font-display flex items-baseline gap-1.5 whitespace-nowrap tracking-[-0.04em]",
+              "font-display flex items-baseline gap-1.5 whitespace-nowrap tracking-[0.05em]",
               typeSize,
               chrome
                 ? "text-[var(--sidebar-foreground)]"
@@ -113,11 +110,11 @@ export function BrandLockup({
             <span className="font-semibold">{brand.legalName}</span>
             <span
               className={cn(
-                "font-medium",
+                "font-semibold tabular-nums tracking-[0.08em]",
                 chrome
                   ? "text-[var(--mkt-safety)]"
                   : inverse
-                    ? "text-teal-200/90"
+                    ? "text-teal-200"
                     : "text-[var(--mkt-safety)]",
               )}
             >
@@ -127,7 +124,7 @@ export function BrandLockup({
           {showLegal ? (
             <span
               className={cn(
-                "mt-0.5 block text-[10px] font-medium uppercase tracking-[0.16em]",
+                "mt-0.5 block text-[10px] font-medium uppercase tracking-[0.18em]",
                 inverse ? "text-white/45" : "text-muted-foreground",
               )}
             >

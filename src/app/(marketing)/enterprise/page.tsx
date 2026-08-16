@@ -61,7 +61,7 @@ export default function EnterprisePage() {
         </Container>
       </section>
 
-      <section id="configuration" className="scroll-mt-24 border-y border-border bg-white py-16 md:py-20">
+      <section id="configuration" className="mkt-section scroll-mt-24 border-y border-border mkt-band">
         <Container className="grid gap-10 lg:grid-cols-2">
           <SectionHeader
             eyebrow="Configuration"

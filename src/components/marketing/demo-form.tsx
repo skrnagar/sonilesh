@@ -25,7 +25,7 @@ export function DemoForm({ variant = "demo" }: DemoFormProps) {
   if (submitted) {
     return (
       <div
-        className="border border-border bg-card p-6"
+        className="rounded-xl border border-border bg-card p-6 shadow-[var(--shadow-sm)] sm:p-8"
         role="status"
         aria-live="polite"
       >
@@ -40,7 +40,7 @@ export function DemoForm({ variant = "demo" }: DemoFormProps) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4 border border-border bg-card p-6">
+    <form onSubmit={onSubmit} className="space-y-5 rounded-xl border border-border bg-card p-6 shadow-[var(--shadow-sm)] sm:p-8">
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
           <Label htmlFor="name">Full name</Label>

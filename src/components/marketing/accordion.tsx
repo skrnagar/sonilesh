@@ -19,7 +19,7 @@ export function Accordion({ items, className }: AccordionProps) {
   const [openId, setOpenId] = useState<string | null>(items[0]?.id ?? null);
 
   return (
-    <div className={cn("divide-y divide-border border border-border", className)}>
+    <div className={cn("divide-y divide-border overflow-hidden rounded-xl border border-border bg-card", className)}>
       {items.map((item) => {
         const open = openId === item.id;
         return (

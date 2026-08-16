@@ -28,12 +28,12 @@ export default function PlatformPage() {
         secondaryHref="/field-experience"
         secondaryLabel="Field experience"
       >
-        <ProductScreenshot>
+        <ProductScreenshot stage>
           <DashboardPreview />
         </ProductScreenshot>
       </PageHero>
 
-      <section className="py-16 md:py-20">
+      <section className="mkt-section">
         <Container>
           <SectionHeader
             eyebrow="Architecture of work"
@@ -48,7 +48,7 @@ export default function PlatformPage() {
         </Container>
       </section>
 
-      <section className="border-y border-border bg-white py-16 md:py-20">
+      <section className="mkt-section border-y border-border mkt-band">
         <Container>
           <SectionHeader
             eyebrow="Lifecycle"
@@ -61,7 +61,7 @@ export default function PlatformPage() {
         </Container>
       </section>
 
-      <section id="ai-ready" className="scroll-mt-24 py-16 md:py-20">
+      <section id="ai-ready" className="mkt-section scroll-mt-24">
         <Container className="grid gap-10 lg:grid-cols-2">
           <SectionHeader
             eyebrow="AI-ready"

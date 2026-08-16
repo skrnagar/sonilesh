@@ -42,7 +42,7 @@ export function ModulePage({ slug }: { slug: string }) {
           </div>
         </Container>
       </section>
-      <section className="border-y border-border bg-white py-16 md:py-20">
+      <section className="mkt-section border-y border-border mkt-band">
         <Container>
           <SectionHeader
             eyebrow="Related"
@@ -54,7 +54,7 @@ export function ModulePage({ slug }: { slug: string }) {
               <li key={item.slug}>
                 <Link
                   href={`/modules/${item.slug}`}
-                  className="block border border-border bg-card px-4 py-3 text-sm font-medium text-primary hover:border-accent/40"
+                  className="block rounded-xl border border-border bg-card px-4 py-3 text-sm font-medium text-primary transition-colors hover:border-accent/40 hover:bg-muted/40"
                 >
                   {item.name}
                 </Link>

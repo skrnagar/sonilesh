@@ -27,7 +27,7 @@ export default function PricingPage() {
         compact
       />
 
-      <section className="py-16 md:py-20">
+      <section className="mkt-section">
         <Container>
           <div className="grid gap-4 lg:grid-cols-3">
             {pricingTiers.map((tier) => (
@@ -37,7 +37,7 @@ export default function PricingPage() {
         </Container>
       </section>
 
-      <section className="border-y border-border bg-white py-16 md:py-20">
+      <section className="mkt-section border-y border-border mkt-band">
         <Container>
           <SectionHeader
             eyebrow="Compare"

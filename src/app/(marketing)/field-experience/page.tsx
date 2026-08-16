@@ -24,19 +24,19 @@ export default function FieldExperiencePage() {
         secondaryHref="/platform"
         secondaryLabel="Platform overview"
       >
-        <div className="flex justify-center">
+        <div className="flex justify-center lg:justify-end">
           <MobilePreview />
         </div>
       </PageHero>
 
-      <section className="py-16 md:py-20">
+      <section className="mkt-section">
         <Container>
           <SectionHeader
             eyebrow="Designed for the site"
             title="What field users need in the first 30 seconds"
             description="Fewer screens. Strong defaults. Enough structure for investigations later."
           />
-          <div className="mt-12 grid gap-10 md:grid-cols-3">
+          <div className="mt-14 grid gap-10 md:grid-cols-3">
             <FeatureCard
               title="Quick report paths"
               body="Incident, near miss, hazard, and related checks without navigating a full desktop IA."
@@ -50,7 +50,7 @@ export default function FieldExperiencePage() {
               body="Large targets, clear status, and a layout that works under time pressure."
             />
           </div>
-          <p className="mt-10 text-sm text-muted-foreground">
+          <p className="mt-12 text-sm text-muted-foreground">
             Note: Marketing lives at <code className="text-foreground">/field-experience</code> because{" "}
             <code className="text-foreground">/field</code> is reserved for the authenticated field app.
           </p>

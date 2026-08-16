@@ -41,7 +41,7 @@ export function IndustryPage({ slug }: { slug: string }) {
           </ul>
         </Container>
       </section>
-      <section className="border-y border-border bg-white py-16 md:py-20">
+      <section className="mkt-section border-y border-border mkt-band">
         <Container>
           <SectionHeader
             eyebrow="Recommended modules"

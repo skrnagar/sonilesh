@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import {
   AlertTriangle,
   Building2,
@@ -34,75 +35,72 @@ import {
 export default function HomePage() {
   return (
     <>
-      {/* Hero — brand-first, one composition, full-bleed visual plane */}
       <section className="relative overflow-hidden bg-[var(--mkt-hero)] text-white">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_18%_0%,rgba(31,111,139,0.5),transparent_48%),radial-gradient(ellipse_at_92%_18%,rgba(15,118,110,0.3),transparent_42%),linear-gradient(180deg,#071f2d_0%,#0b3a53_58%,#0a3044_100%)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_18%_0%,rgba(15,118,110,0.38),transparent_46%),radial-gradient(ellipse_at_88%_12%,rgba(31,111,139,0.22),transparent_40%),linear-gradient(180deg,#050d12_0%,#071f2d_52%,#0a3044_100%)]"
         />
-        <div aria-hidden className="mkt-grid-fade pointer-events-none absolute inset-0 opacity-70" />
-        <Container className="relative grid min-h-[min(92vh,920px)] items-center gap-12 py-16 lg:grid-cols-[1fr_1.08fr] lg:gap-14 lg:py-20">
-          <FadeIn>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-200/90">
-              Enterprise EHS SaaS
+        <div aria-hidden className="mkt-grid-fade pointer-events-none absolute inset-0 opacity-80" />
+        <Container className="relative grid min-h-[min(88vh,840px)] items-center gap-10 pb-20 pt-24 md:gap-12 md:pb-28 md:pt-28 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-16 lg:pb-32">
+          <FadeIn className="max-w-xl">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-teal-200/85">
+              {brand.name} · Enterprise EHS SaaS
             </p>
-            <h1 className="font-display mt-5">
-              <span className="block text-[2.65rem] font-semibold leading-[0.95] tracking-[-0.045em] md:text-7xl">
-                {brand.legalName}
-              </span>
-              <span className="mt-2 block text-[2rem] font-medium leading-none tracking-[-0.04em] text-teal-200/95 md:text-5xl">
-                {brand.product}
-              </span>
-            </h1>
-            <p className="mt-6 max-w-lg text-xl font-medium leading-snug text-white/95 md:text-2xl">
+            <h1 className="font-display mt-5 text-[2.35rem] font-semibold leading-[0.96] tracking-[-0.05em] sm:text-5xl md:text-[3.75rem] md:leading-[0.94]">
               {brand.tagline}
+            </h1>
+            <p className="mt-5 max-w-md text-lg leading-relaxed text-slate-300 md:text-xl">
+              {brand.supporting} Unify incidents, risk, permits, CAPA, and analytics in one multi-tenant system of record.
             </p>
-            <p className="mt-4 max-w-md text-base leading-relaxed text-slate-300">
-              {brand.supporting}
-            </p>
-            <div className="mt-9 flex flex-wrap gap-3">
-              <Button
-                asChild
-                size="lg"
-                className="bg-[var(--mkt-safety)] text-white hover:bg-[#0d6b63]"
-              >
-                <Link href="/request-demo">Request demo</Link>
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <Button asChild size="lg" className="mkt-btn-safety h-12 px-6">
+                <Link href="/request-demo">
+                  Request demo
+                  <ArrowRight className="h-4 w-4" aria-hidden />
+                </Link>
               </Button>
               <Button
                 asChild
                 size="lg"
                 variant="outline"
-                className="border-white/30 bg-transparent text-white hover:bg-white/10"
+                className="h-12 border-white/25 bg-transparent px-6 text-white hover:bg-white/10 hover:text-white"
               >
-                <Link href="/login">Sign in</Link>
+                <Link href="/platform">Explore platform</Link>
               </Button>
             </div>
+            <ul className="mt-8 grid gap-2 text-sm text-slate-400 sm:grid-cols-3 sm:gap-4">
+              <li>Field capture to boardroom</li>
+              <li>Multi-tenant by design</li>
+              <li>No invented certifications</li>
+            </ul>
           </FadeIn>
-          <FadeIn delay={0.12} className="relative">
-            <ProductScreenshot title="SONIL EHS360 · Control board" className="lg:translate-y-2">
+          <FadeIn delay={0.1} className="relative min-w-0">
+            <ProductScreenshot title="SONIL EHS360 · Control board" stage>
               <DashboardPreview />
             </ProductScreenshot>
-            <div className="pointer-events-none absolute -bottom-8 -left-4 hidden md:block lg:-left-10">
-              <MobilePreview className="scale-90 shadow-[var(--shadow-lg)]" />
+            <div className="pointer-events-none absolute -bottom-10 -left-2 hidden lg:block xl:-left-8">
+              <MobilePreview className="scale-[0.88] shadow-[var(--shadow-lg)]" />
             </div>
           </FadeIn>
         </Container>
       </section>
 
-      {/* Trust strip — industries as text */}
-      <section className="border-b border-border bg-white">
-        <Container className="py-9">
-          <p className="text-center text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+      <section className="border-b border-border mkt-band">
+        <Container className="py-8 md:py-10">
+          <p className="text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             Built for high-risk industries
           </p>
-          <p className="mt-4 text-center text-sm leading-relaxed text-foreground/80 md:text-base">
-            {trustIndustries.join(" · ")}
-          </p>
+          <div className="-mx-1 mt-5 flex gap-x-6 gap-y-2 overflow-x-auto px-1 pb-1 text-sm font-medium text-foreground/75 md:flex-wrap md:justify-center md:overflow-visible">
+            {trustIndustries.map((name) => (
+              <span key={name} className="shrink-0 whitespace-nowrap">
+                {name}
+              </span>
+            ))}
+          </div>
         </Container>
       </section>
 
-      {/* Problem */}
-      <section className="py-16 md:py-24">
+      <section className="mkt-section">
         <Container>
           <Reveal>
             <SectionHeader
@@ -111,7 +109,7 @@ export default function HomePage() {
               description="Spreadsheets, inbox trails, and disconnected apps leave field reality invisible to leadership — and CAPA rarely closes cleanly."
             />
           </Reveal>
-          <div className="mt-12 grid gap-10 md:grid-cols-3 md:gap-12">
+          <div className="mt-14 grid gap-10 md:grid-cols-3 md:gap-12">
             <FeatureCard
               icon={AlertTriangle}
               title="Fragmented capture"
@@ -131,8 +129,7 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* Platform overview map */}
-      <section className="border-y border-border bg-white py-16 md:py-24">
+      <section className="mkt-section border-y border-border mkt-band">
         <Container>
           <Reveal>
             <SectionHeader
@@ -141,13 +138,13 @@ export default function HomePage() {
               description="SONIL EHS360 connects capture, operations, risk, assurance, and leadership visibility."
             />
           </Reveal>
-          <ol className="mt-12 grid gap-px overflow-hidden rounded-lg border border-border bg-border md:grid-cols-5">
+          <ol className="mt-12 grid gap-px overflow-hidden rounded-xl border border-border bg-border md:grid-cols-5">
             {platformPillars.map((pillar, index) => (
-              <li key={pillar.title} className="bg-background p-5 md:bg-white">
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              <li key={pillar.title} className="bg-background p-5 md:bg-[var(--mkt-band)]">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                   {String(index + 1).padStart(2, "0")}
                 </p>
-                <p className="mt-3 text-lg font-semibold text-primary">{pillar.title}</p>
+                <p className="mt-3 font-display text-lg font-semibold text-primary">{pillar.title}</p>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                   {pillar.body}
                 </p>
@@ -162,9 +159,8 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* Product showcases */}
-      <section className="py-16 md:py-24">
-        <Container className="grid items-center gap-12 lg:grid-cols-2">
+      <section className="mkt-section">
+        <Container className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
           <Reveal>
             <SectionHeader
               eyebrow="Product"
@@ -181,20 +177,19 @@ export default function HomePage() {
             </div>
           </Reveal>
           <Reveal>
-            <ProductScreenshot title="SONIL EHS360 · Analytics">
+            <ProductScreenshot title="SONIL EHS360 · Analytics" stage>
               <DashboardPreview />
             </ProductScreenshot>
           </Reveal>
         </Container>
       </section>
 
-      {/* Field experience */}
-      <section className="relative overflow-hidden border-y border-border bg-[#0b3a53] py-16 text-white md:py-24">
+      <section className="relative overflow-hidden border-y border-white/10 bg-[var(--mkt-hero)] py-16 text-white md:py-28">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_80%_20%,rgba(15,118,110,0.28),transparent_45%)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_80%_20%,rgba(15,118,110,0.26),transparent_48%)]"
         />
-        <Container className="relative grid items-center gap-12 lg:grid-cols-2">
+        <Container className="relative grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
           <Reveal>
             <SectionHeader
               tone="inverse"
@@ -203,11 +198,11 @@ export default function HomePage() {
               description="Quick report paths for incidents, near misses, hazards, and permit checks — designed for gloves, glare, and time pressure."
             />
             <div className="mt-8">
-              <Button
-                asChild
-                className="bg-[var(--mkt-safety)] text-white hover:bg-[#0d6b63]"
-              >
-                <Link href="/field-experience">Explore field</Link>
+              <Button asChild className="mkt-btn-safety h-12 px-6">
+                <Link href="/field-experience">
+                  Explore field
+                  <ArrowRight className="h-4 w-4" aria-hidden />
+                </Link>
               </Button>
             </div>
           </Reveal>
@@ -219,8 +214,7 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* Workflow lifecycle */}
-      <section className="py-16 md:py-24">
+      <section className="mkt-section">
         <Container>
           <Reveal>
             <SectionHeader
@@ -237,9 +231,8 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* Multi-tenant + configuration */}
-      <section className="border-y border-border bg-white py-16 md:py-24">
-        <Container className="grid gap-12 lg:grid-cols-2">
+      <section className="mkt-section border-y border-border mkt-band">
+        <Container className="grid gap-16 lg:grid-cols-2">
           <Reveal>
             <SectionHeader
               eyebrow="Enterprise"
@@ -286,8 +279,7 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* Security */}
-      <section className="py-16 md:py-24">
+      <section className="mkt-section">
         <Container>
           <Reveal>
             <SectionHeader
@@ -304,8 +296,7 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* Industries */}
-      <section className="border-y border-border bg-white py-16 md:py-24">
+      <section className="mkt-section border-y border-border mkt-band">
         <Container>
           <Reveal>
             <SectionHeader
@@ -332,8 +323,7 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* Modules teaser */}
-      <section className="py-16 md:py-24">
+      <section className="mkt-section">
         <Container>
           <Reveal>
             <SectionHeader
@@ -360,8 +350,7 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* Pricing teaser */}
-      <section className="border-y border-border bg-white py-16 md:py-24">
+      <section className="mkt-section border-y border-border mkt-band">
         <Container>
           <Reveal>
             <SectionHeader
@@ -370,7 +359,7 @@ export default function HomePage() {
               description="Plans are sold through Contact Sales / Custom Enterprise engagement. No invented dollar amounts."
             />
           </Reveal>
-          <div className="mt-10 grid gap-3 lg:grid-cols-3">
+          <div className="mt-10 grid gap-4 lg:grid-cols-3">
             {pricingTiers.map((tier) => (
               <PricingCard key={tier.name} {...tier} />
             ))}
@@ -378,8 +367,7 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* Resources teaser */}
-      <section className="py-16 md:py-24">
+      <section className="mkt-section">
         <Container>
           <Reveal>
             <SectionHeader
@@ -392,12 +380,12 @@ export default function HomePage() {
             {resources.map((item) => (
               <div
                 key={item.title}
-                className="rounded-lg border border-border bg-card p-5 transition-colors hover:border-accent/40"
+                className="rounded-xl border border-border bg-card p-5 transition-colors hover:border-accent/40 motion-reduce:transition-none"
               >
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
                   {item.status}
                 </p>
-                <h3 className="mt-2 text-base font-semibold text-primary">{item.title}</h3>
+                <h3 className="mt-2 font-display text-base font-semibold text-primary">{item.title}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">{item.body}</p>
               </div>
             ))}

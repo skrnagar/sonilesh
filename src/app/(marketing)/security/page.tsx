@@ -61,7 +61,7 @@ export default function SecurityPage() {
         </Container>
       </section>
 
-      <section className="border-y border-border bg-white py-16 md:py-20">
+      <section className="mkt-section border-y border-border mkt-band">
         <Container className="grid gap-10 lg:grid-cols-2">
           <SectionHeader
             eyebrow="Clarity"

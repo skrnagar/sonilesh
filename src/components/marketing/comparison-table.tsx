@@ -40,7 +40,7 @@ const rows: Row[] = [
 
 export function ComparisonTable() {
   return (
-    <div className="overflow-x-auto border border-border">
+    <div className="overflow-x-auto rounded-xl border border-border">
       <table className="w-full min-w-[640px] border-collapse text-left text-sm">
         <caption className="sr-only">SONIL EHS360 plan capability comparison</caption>
         <thead className="bg-muted/60">

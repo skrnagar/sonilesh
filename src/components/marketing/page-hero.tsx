@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/marketing/container";
+import { FadeIn } from "@/components/marketing/motion";
 import { cn } from "@/lib/utils";
 
 type PageHeroProps = {
@@ -31,48 +33,44 @@ export function PageHero({
   return (
     <section
       className={cn(
-        "relative overflow-hidden border-b border-border bg-card",
+        "relative overflow-hidden border-b border-border",
         className,
       )}
     >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_0%_0%,rgba(31,111,139,0.14),transparent_42%),radial-gradient(ellipse_at_100%_0%,rgba(15,118,110,0.08),transparent_36%),linear-gradient(180deg,#ffffff_0%,#f4f6f8_100%)]"
-      />
-      <Container className={cn("relative", compact ? "py-14 md:py-16" : "py-16 md:py-20")}>
+      <div aria-hidden className="mkt-page-hero-wash pointer-events-none absolute inset-0" />
+      <Container className={cn("relative", compact ? "py-12 md:py-16" : "py-16 md:py-24")}>
         <div
           className={cn(
             "grid gap-10",
-            children && "lg:grid-cols-[1.1fr_0.9fr] lg:items-center",
+            children && "lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center lg:gap-16",
           )}
         >
-          <div>
+          <FadeIn>
             {eyebrow ? (
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--mkt-safety)]">
+              <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--mkt-safety)]">
                 {eyebrow}
               </p>
             ) : null}
-            <h1 className="max-w-2xl font-display text-4xl font-semibold tracking-tight text-primary md:text-[2.85rem] md:leading-[1.1]">
+            <h1 className="max-w-2xl font-display text-[2.15rem] font-semibold leading-[1.04] tracking-[-0.05em] text-primary sm:text-4xl md:text-[2.9rem] md:leading-[1.05]">
               {title}
             </h1>
-            <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground md:text-[1.05rem]">
+            <p className="mt-5 max-w-xl text-[1.05rem] leading-relaxed text-muted-foreground md:text-lg">
               {description}
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button
-                asChild
-                size="lg"
-                className="bg-[var(--mkt-safety)] text-white hover:bg-[#0d6b63]"
-              >
-                <Link href={primaryHref}>{primaryLabel}</Link>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <Button asChild size="lg" variant="safety" className="h-12 px-6">
+                <Link href={primaryHref}>
+                  {primaryLabel}
+                  <ArrowRight className="h-4 w-4" aria-hidden />
+                </Link>
               </Button>
               {secondaryHref && secondaryLabel ? (
-                <Button asChild size="lg" variant="outline">
+                <Button asChild size="lg" variant="outline" className="h-12 px-6">
                   <Link href={secondaryHref}>{secondaryLabel}</Link>
                 </Button>
               ) : null}
             </div>
-          </div>
+          </FadeIn>
           {children}
         </div>
       </Container>

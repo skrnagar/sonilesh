@@ -5,7 +5,7 @@ export function MobilePreview({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        "mx-auto w-[240px] rounded-[1.6rem] border-[6px] border-[#0b3a53] bg-[#0b3a53] p-2 shadow-[var(--shadow-lg)] ring-1 ring-white/10",
+        "mx-auto w-[min(100%,260px)] rounded-[1.75rem] border-[6px] border-[#0b3a53] bg-[#0b3a53] p-2 shadow-[var(--shadow-lg)] ring-1 ring-white/10",
         className,
       )}
     >

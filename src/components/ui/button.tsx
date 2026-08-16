@@ -10,6 +10,8 @@ const buttonVariants = cva(
       variant: {
         default:
           "bg-primary text-primary-foreground shadow-[var(--shadow-sm)] hover:bg-[#0a3146]",
+        safety:
+          "bg-[var(--mkt-safety)] text-[var(--mkt-safety-ink)] shadow-[var(--shadow-sm)] hover:bg-[var(--mkt-safety-hover)]",
         secondary: "bg-muted text-foreground hover:bg-[#dce4ec]",
         outline: "border border-border bg-card hover:bg-muted hover:border-[#c4ced9]",
         ghost: "hover:bg-muted",

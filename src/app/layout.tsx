@@ -1,15 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import { Outfit, Source_Sans_3 } from "next/font/google";
+import { IBM_Plex_Sans, Plus_Jakarta_Sans } from "next/font/google";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import "./globals.css";
 
-const sans = Source_Sans_3({
+const sans = IBM_Plex_Sans({
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-sans-face",
   display: "swap",
 });
 
-const display = Outfit({
+const display = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-display-face",
   display: "swap",

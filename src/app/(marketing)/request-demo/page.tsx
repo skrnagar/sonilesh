@@ -20,8 +20,34 @@ export default function RequestDemoPage() {
         primaryLabel="Contact sales"
         compact
       />
-      <section className="pb-20">
-        <Container className="max-w-3xl">
+      <section className="pb-20 pt-2 md:pb-28">
+        <Container className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-start lg:gap-16">
+          <div className="lg:sticky lg:top-28">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--mkt-safety)]">
+              What to expect
+            </p>
+            <h2 className="mt-3 font-display text-2xl font-semibold tracking-tight text-primary md:text-[1.85rem]">
+              A working product, mapped to your sites
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground md:text-base">
+              This is a commercial conversation — not a generic webinar. Come with the modules and operating model you care about.
+            </p>
+            <ol className="mt-8 space-y-5">
+              {[
+                ["01", "Context", "Industry, sites, and the modules you actually need."],
+                ["02", "Walkthrough", "Field capture through CAPA, then leadership visibility."],
+                ["03", "Fit", "Tenancy, roles, and packaging — without invented price tags."],
+              ].map(([n, title, body]) => (
+                <li key={n} className="border-l border-[var(--mkt-safety)]/70 pl-5">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                    {n}
+                  </p>
+                  <p className="mt-1 font-display text-base font-semibold text-primary">{title}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{body}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
           <DemoForm variant="demo" />
         </Container>
       </section>

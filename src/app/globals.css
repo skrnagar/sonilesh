@@ -31,8 +31,11 @@
   --danger-soft: #fee2e2;
   --danger-ink: #991b1b;
   --mkt-safety: #0f766e;
+  --mkt-safety-hover: #0d6b63;
+  --mkt-safety-ink: #ffffff;
   --mkt-hero: #071f2d;
   --mkt-surface: #ffffff;
+  --mkt-band: #ffffff;
   --mkt-ink-soft: #475569;
   --radius: 0.75rem;
   --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
@@ -70,8 +73,11 @@
   --danger-soft: rgba(248, 113, 113, 0.16);
   --danger-ink: #fecaca;
   --mkt-safety: #2dd4bf;
-  --mkt-hero: #071018;
+  --mkt-safety-hover: #5eead4;
+  --mkt-safety-ink: #071f2d;
+  --mkt-hero: #050d12;
   --mkt-surface: #121c26;
+  --mkt-band: #101820;
   --mkt-ink-soft: #94a3b8;
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
   --shadow-md: 0 8px 24px -12px rgba(0, 0, 0, 0.55);
@@ -98,8 +104,8 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-warning: var(--warning);
   --color-success: var(--success);
-  --font-sans: var(--font-sans-face), "Source Sans 3", "Segoe UI", sans-serif;
-  --font-display: var(--font-display-face), Outfit, "Segoe UI", sans-serif;
+  --font-sans: var(--font-sans-face), "IBM Plex Sans", "Segoe UI", sans-serif;
+  --font-display: var(--font-display-face), "Plus Jakarta Sans", "Segoe UI", sans-serif;
   --radius-sm: calc(var(--radius) - 2px);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 2px);
@@ -130,11 +136,17 @@ h2,
 h3,
 .font-display {
   font-family: var(--font-display);
-  letter-spacing: -0.03em;
+  letter-spacing: -0.04em;
 }
 
 h1 {
-  line-height: 1.08;
+  letter-spacing: -0.05em;
+  line-height: 1.02;
+}
+
+h2 {
+  letter-spacing: -0.038em;
+  line-height: 1.12;
 }
 
 .tabular-nums {
@@ -157,10 +169,64 @@ a {
 
 .mkt-grid-fade {
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
-  background-size: 48px 48px;
-  mask-image: radial-gradient(ellipse at 50% 30%, black 20%, transparent 75%);
+    linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse at 62% 42%, black 18%, transparent 72%);
+}
+
+.mkt-band {
+  background-color: var(--mkt-band);
+}
+
+.mkt-section {
+  padding-block: 4.5rem;
+}
+
+@media (min-width: 768px) {
+  .mkt-section {
+    padding-block: 6.5rem;
+  }
+}
+
+@utility mkt-btn-safety {
+  background-color: var(--mkt-safety);
+  color: var(--mkt-safety-ink);
+  &:hover {
+    background-color: var(--mkt-safety-hover);
+    color: var(--mkt-safety-ink);
+  }
+}
+
+.mkt-page-hero-wash {
+  background:
+    radial-gradient(ellipse at 0% 0%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 44%),
+    radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--mkt-safety) 10%, transparent), transparent 38%),
+    linear-gradient(180deg, var(--card) 0%, var(--background) 100%);
+}
+
+.mkt-product-glow {
+  position: absolute;
+  inset: 12% -8% -18% 8%;
+  background: radial-gradient(ellipse at 50% 40%, rgba(15, 118, 110, 0.32), transparent 62%);
+  filter: blur(28px);
+  pointer-events: none;
+}
+
+.mkt-product-tilt {
+  position: relative;
+}
+
+@media (min-width: 1024px) {
+  .mkt-product-tilt {
+    transform: perspective(1800px) rotateY(-9deg) rotateX(5deg);
+    transform-origin: left center;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .mkt-product-tilt:hover {
+    transform: perspective(1800px) rotateY(-4deg) rotateX(2deg);
+  }
 }
 
 .surface-elevated {
@@ -190,7 +256,7 @@ a {
 }
 
 .sidebar-glyph {
-  display: none;
+  display: flex;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -225,6 +291,12 @@ a {
 
   html:focus-within {
     scroll-behavior: auto;
+  }
+
+  .mkt-product-tilt,
+  .mkt-product-tilt:hover {
+    transform: none;
+    transition: none;
   }
 
   *,
