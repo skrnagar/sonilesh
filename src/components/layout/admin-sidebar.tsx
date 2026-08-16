@@ -1,30 +1,35 @@
 import Link from "next/link";
-import { ADMIN_NAV } from "@/lib/navigation/modules";
+import { ADMIN_NAV_GROUPS } from "@/lib/navigation/modules";
+import { BrandLockup } from "@/components/brand/brand-lockup";
 import { SidebarNavLink } from "@/components/layout/sidebar-nav-link";
 
 export function AdminSidebar() {
   return (
-    <aside className="flex h-screen w-60 shrink-0 flex-col border-r border-white/10 bg-[var(--mkt-hero)] text-white">
-      <div className="border-b border-white/10 px-4 py-4">
-        <div className="flex items-center gap-2.5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-md bg-white/10 text-xs font-bold">
-            E
-          </span>
-          <div>
-            <p className="text-sm font-semibold">EHS360 Admin</p>
-            <p className="text-xs text-white/55">Platform owner console</p>
-          </div>
-        </div>
+    <aside className="flex h-screen w-64 shrink-0 flex-col overflow-hidden border-r border-[var(--sidebar-border)] bg-sidebar text-sidebar-foreground">
+      <div className="border-b border-[var(--sidebar-border)] px-4 py-4">
+        <BrandLockup chrome size="sm" />
+        <p className="sidebar-copy mt-1.5 text-xs text-[var(--sidebar-muted)]">Admin console</p>
       </div>
-      <nav className="flex-1 space-y-0.5 px-2.5 py-3">
-        {ADMIN_NAV.map((item) => (
-          <SidebarNavLink key={item.href} href={item.href} label={item.label} />
+      <nav className="flex-1 overflow-y-auto px-2.5 py-3">
+        {ADMIN_NAV_GROUPS.map((group) => (
+          <div key={group.label} className="mb-4">
+            <p className="sidebar-copy px-2.5 pb-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--sidebar-muted)]">
+              {group.label}
+            </p>
+            <ul className="space-y-0.5">
+              {group.items.map((item) => (
+                <li key={item.href}>
+                  <SidebarNavLink href={item.href} label={item.label} />
+                </li>
+              ))}
+            </ul>
+          </div>
         ))}
       </nav>
-      <div className="border-t border-white/10 p-3">
+      <div className="border-t border-[var(--sidebar-border)] p-3">
         <Link
           href="/app/dashboard"
-          className="block rounded-md px-2.5 py-2 text-xs text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+          className="sidebar-copy block rounded-xl px-2.5 py-2 text-xs text-[var(--sidebar-muted)] transition-colors hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-foreground)]"
         >
           Back to customer app
         </Link>

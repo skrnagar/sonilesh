@@ -1,6 +1,8 @@
 import { requireOrgContext } from "@/lib/auth/org-context";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select } from "@/components/ui/select";
+import { KpiCard } from "@/components/dashboard/kpi-card";
+import { ScopeFilters } from "@/components/dashboard/scope-filters";
+import { StatusPill } from "@/components/modules/records-table";
 
 async function countEvents(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -95,6 +97,7 @@ export default async function DashboardPage({
     unsafeConditions,
     openCapa,
     overdueCapa,
+    activePermits,
   ] = await Promise.all([
     countEvents(supabase, orgId, { ...scope, event_type_id: typeId("incident") }),
     countEvents(supabase, orgId, {
@@ -131,119 +134,157 @@ export default async function DashboardPage({
       .not("status", "in", '("closed","cancelled","verified")')
       .is("deleted_at", null)
       .then((r: { count: number | null }) => r.count ?? 0),
+    supabase
+      .from("permits")
+      .select("id", { count: "exact", head: true })
+      .eq("organization_id", orgId)
+      .in("status", ["active", "authorization"])
+      .is("deleted_at", null)
+      .then((r: { count: number | null }) => r.count ?? 0),
   ]);
 
   const kpis = [
-    { label: "Total incidents", value: totalIncidents },
-    { label: "Open incidents", value: openIncidents },
-    { label: "Near misses", value: nearMisses },
-    { label: "Unsafe acts", value: unsafeActs },
-    { label: "Unsafe conditions", value: unsafeConditions },
-    { label: "Open CAPA", value: openCapa },
-    { label: "Overdue CAPA", value: overdueCapa },
-  ];
+    {
+      label: "Total incidents",
+      value: totalIncidents,
+      hint: totalIncidents === 0 ? "Clear" : "Recorded",
+      tone: totalIncidents === 0 ? "good" : "neutral",
+    },
+    {
+      label: "Open incidents",
+      value: openIncidents,
+      hint: openIncidents === 0 ? "Clear" : "In progress",
+      tone: openIncidents === 0 ? "good" : "watch",
+    },
+    {
+      label: "Near misses",
+      value: nearMisses,
+      hint: "Leading",
+      tone: "neutral",
+    },
+    {
+      label: "Unsafe acts",
+      value: unsafeActs,
+      hint: unsafeActs > 0 ? "Watch" : "Clear",
+      tone: unsafeActs > 0 ? "watch" : "good",
+    },
+    {
+      label: "Unsafe conditions",
+      value: unsafeConditions,
+      hint: unsafeConditions > 0 ? "Watch" : "Clear",
+      tone: unsafeConditions > 0 ? "watch" : "good",
+    },
+    {
+      label: "Open CAPA",
+      value: openCapa,
+      hint: openCapa === 0 ? "Clear" : "Open loop",
+      tone: openCapa === 0 ? "good" : "watch",
+    },
+    {
+      label: "Overdue CAPA",
+      value: overdueCapa,
+      hint: overdueCapa === 0 ? "On time" : "Needs action",
+      tone: overdueCapa === 0 ? "good" : "critical",
+    },
+    {
+      label: "Active permits",
+      value: activePermits,
+      hint: "Live work",
+      tone: "neutral",
+    },
+  ] as const;
 
   return (
-    <div className="space-y-5">
-      <div className="flex flex-wrap items-end justify-between gap-3">
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold text-primary">EHS Dashboard</h1>
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--mkt-safety)]">
+            Operations
+          </p>
+          <h1 className="mt-1 font-display text-2xl font-semibold text-foreground">
+            EHS dashboard
+          </h1>
           <p className="text-sm text-muted-foreground">
-            Tenant-scoped KPIs for {organization.name}
+            Tenant-scoped control for {organization.name}
           </p>
         </div>
-        <form className="grid grid-cols-2 gap-2 md:grid-cols-4">
-          <Select name="businessUnitId" defaultValue={params.businessUnitId || ""}>
-            <option value="">All business units</option>
-            {(bus ?? []).map((b) => (
-              <option key={b.id} value={b.id}>
-                {b.name}
-              </option>
-            ))}
-          </Select>
-          <Select name="siteId" defaultValue={params.siteId || ""}>
-            <option value="">All sites</option>
-            {(sites ?? []).map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </Select>
-          <Select name="projectId" defaultValue={params.projectId || ""}>
-            <option value="">All projects</option>
-            {(projects ?? []).map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name}
-              </option>
-            ))}
-          </Select>
-          <Select name="departmentId" defaultValue={params.departmentId || ""}>
-            <option value="">All departments</option>
-            {(departments ?? []).map((d) => (
-              <option key={d.id} value={d.id}>
-                {d.name}
-              </option>
-            ))}
-          </Select>
-          <button className="col-span-2 h-10 rounded-md bg-primary px-3 text-sm text-primary-foreground md:col-span-4">
-            Apply filters
-          </button>
-        </form>
+        <ScopeFilters
+          params={params}
+          sites={sites ?? []}
+          projects={projects ?? []}
+          departments={departments ?? []}
+          bus={bus ?? []}
+        />
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {kpis.map((kpi) => (
-          <div key={kpi.label} className="border border-border bg-card px-4 py-3">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">
-              {kpi.label}
-            </p>
-            <p className="mt-2 text-2xl font-semibold text-foreground">{kpi.value}</p>
-          </div>
+          <KpiCard
+            key={kpi.label}
+            label={kpi.label}
+            value={kpi.value}
+            hint={kpi.hint}
+            tone={kpi.tone}
+          />
         ))}
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
+      <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+        <Card className="rounded-2xl shadow-[var(--shadow-sm)]">
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Recent events</CardTitle>
+            <span className="text-xs text-muted-foreground">Latest 8</span>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-2 text-sm">
-              {(trendRows ?? []).map((row, idx) => (
-                <div
-                  key={`${row.occurred_at}-${idx}`}
-                  className="flex justify-between border-b border-border py-1.5"
-                >
-                  <span className="text-muted-foreground">
-                    {new Date(row.occurred_at).toLocaleDateString()}
-                  </span>
-                  <span className="font-medium capitalize">{row.status}</span>
-                </div>
-              ))}
-              {!trendRows?.length ? (
-                <p className="text-muted-foreground">
-                  No events yet for this organization.
-                </p>
-              ) : null}
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
+                <thead className="border-y border-border bg-muted/50 text-xs uppercase tracking-wide text-muted-foreground">
+                  <tr>
+                    <th className="px-4 py-2.5 font-medium">Occurred</th>
+                    <th className="px-4 py-2.5 font-medium">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(trendRows ?? []).map((row, idx) => (
+                    <tr key={`${row.occurred_at}-${idx}`} className="border-b border-border last:border-0">
+                      <td className="px-4 py-3 tabular-nums text-muted-foreground">
+                        {new Date(row.occurred_at).toLocaleDateString()}
+                      </td>
+                      <td className="px-4 py-3">
+                        <StatusPill value={row.status} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
+            {!trendRows?.length ? (
+              <p className="px-4 py-6 text-sm text-muted-foreground">
+                No events yet for this organization.
+              </p>
+            ) : null}
           </CardContent>
         </Card>
-        <Card>
+        <Card className="rounded-2xl shadow-[var(--shadow-sm)]">
           <CardHeader>
-            <CardTitle>Severity & CAPA focus</CardTitle>
+            <CardTitle>Closed-loop focus</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm text-muted-foreground">
+          <CardContent className="space-y-3 text-sm text-muted-foreground">
             <p>
               Open CAPA:{" "}
-              <span className="font-semibold text-foreground">{openCapa}</span>
+              <span className="font-semibold tabular-nums text-foreground">{openCapa}</span>
             </p>
             <p>
               Overdue CAPA:{" "}
-              <span className="font-semibold text-foreground">{overdueCapa}</span>
+              <span className="font-semibold tabular-nums text-foreground">{overdueCapa}</span>
             </p>
             <p>
-              Charts expand as event volume grows. All queries are constrained by
-              `organization_id` and RLS.
+              Active permits:{" "}
+              <span className="font-semibold tabular-nums text-foreground">{activePermits}</span>
+            </p>
+            <p>
+              Charts expand as event volume grows. All queries stay constrained by
+              organization scope and RLS.
             </p>
           </CardContent>
         </Card>

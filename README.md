@@ -1,4 +1,4 @@
-# EHS360
+# SONIL EHS360
 
 Production-oriented multi-tenant Environment, Health & Safety SaaS built with Next.js, TypeScript, Tailwind, shadcn-style UI, and Supabase (Auth, PostgreSQL, RLS).
 

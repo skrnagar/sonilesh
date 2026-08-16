@@ -20,7 +20,9 @@ export function MegaMenu({ columns, open, onNavigate }: MegaMenuProps) {
           : "pointer-events-none -translate-y-1 opacity-0 motion-reduce:translate-y-0",
       )}
     >
-      <div className="min-w-[440px] rounded-lg border border-border bg-card p-5 shadow-[var(--shadow-lg)]">
+      <div className="min-w-[460px] overflow-hidden rounded-lg border border-border bg-card shadow-[var(--shadow-lg)]">
+        <div className="h-0.5 bg-[linear-gradient(90deg,var(--mkt-safety),var(--accent))]" />
+        <div className="p-5">
         <div
           className={cn(
             "grid gap-6",
@@ -54,6 +56,7 @@ export function MegaMenu({ columns, open, onNavigate }: MegaMenuProps) {
               </ul>
             </div>
           ))}
+        </div>
         </div>
       </div>
     </div>

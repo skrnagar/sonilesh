@@ -9,7 +9,7 @@ export default async function LoginPage({
 }) {
   const params = await searchParams;
   return (
-    <AuthShell title="Sign in" subtitle="Access your EHS360 workspace.">
+    <AuthShell title="Sign in" subtitle="Access your SONIL EHS360 workspace.">
       {params.error === "supabase_not_configured" ? (
         <p className="mb-4 text-sm text-destructive">
           Configure Supabase environment variables before signing in.

@@ -24,7 +24,7 @@ export function ModulePage({ slug }: { slug: string }) {
         secondaryHref="/modules"
         secondaryLabel="All modules"
       >
-        <ProductScreenshot title={`EHS360 · ${mod.name}`}>
+        <ProductScreenshot title={`SONIL EHS360 · ${mod.name}`}>
           <DashboardPreview />
         </ProductScreenshot>
       </PageHero>

@@ -1,8 +1,8 @@
-# EHS360 Architecture
+# SONIL EHS360 Architecture
 
 ## Product
 
-EHS360 is a production-grade multi-tenant Environment, Health & Safety SaaS platform serving independent organizations across EPC, construction, infrastructure, T&D, power, renewables, manufacturing, oil & gas, mining, logistics, facilities, and general enterprise EHS.
+SONIL EHS360 is a production-grade multi-tenant Environment, Health & Safety SaaS platform serving independent organizations across EPC, construction, infrastructure, T&D, power, renewables, manufacturing, oil & gas, mining, logistics, facilities, and general enterprise EHS.
 
 ## Experiences
 

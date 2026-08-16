@@ -18,7 +18,7 @@ import { DashboardPreview } from "@/components/marketing/dashboard-preview";
 export const metadata: Metadata = {
   title: "Features",
   description:
-    "EHS360 features spanning field capture, investigations, CAPA, RBAC, analytics, and multi-tenant administration.",
+    "SONIL EHS360 features spanning field capture, investigations, CAPA, RBAC, analytics, and multi-tenant administration.",
 };
 
 const features = [

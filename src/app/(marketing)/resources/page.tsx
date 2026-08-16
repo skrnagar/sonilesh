@@ -7,7 +7,7 @@ import { resources } from "@/lib/marketing/content";
 export const metadata: Metadata = {
   title: "Resources",
   description:
-    "EHS360 resources and guides — placeholders for implementation, field adoption, CAPA, and analytics content.",
+    "SONIL EHS360 resources and guides — placeholders for implementation, field adoption, CAPA, and analytics content.",
 };
 
 export default function ResourcesPage() {

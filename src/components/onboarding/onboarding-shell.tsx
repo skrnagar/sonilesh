@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandLockup } from "@/components/brand/brand-lockup";
 
 export function OnboardingShell({
   step,
@@ -15,11 +16,8 @@ export function OnboardingShell({
     <div className="min-h-screen bg-[linear-gradient(180deg,#f4f6f8_0%,#eef3f7_100%)]">
       <header className="border-b border-border bg-white/90 backdrop-blur-md">
         <div className="mx-auto flex w-full max-w-2xl items-center justify-between px-6 py-4">
-          <Link href="/" className="inline-flex items-center gap-2.5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground">
-              E
-            </span>
-            <span className="text-sm font-semibold tracking-tight text-primary">EHS360</span>
+          <Link href="/" className="inline-flex">
+            <BrandLockup size="sm" />
           </Link>
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             Setup

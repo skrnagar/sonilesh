@@ -1,4 +1,4 @@
-# EHS360 Marketing Page Map
+# SONIL EHS360 Marketing Page Map
 
 ## Public routes
 
@@ -34,7 +34,7 @@
 | `/security` | Security posture (no fake certs) | Contact Sales |
 | `/pricing` | Pricing (Custom / Contact Sales) | Contact Sales |
 | `/resources` | Resources placeholders | Browse |
-| `/about` | About EHS360 | Request Demo |
+| `/about` | About SONIL EHS360 | Request Demo |
 | `/contact` | Contact | Send message |
 | `/request-demo` | Demo request form | Submit |
 
@@ -63,4 +63,4 @@
 
 ## Footer columns
 
-Product · Solutions · Modules · Company · Legal placeholders · © 2026 EHS360
+Product · Solutions · Modules · Company · Legal placeholders · © 2026 SONIL

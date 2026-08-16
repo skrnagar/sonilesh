@@ -4,8 +4,10 @@ import Link from "next/link";
 import { useEffect, useId, useState } from "react";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BrandLockup } from "@/components/brand/brand-lockup";
 import { Container } from "@/components/marketing/container";
 import { MegaMenu } from "@/components/marketing/mega-menu";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { primaryNav } from "@/lib/marketing/nav";
 import { cn } from "@/lib/utils";
 
@@ -36,22 +38,17 @@ export function Navbar() {
       className={cn(
         "sticky top-0 z-50 border-b transition-[background-color,box-shadow,border-color] duration-200 motion-reduce:transition-none",
         scrolled
-          ? "border-border/80 bg-white/95 shadow-[var(--shadow-header)] backdrop-blur-md"
-          : "border-transparent bg-white/90 backdrop-blur-md",
+          ? "border-border/80 bg-card/95 shadow-[var(--shadow-header)] backdrop-blur-md"
+          : "border-transparent bg-card/90 backdrop-blur-md",
       )}
     >
-      <Container className="flex h-[4.25rem] items-center justify-between gap-4">
+      <Container className="flex h-[4.35rem] items-center justify-between gap-3">
         <Link
           href="/"
-          className="group flex items-center gap-2.5"
+          className="group min-w-0 shrink"
           onClick={() => setMobileOpen(false)}
         >
-          <span className="relative flex h-9 w-9 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)] transition-transform duration-200 group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100">
-            E
-          </span>
-          <span className="text-lg font-semibold tracking-tight text-primary">
-            EHS360
-          </span>
+          <BrandLockup className="transition-opacity duration-200 group-hover:opacity-90 motion-reduce:transition-none" />
         </Link>
 
         <nav className="hidden items-center gap-0.5 lg:flex" aria-label="Primary">
@@ -70,7 +67,7 @@ export function Navbar() {
                     <button
                       type="button"
                       className={cn(
-                        "inline-flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium text-foreground/90 transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                        "inline-flex items-center gap-1 rounded-md px-3 py-2 text-[13px] font-medium tracking-[-0.01em] text-foreground/90 transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                         isOpen && "bg-muted text-foreground",
                       )}
                       aria-expanded={isOpen}
@@ -97,7 +94,7 @@ export function Navbar() {
                 ) : (
                   <Link
                     href={item.href}
-                    className="rounded-md px-3 py-2 text-sm font-medium text-foreground/90 transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="rounded-md px-3 py-2 text-[13px] font-medium tracking-[-0.01em] text-foreground/90 transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
                     {item.label}
                   </Link>
@@ -107,31 +104,31 @@ export function Navbar() {
           })}
         </nav>
 
-        <div className="hidden items-center gap-2 lg:flex">
-          <Button asChild variant="ghost" className="text-foreground/90">
+        <div className="flex items-center gap-2">
+          <ThemeToggle compact className="hidden sm:inline-flex" />
+          <Button asChild variant="ghost" className="hidden text-foreground/90 lg:inline-flex">
             <Link href="/login">Sign in</Link>
           </Button>
           <Button
             asChild
-            className="bg-[var(--mkt-safety)] text-white hover:bg-[#0d6b63]"
+            className="h-10 bg-[var(--mkt-safety)] px-3.5 text-white hover:bg-[#0d6b63] sm:px-4"
           >
             <Link href="/request-demo">Request demo</Link>
           </Button>
+          <button
+            type="button"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border bg-card lg:hidden"
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileOpen}
+            onClick={() => setMobileOpen((v) => !v)}
+          >
+            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
         </div>
-
-        <button
-          type="button"
-          className="inline-flex h-11 w-11 items-center justify-center rounded-md border border-border bg-card lg:hidden"
-          aria-label={mobileOpen ? "Close menu" : "Open menu"}
-          aria-expanded={mobileOpen}
-          onClick={() => setMobileOpen((v) => !v)}
-        >
-          {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
       </Container>
 
       {mobileOpen ? (
-        <div className="border-t border-border bg-white lg:hidden">
+        <div className="border-t border-border bg-card lg:hidden">
           <Container className="max-h-[min(80vh,640px)] space-y-4 overflow-y-auto py-5">
             {primaryNav.map((item) => (
               <div key={item.label} className="space-y-2">
@@ -156,7 +153,8 @@ export function Navbar() {
                 )}
               </div>
             ))}
-            <div className="flex gap-2 pt-2">
+            <div className="flex items-center gap-2 pt-2">
+              <ThemeToggle compact />
               <Button asChild variant="outline" className="h-11 flex-1">
                 <Link href="/login" onClick={() => setMobileOpen(false)}>
                   Sign in

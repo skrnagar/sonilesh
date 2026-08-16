@@ -6,7 +6,7 @@ const envSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
   SUPABASE_JWKS_URL: z.string().url().optional(),
   NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
-  NEXT_PUBLIC_APP_NAME: z.string().default("EHS360"),
+  NEXT_PUBLIC_APP_NAME: z.string().default("SONIL EHS360"),
 });
 
 /** Prefer NEXT_PUBLIC_*; fall back to official SUPABASE_URL. */
@@ -50,7 +50,7 @@ export const env = envSchema.parse({
   SUPABASE_SERVICE_ROLE_KEY: resolveServiceRoleKey(),
   SUPABASE_JWKS_URL: resolveJwksUrl(),
   NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
-  NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME ?? "EHS360",
+  NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME ?? "SONIL EHS360",
 });
 
 export function hasSupabaseConfig() {

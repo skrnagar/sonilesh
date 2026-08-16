@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/layout/app-sidebar";
+import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import { requireOrgContext } from "@/lib/auth/org-context";
 import { listEnabledFeatures } from "@/lib/services/entitlements";
 import { getUserPermissions } from "@/lib/services/rbac";
@@ -20,10 +21,10 @@ export default async function AppLayout({
   if (organization.status === "suspended") {
     return (
       <div className="flex min-h-screen items-center justify-center px-6">
-        <div className="max-w-md rounded-lg border border-border bg-card p-6 text-center">
+        <div className="max-w-md rounded-2xl border border-border bg-card p-6 text-center shadow-[var(--shadow-md)]">
           <h1 className="text-lg font-semibold">Organization suspended</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Contact your administrator or EHS360 support.
+            Contact your administrator or SONIL EHS360 support.
           </p>
         </div>
       </div>
@@ -35,31 +36,28 @@ export default async function AppLayout({
     getUserPermissions(supabase, organization.id, user.id),
   ]);
 
+  const userLabel = profile?.full_name || profile?.email || user.email || "User";
+
   return (
-    <div className="flex min-h-screen bg-background">
-      <AppSidebar
-        enabledFeatures={enabledFeatures}
-        permissions={permissions}
-        organizationName={organization.name}
-      />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="app-shell-header sticky top-0 z-10 flex items-center justify-between border-b border-border px-5 py-3">
-          <div>
-            <p className="text-sm font-semibold tracking-tight text-foreground">
-              EHS Workspace
-            </p>
-            <p className="text-xs text-muted-foreground">
-              {profile?.full_name || profile?.email || user.email}
-            </p>
-          </div>
-          <form action={signOutAction}>
-            <Button type="submit" variant="outline" size="sm">
-              Sign out
-            </Button>
-          </form>
-        </header>
-        <main className="flex-1 overflow-auto p-5 md:p-6">{children}</main>
-      </div>
-    </div>
+    <WorkspaceShell
+      title="EHS Workspace"
+      userLabel={userLabel}
+      sidebar={
+        <AppSidebar
+          enabledFeatures={enabledFeatures}
+          permissions={permissions}
+          organizationName={organization.name}
+        />
+      }
+      signOut={
+        <form action={signOutAction}>
+          <Button type="submit" variant="outline" size="sm" className="w-full rounded-xl">
+            Sign out
+          </Button>
+        </form>
+      }
+    >
+      {children}
+    </WorkspaceShell>
   );
 }

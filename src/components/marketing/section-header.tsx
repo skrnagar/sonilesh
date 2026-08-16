@@ -37,7 +37,7 @@ export function SectionHeader({
       ) : null}
       <h2
         className={cn(
-          "text-3xl font-semibold tracking-tight md:text-[2.15rem] md:leading-[1.15]",
+          "text-3xl font-semibold tracking-tight md:text-[2.2rem] md:leading-[1.15]",
           tone === "inverse" ? "text-white" : "text-primary",
         )}
       >

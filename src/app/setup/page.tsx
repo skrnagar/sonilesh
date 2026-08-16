@@ -84,7 +84,7 @@ export default async function SetupPage({
 
   return (
     <div className="mx-auto max-w-2xl space-y-4 px-6 py-16">
-      <h1 className="text-2xl font-semibold text-primary">EHS360 setup status</h1>
+      <h1 className="text-2xl font-semibold text-primary">SONIL EHS360 setup status</h1>
       <p className="text-sm text-muted-foreground">
         Onboarding and the dashboard require the remote schema. If tables are missing, apply
         migrations before continuing.

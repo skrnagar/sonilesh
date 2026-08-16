@@ -8,7 +8,7 @@ type ProductScreenshotProps = {
 };
 
 export function ProductScreenshot({
-  title = "EHS360",
+  title = "SONIL EHS360",
   children,
   className,
   chrome = true,

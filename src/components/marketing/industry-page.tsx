@@ -30,7 +30,7 @@ export function IndustryPage({ slug }: { slug: string }) {
           <SectionHeader
             eyebrow="Challenges"
             title={`What ${industry.name} teams wrestle with`}
-            description="EHS360 is designed to replace fragmented tools with one operational control system."
+            description="SONIL EHS360 is designed to replace fragmented tools with one operational control system."
           />
           <ul className="space-y-4">
             {industry.challenges.map((challenge) => (

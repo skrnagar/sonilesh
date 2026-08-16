@@ -18,13 +18,17 @@ export function SidebarNavLink({
     <Link
       href={href}
       className={cn(
-        "block rounded-md px-2.5 py-2 text-sm transition-colors",
+        "flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm transition-colors",
         active
-          ? "bg-white/14 font-medium text-white"
-          : "text-white/80 hover:bg-white/10 hover:text-white",
+          ? "bg-[var(--sidebar-active)] font-medium text-primary"
+          : "text-[var(--sidebar-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-foreground)]",
       )}
+      title={label}
     >
-      {label}
+      <span className="sidebar-glyph h-8 w-8 items-center justify-center rounded-lg bg-[var(--sidebar-active)] text-xs font-semibold text-primary">
+        {label.slice(0, 1)}
+      </span>
+      <span className="sidebar-copy truncate">{label}</span>
     </Link>
   );
 }

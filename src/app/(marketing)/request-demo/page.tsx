@@ -6,7 +6,7 @@ import { DemoForm } from "@/components/marketing/demo-form";
 export const metadata: Metadata = {
   title: "Request Demo",
   description:
-    "Request an EHS360 demo focused on your industry, sites, and modules.",
+    "Request a SONIL EHS360 demo focused on your industry, sites, and modules.",
 };
 
 export default function RequestDemoPage() {

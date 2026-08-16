@@ -8,7 +8,7 @@ import { industries } from "@/lib/marketing/content";
 export const metadata: Metadata = {
   title: "Solutions",
   description:
-    "EHS360 industry solutions for construction, EPC, energy, manufacturing, oil & gas, mining, and more.",
+    "SONIL EHS360 industry solutions for construction, EPC, energy, manufacturing, oil & gas, mining, and more.",
 };
 
 export default function SolutionsPage() {

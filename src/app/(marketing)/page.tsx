@@ -43,13 +43,18 @@ export default function HomePage() {
         <div aria-hidden className="mkt-grid-fade pointer-events-none absolute inset-0 opacity-70" />
         <Container className="relative grid min-h-[min(92vh,920px)] items-center gap-12 py-16 lg:grid-cols-[1fr_1.08fr] lg:gap-14 lg:py-20">
           <FadeIn>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-200/90">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-200/90">
               Enterprise EHS SaaS
             </p>
-            <h1 className="font-display mt-5 text-5xl font-semibold tracking-tight md:text-6xl md:leading-[1.05]">
-              {brand.name}
+            <h1 className="font-display mt-5">
+              <span className="block text-[2.65rem] font-semibold leading-[0.95] tracking-[-0.045em] md:text-7xl">
+                {brand.legalName}
+              </span>
+              <span className="mt-2 block text-[2rem] font-medium leading-none tracking-[-0.04em] text-teal-200/95 md:text-5xl">
+                {brand.product}
+              </span>
             </h1>
-            <p className="mt-5 max-w-lg text-xl font-medium leading-snug text-white/95 md:text-2xl">
+            <p className="mt-6 max-w-lg text-xl font-medium leading-snug text-white/95 md:text-2xl">
               {brand.tagline}
             </p>
             <p className="mt-4 max-w-md text-base leading-relaxed text-slate-300">
@@ -74,7 +79,7 @@ export default function HomePage() {
             </div>
           </FadeIn>
           <FadeIn delay={0.12} className="relative">
-            <ProductScreenshot title="EHS360 · Control board" className="lg:translate-y-2">
+            <ProductScreenshot title="SONIL EHS360 · Control board" className="lg:translate-y-2">
               <DashboardPreview />
             </ProductScreenshot>
             <div className="pointer-events-none absolute -bottom-8 -left-4 hidden md:block lg:-left-10">
@@ -133,7 +138,7 @@ export default function HomePage() {
             <SectionHeader
               eyebrow="Platform map"
               title="One system from field to boardroom"
-              description="EHS360 connects capture, operations, risk, assurance, and leadership visibility."
+              description="SONIL EHS360 connects capture, operations, risk, assurance, and leadership visibility."
             />
           </Reveal>
           <ol className="mt-12 grid gap-px overflow-hidden rounded-lg border border-border bg-border md:grid-cols-5">
@@ -176,7 +181,7 @@ export default function HomePage() {
             </div>
           </Reveal>
           <Reveal>
-            <ProductScreenshot title="EHS360 · Analytics">
+            <ProductScreenshot title="SONIL EHS360 · Analytics">
               <DashboardPreview />
             </ProductScreenshot>
           </Reveal>

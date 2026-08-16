@@ -1,8 +1,8 @@
-# EHS360 Marketing Website Architecture
+# SONIL EHS360 Marketing Website Architecture
 
 ## Goals
 
-Ship a polished enterprise SaaS marketing site for EHS360 that converts to demos without touching product surfaces (`/app`, `/admin`, `/field`, auth, APIs).
+Ship a polished enterprise SaaS marketing site for SONIL EHS360 that converts to demos without touching product surfaces (`/app`, `/admin`, `/field`, auth, APIs).
 
 ## Tech stack
 
@@ -60,7 +60,7 @@ Mega menus:
 
 ## SEO & discoverability
 
-- Per-page `metadata` (title template `… | EHS360`)
+- Per-page `metadata` (title template `… | SONIL EHS360`)
 - Open Graph + Twitter cards
 - `sitemap.ts`, `robots.ts`
 - Semantic headings, descriptive link text

@@ -31,7 +31,7 @@ export function PageHero({
   return (
     <section
       className={cn(
-        "relative overflow-hidden border-b border-border bg-white",
+        "relative overflow-hidden border-b border-border bg-card",
         className,
       )}
     >
@@ -52,7 +52,7 @@ export function PageHero({
                 {eyebrow}
               </p>
             ) : null}
-            <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-primary md:text-[2.75rem] md:leading-[1.12]">
+            <h1 className="max-w-2xl font-display text-4xl font-semibold tracking-tight text-primary md:text-[2.85rem] md:leading-[1.1]">
               {title}
             </h1>
             <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground md:text-[1.05rem]">

@@ -102,17 +102,17 @@ export default async function FieldHomePage() {
 
   return (
     <div className="space-y-5">
-      <section className="rounded-xl border border-white/10 bg-white/5 p-4">
-        <p className="text-xs font-semibold tracking-[0.18em] text-teal-200/90">
+      <section className="rounded-2xl border border-border bg-card p-4 shadow-[var(--shadow-sm)]">
+        <p className="text-xs font-semibold tracking-[0.18em] text-[var(--mkt-safety)]">
           {greetingForNow()}
         </p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight text-white">
+        <h1 className="mt-1 text-2xl font-semibold tracking-tight text-foreground">
           {profile?.full_name?.split(" ")[0] || "Field user"}
         </h1>
-        <p className="mt-2 text-sm text-slate-300">
+        <p className="mt-2 text-sm text-muted-foreground">
           Site: {sites?.[0]?.name ?? "Unassigned"} · Project: {projects?.[0]?.name ?? "—"}
         </p>
-        <p className="mt-1 text-xs uppercase tracking-wide text-slate-400">
+        <p className="mt-1 text-xs uppercase tracking-wide text-muted-foreground">
           Role: {role.replaceAll("_", " ")} · Org: {org?.name}
         </p>
       </section>
@@ -122,7 +122,7 @@ export default async function FieldHomePage() {
           <Link
             key={q.href}
             href={q.href}
-            className="rounded-xl bg-[var(--mkt-safety)] px-4 py-4 text-center text-sm font-bold tracking-wide text-white shadow-[0_12px_28px_-12px_rgba(15,118,110,0.65)] transition-transform active:scale-[0.99] motion-reduce:transition-none"
+            className="flex min-h-14 items-center justify-center rounded-2xl bg-[var(--mkt-safety)] px-4 py-4 text-center text-sm font-bold tracking-wide text-white shadow-[var(--shadow-md)] transition-transform active:scale-[0.99] motion-reduce:transition-none"
           >
             {q.label}
           </Link>
@@ -192,7 +192,7 @@ export default async function FieldHomePage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="space-y-2">
-      <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">{title}</h2>
+      <h2 className="text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground">{title}</h2>
       <div className="space-y-2">{children}</div>
     </section>
   );
@@ -200,16 +200,16 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function Row({ title, meta }: { title: string; meta: string }) {
   return (
-    <div className="rounded-xl border border-white/10 bg-black/20 px-3.5 py-3.5">
-      <p className="text-sm font-medium text-white">{title}</p>
-      <p className="mt-1 text-xs capitalize text-slate-400">{meta}</p>
+    <div className="rounded-2xl border border-border bg-card px-3.5 py-3.5 shadow-[var(--shadow-sm)]">
+      <p className="text-sm font-medium text-foreground">{title}</p>
+      <p className="mt-1 text-xs capitalize text-muted-foreground">{meta}</p>
     </div>
   );
 }
 
 function Empty({ text }: { text: string }) {
   return (
-    <p className="rounded-xl border border-dashed border-white/10 px-3.5 py-4 text-sm text-slate-500">
+    <p className="rounded-2xl border border-dashed border-border px-3.5 py-4 text-sm text-muted-foreground">
       {text}
     </p>
   );

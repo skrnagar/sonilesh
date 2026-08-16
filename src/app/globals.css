@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #f4f6f8;
   --foreground: #0f172a;
@@ -14,19 +16,67 @@
   --accent-foreground: #f8fafc;
   --destructive: #b42318;
   --ring: #1f6f8b;
-  --sidebar: #0b3a53;
-  --sidebar-foreground: #e8f1f5;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0f172a;
+  --sidebar-muted: #64748b;
+  --sidebar-hover: #f1f5f9;
+  --sidebar-active: #e8f1f6;
+  --sidebar-border: #e8edf2;
   --success: #0f766e;
   --warning: #b45309;
+  --success-soft: #d1fae5;
+  --success-ink: #065f46;
+  --warning-soft: #fef3c7;
+  --warning-ink: #92400e;
+  --danger-soft: #fee2e2;
+  --danger-ink: #991b1b;
   --mkt-safety: #0f766e;
   --mkt-hero: #071f2d;
   --mkt-surface: #ffffff;
   --mkt-ink-soft: #475569;
-  --radius: 0.5rem;
+  --radius: 0.75rem;
   --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
   --shadow-md: 0 8px 24px -12px rgba(11, 58, 83, 0.18);
   --shadow-lg: 0 24px 64px -28px rgba(7, 31, 45, 0.45);
   --shadow-header: 0 1px 0 rgba(215, 222, 231, 0.9), 0 8px 24px -16px rgba(11, 58, 83, 0.18);
+}
+
+.dark {
+  --background: #0b141c;
+  --foreground: #e8eef3;
+  --card: #121c26;
+  --card-foreground: #e8eef3;
+  --muted: #1b2833;
+  --muted-foreground: #94a3b8;
+  --border: #243240;
+  --primary: #7eb8cc;
+  --primary-foreground: #071f2d;
+  --accent: #4aa0b8;
+  --accent-foreground: #071f2d;
+  --destructive: #f87171;
+  --ring: #4aa0b8;
+  --sidebar: #0e1820;
+  --sidebar-foreground: #e8f1f5;
+  --sidebar-muted: #8aa0ae;
+  --sidebar-hover: #1a2832;
+  --sidebar-active: #163040;
+  --sidebar-border: #1f2e3a;
+  --success: #2dd4bf;
+  --warning: #fbbf24;
+  --success-soft: rgba(45, 212, 191, 0.16);
+  --success-ink: #99f6e4;
+  --warning-soft: rgba(251, 191, 36, 0.16);
+  --warning-ink: #fde68a;
+  --danger-soft: rgba(248, 113, 113, 0.16);
+  --danger-ink: #fecaca;
+  --mkt-safety: #2dd4bf;
+  --mkt-hero: #071018;
+  --mkt-surface: #121c26;
+  --mkt-ink-soft: #94a3b8;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 8px 24px -12px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 24px 64px -28px rgba(0, 0, 0, 0.65);
+  --shadow-header: 0 1px 0 rgba(36, 50, 64, 0.9), 0 8px 24px -16px rgba(0, 0, 0, 0.45);
 }
 
 @theme inline {
@@ -45,10 +95,11 @@
   --color-ring: var(--ring);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-border: var(--sidebar-border);
   --color-warning: var(--warning);
   --color-success: var(--success);
-  --font-sans: var(--font-sans-face), "IBM Plex Sans", "Segoe UI", sans-serif;
-  --font-display: var(--font-display-face), "Source Serif 4", Georgia, serif;
+  --font-sans: var(--font-sans-face), "Source Sans 3", "Segoe UI", sans-serif;
+  --font-display: var(--font-display-face), Outfit, "Segoe UI", sans-serif;
   --radius-sm: calc(var(--radius) - 2px);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 2px);
@@ -66,9 +117,28 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+  font-size: 1.0125rem;
+  line-height: 1.6;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+h1,
+h2,
+h3,
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+}
+
+h1 {
+  line-height: 1.08;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums lining-nums;
 }
 
 ::selection {
@@ -101,6 +171,32 @@ a {
 .app-shell-header {
   background: color-mix(in srgb, var(--card) 92%, transparent);
   backdrop-filter: blur(10px);
+}
+
+.workspace-shell aside {
+  transition: width 0.2s ease;
+}
+
+.workspace-shell.is-collapsed aside {
+  width: 4.75rem;
+}
+
+.workspace-shell.is-collapsed .sidebar-copy {
+  display: none;
+}
+
+.workspace-shell.is-collapsed .sidebar-glyph {
+  display: flex;
+}
+
+.sidebar-glyph {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace-shell aside {
+    transition: none;
+  }
 }
 
 @keyframes mkt-fade-in-up {

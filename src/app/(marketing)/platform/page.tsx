@@ -15,7 +15,7 @@ import { platformPillars } from "@/lib/marketing/content";
 export const metadata: Metadata = {
   title: "Platform",
   description:
-    "EHS360 platform overview — field capture, operations workspace, risk, assurance, and leadership analytics.",
+    "SONIL EHS360 platform overview — field capture, operations workspace, risk, assurance, and leadership analytics.",
 };
 
 export default function PlatformPage() {
@@ -66,7 +66,7 @@ export default function PlatformPage() {
           <SectionHeader
             eyebrow="AI-ready"
             title="Assistive potential on structured data"
-            description="EHS360 keeps records structured and workflows explicit so assistive features can be introduced responsibly. We do not claim autonomous safety decisions."
+            description="SONIL EHS360 keeps records structured and workflows explicit so assistive features can be introduced responsibly. We do not claim autonomous safety decisions."
           />
           <Accordion
             items={[

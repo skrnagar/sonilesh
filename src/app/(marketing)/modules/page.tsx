@@ -8,7 +8,7 @@ import { modules } from "@/lib/marketing/content";
 export const metadata: Metadata = {
   title: "Modules",
   description:
-    "EHS360 modules for incidents, risk, permits, inspections, audits, CAPA, training, contractors, PPE, documents, and analytics.",
+    "SONIL EHS360 modules for incidents, risk, permits, inspections, audits, CAPA, training, contractors, PPE, documents, and analytics.",
 };
 
 export default function ModulesHubPage() {

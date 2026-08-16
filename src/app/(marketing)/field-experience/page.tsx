@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 export const metadata: Metadata = {
   title: "Field Experience",
   description:
-    "EHS360 field experience for fast incident, hazard, permit, and inspection capture where work happens.",
+    "SONIL EHS360 field experience for fast incident, hazard, permit, and inspection capture where work happens.",
 };
 
 export default function FieldExperiencePage() {

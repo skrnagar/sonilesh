@@ -1,5 +1,11 @@
+/**
+ * Primary wordmark is SONIL EHS360.
+ * EHS = Environment, Health & Safety (industry acronym). The typed “ESH” maps to EHS, not a different product name.
+ */
 export const brand = {
-  name: "EHS360",
+  name: "SONIL EHS360",
+  legalName: "SONIL",
+  product: "EHS360",
   tagline: "One Platform. Complete EHS Control.",
   supporting: "From the field to the boardroom.",
   description:

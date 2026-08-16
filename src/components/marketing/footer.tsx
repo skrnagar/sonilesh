@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandLockup } from "@/components/brand/brand-lockup";
 import { Container } from "@/components/marketing/container";
 import { footerColumns } from "@/lib/marketing/nav";
 import { brand } from "@/lib/marketing/content";
@@ -9,13 +10,8 @@ export function Footer() {
       <Container className="py-16">
         <div className="grid gap-12 md:grid-cols-[1.35fr_repeat(4,1fr)]">
           <div>
-            <Link href="/" className="inline-flex items-center gap-2.5">
-              <span className="flex h-8 w-8 items-center justify-center rounded-md bg-white/10 text-sm font-bold text-white">
-                E
-              </span>
-              <span className="text-lg font-semibold tracking-tight text-white">
-                {brand.name}
-              </span>
+            <Link href="/" className="inline-flex">
+              <BrandLockup inverse />
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-slate-300">
               {brand.tagline}
@@ -43,7 +39,7 @@ export function Footer() {
           ))}
         </div>
         <div className="mt-14 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-          <p>© 2026 EHS360</p>
+          <p>© 2026 {brand.legalName}</p>
           <p>Enterprise Environment, Health & Safety platform</p>
         </div>
       </Container>

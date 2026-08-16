@@ -9,7 +9,7 @@ import { CTASection } from "@/components/marketing/cta-section";
 export const metadata: Metadata = {
   title: "Security",
   description:
-    "EHS360 security posture: authentication, RBAC, tenant isolation, and audit trails — without fake certification badges.",
+    "SONIL EHS360 security posture: authentication, RBAC, tenant isolation, and audit trails — without fake certification badges.",
 };
 
 export default function SecurityPage() {
@@ -18,7 +18,7 @@ export default function SecurityPage() {
       <PageHero
         eyebrow="Security"
         title="Controls you can inspect — claims we won’t invent"
-        description="EHS360 emphasizes authentication, authorization, tenant scoping, and auditable operations. This page does not display fake SOC 2, ISO, or GDPR certification badges."
+        description="SONIL EHS360 emphasizes authentication, authorization, tenant scoping, and auditable operations. This page does not display fake SOC 2, ISO, or GDPR certification badges."
         primaryHref="/contact"
         primaryLabel="Contact sales"
         secondaryHref="/enterprise"

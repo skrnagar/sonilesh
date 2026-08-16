@@ -10,7 +10,7 @@ import { pricingTiers } from "@/lib/marketing/content";
 export const metadata: Metadata = {
   title: "Pricing",
   description:
-    "EHS360 pricing is Contact Sales / Custom Enterprise — plans and entitlements without fake dollar amounts.",
+    "SONIL EHS360 pricing is Contact Sales / Custom Enterprise — plans and entitlements without fake dollar amounts.",
 };
 
 export default function PricingPage() {

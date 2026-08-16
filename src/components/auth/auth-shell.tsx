@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandLockup } from "@/components/brand/brand-lockup";
 
 export function AuthShell({
   title,
@@ -17,17 +18,14 @@ export function AuthShell({
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_10%,rgba(31,111,139,0.55),transparent_50%),radial-gradient(ellipse_at_90%_80%,rgba(15,118,110,0.28),transparent_45%)]"
         />
         <div aria-hidden className="mkt-grid-fade pointer-events-none absolute inset-0 opacity-60" />
-        <Link href="/" className="relative inline-flex items-center gap-2.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-md bg-white/10 text-sm font-bold">
-            E
-          </span>
-          <span className="text-xl font-semibold tracking-tight">EHS360</span>
+        <Link href="/" className="relative inline-flex">
+          <BrandLockup inverse size="lg" />
         </Link>
         <div className="relative max-w-lg">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-teal-200/80">
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-200/80">
             Enterprise EHS
           </p>
-          <p className="mt-4 text-3xl font-semibold leading-tight tracking-tight md:text-[2.15rem]">
+          <p className="font-display mt-4 text-3xl font-semibold leading-tight tracking-tight md:text-[2.35rem]">
             One platform. Complete EHS control — from field to boardroom.
           </p>
           <p className="mt-5 max-w-md text-sm leading-relaxed text-white/75">
@@ -39,14 +37,8 @@ export function AuthShell({
       </div>
       <div className="flex items-center justify-center bg-background px-6 py-10">
         <div className="w-full max-w-md">
-          <Link
-            href="/"
-            className="mb-8 inline-flex items-center gap-2 text-primary md:hidden"
-          >
-            <span className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground">
-              E
-            </span>
-            <span className="text-lg font-semibold tracking-tight">EHS360</span>
+          <Link href="/" className="mb-8 inline-flex md:hidden">
+            <BrandLockup />
           </Link>
           <div className="rounded-xl border border-border bg-card p-7 shadow-[var(--shadow-md)]">
             <h1 className="text-xl font-semibold tracking-tight text-primary">{title}</h1>

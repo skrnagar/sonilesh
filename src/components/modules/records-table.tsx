@@ -9,19 +9,19 @@ export function RecordsTable({
 }) {
   if (!rows.length) {
     return (
-      <div className="border border-border bg-card p-6 text-sm text-muted-foreground">
+      <div className="overflow-x-auto rounded-2xl border border-border bg-card p-6 text-sm text-muted-foreground">
         {empty}
       </div>
     );
   }
 
   return (
-    <div className="overflow-x-auto border border-border bg-card">
+    <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-[var(--shadow-sm)]">
       <table className="w-full min-w-[640px] text-left text-sm">
-        <thead className="border-b border-border bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
+        <thead className="border-b border-border bg-muted/50 text-xs uppercase tracking-wide text-muted-foreground">
           <tr>
             {columns.map((c) => (
-              <th key={c} className="px-3 py-2 font-medium">
+              <th key={c} className="px-4 py-2.5 font-medium">
                 {c}
               </th>
             ))}
@@ -29,9 +29,9 @@ export function RecordsTable({
         </thead>
         <tbody>
           {rows.map((row, idx) => (
-            <tr key={idx} className="border-b border-border last:border-0">
+            <tr key={idx} className="border-b border-border last:border-0 hover:bg-muted/30">
               {row.map((cell, cIdx) => (
-                <td key={cIdx} className="px-3 py-2.5 align-top text-foreground">
+                <td key={cIdx} className="px-4 py-3 align-top text-foreground">
                   {cell}
                 </td>
               ))}

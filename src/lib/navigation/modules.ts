@@ -43,3 +43,30 @@ export const ADMIN_NAV = [
   { href: "/admin/settings", label: "Platform Settings" },
   { href: "/admin/billing", label: "Billing Config" },
 ];
+
+export const ADMIN_NAV_GROUPS = [
+  { label: "Menu", items: [{ href: "/admin", label: "Dashboard" }] },
+  {
+    label: "Tenants",
+    items: [
+      { href: "/admin/organizations", label: "Organizations" },
+      { href: "/admin/users", label: "Platform Users" },
+    ],
+  },
+  {
+    label: "Commercial",
+    items: [
+      { href: "/admin/plans", label: "Plans" },
+      { href: "/admin/features", label: "Features" },
+      { href: "/admin/billing", label: "Billing Config" },
+    ],
+  },
+  {
+    label: "Governance",
+    items: [
+      { href: "/admin/support", label: "Support" },
+      { href: "/admin/audit", label: "Audit Logs" },
+      { href: "/admin/settings", label: "Platform Settings" },
+    ],
+  },
+] as const;

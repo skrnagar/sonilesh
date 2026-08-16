@@ -1,15 +1,30 @@
-# EHS360 Marketing Design System
+# SONIL EHS360 Marketing Design System
 
 ## Brand
 
 | Token | Value |
 |---|---|
-| Name | **EHS360** |
+| Wordmark | **SONIL** (company) + **EHS360** (product) |
+| Legal / footer | **SONIL** |
 | Tagline | One Platform. Complete EHS Control. |
 | Supporting | From the field to the boardroom. |
 | Personality | Premium B2B SaaS — authoritative, calm, operationally precise |
 
+**EHS** is the industry acronym for Environment, Health & Safety. The product is branded **SONIL EHS360** even if informal notes say “ESH”.
+
 **Do not use:** Raksha branding, fake logos, fake case studies, fake certifications (SOC2/ISO/GDPR claims), childish UI, purple/cream AI tropes.
+
+## Lockup
+
+Header mark is an SVG shield inside a 360° orbit (navy field, teal arc, three EHS layer strokes) plus Outfit type: **SONIL** in navy, **EHS360** in safety green. Inverse lockup is used on navy marketing/auth chrome. Product sidebars, field, and admin use the `chrome` lockup so type follows light/dark sidebar tokens.
+
+## Theme
+
+Default is **light**. `next-themes` with `attribute="class"`, `defaultTheme="light"`, `enableSystem={false}`, storage key `sonil-ehs360-theme`.
+
+Toggle locations: marketing navbar, workspace/admin sticky header, field header.
+
+`.dark` on `html` remaps the same CSS variables (canvas, card, border, sidebar, badges). Do not invent a second palette.
 
 ## Color
 
@@ -34,18 +49,21 @@ Hero may use a subtle navy→teal radial gradient. Elsewhere: flat white / light
 
 | Role | Face | Notes |
 |---|---|---|
-| UI / body | IBM Plex Sans (`--font-sans-face`) | Already loaded in root layout |
-| Display (rare) | Source Serif 4 (`--font-display-face`) | Brand wordmark emphasis only |
+| Display / headings / wordmark | Outfit (`--font-display-face`) | Geometric, confident H1s, tight tracking |
+| UI / body | Source Sans 3 (`--font-sans-face`) | High-readability professional sans |
+| Numbers | Tabular lining (`tabular-nums`) | Dashboards and KPI tiles |
 
 Scale (marketing):
 
-- Display: 48–56px / 1.1 / semibold
-- H1: 36–44px
-- H2: 28–32px
+- Display: 56–72px / 0.95 / semibold (hero SONIL)
+- Product line: 32–48px / medium (hero EHS360)
+- H1: 36–46px
+- H2: 28–35px
 - H3: 18–20px
 - Body: 16px / 1.6
 - Small / meta: 13–14px
-- Eyebrow: 12px uppercase, tracking `0.16em`
+- Nav: 13px, tracking `-0.01em`
+- Eyebrow: 12px uppercase, tracking `0.16–0.2em`
 
 ## Spacing & layout
 
@@ -53,15 +71,17 @@ Scale (marketing):
 - Section vertical rhythm: `72–112px`
 - Breakpoints target: **1440 / 1024 / 390**
 - Prefer section dividers and typographic hierarchy over card grids
+- Mobile header: lockup + Request demo (menu remains for full nav)
 
 ## Components (marketing)
 
 | Component | Purpose |
 |---|---|
+| `BrandLockup` | SVG mark + SONIL EHS360 type |
 | `Container` | Max-width wrapper |
 | `SectionHeader` | Eyebrow + title + support |
 | `Navbar` / `MegaMenu` | Sticky header + menus |
-| `Footer` | Site map + legal |
+| `Footer` | Site map + SONIL copyright |
 | `CTASection` | Closing conversion block |
 | `ProductScreenshot` | Framed product viz shell |
 | `DashboardPreview` | Synthetic ops dashboard |

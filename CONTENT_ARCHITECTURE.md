@@ -1,4 +1,4 @@
-# EHS360 Marketing Content Architecture
+# SONIL EHS360 Marketing Content Architecture
 
 ## Voice
 
@@ -10,7 +10,7 @@
 
 | Layer | Copy |
 |---|---|
-| Brand | EHS360 |
+| Brand | SONIL EHS360 (legal: SONIL; product: EHS360 — Environment, Health & Safety) |
 | Tagline | One Platform. Complete EHS Control. |
 | Support | From the field to the boardroom. |
 | Promise | Unify incidents, risk, permits, inspections, CAPA, training, and analytics in one multi-tenant SaaS platform. |
@@ -74,5 +74,5 @@ Name, work email, company, industry, message/role. Success state local only unle
 
 ## SEO title pattern
 
-`{Page} | EHS360`  
-Homepage: `EHS360 — One Platform. Complete EHS Control.`
+`{Page} | SONIL EHS360`  
+Homepage: `SONIL EHS360 — One Platform. Complete EHS Control.`

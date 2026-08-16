@@ -9,7 +9,7 @@ import { brand } from "@/lib/marketing/content";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "About EHS360 — an enterprise multi-tenant EHS SaaS platform from field capture to boardroom visibility.",
+    "About SONIL EHS360 — an enterprise multi-tenant EHS SaaS platform from field capture to boardroom visibility.",
 };
 
 export default function AboutPage() {

@@ -42,7 +42,7 @@ export function ComparisonTable() {
   return (
     <div className="overflow-x-auto border border-border">
       <table className="w-full min-w-[640px] border-collapse text-left text-sm">
-        <caption className="sr-only">EHS360 plan capability comparison</caption>
+        <caption className="sr-only">SONIL EHS360 plan capability comparison</caption>
         <thead className="bg-muted/60">
           <tr>
             <th scope="col" className="px-4 py-3 font-semibold text-primary">

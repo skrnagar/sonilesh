@@ -41,7 +41,7 @@ export async function ModuleShell({
         <p className="text-sm text-muted-foreground">{description}</p>
       </div>
       {children ?? (
-        <div className="border border-border bg-card p-6 text-sm text-muted-foreground">
+        <div className="rounded-2xl border border-border bg-card p-6 text-sm text-muted-foreground shadow-[var(--shadow-sm)]">
           Module shell ready. Full CRUD arrives in later phases. Navigation, entitlement and
           permission gates are already enforced.
         </div>

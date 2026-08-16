@@ -9,7 +9,7 @@ import { CTASection } from "@/components/marketing/cta-section";
 export const metadata: Metadata = {
   title: "Enterprise",
   description:
-    "EHS360 enterprise multi-tenant SaaS — organization isolation, RBAC, entitlements, and configuration.",
+    "SONIL EHS360 enterprise multi-tenant SaaS — organization isolation, RBAC, entitlements, and configuration.",
 };
 
 export default function EnterprisePage() {

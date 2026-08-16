@@ -1,27 +1,29 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Sans, Source_Serif_4 } from "next/font/google";
+import { Outfit, Source_Sans_3 } from "next/font/google";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 import "./globals.css";
 
-const sans = IBM_Plex_Sans({
+const sans = Source_Sans_3({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
   variable: "--font-sans-face",
+  display: "swap",
 });
 
-const display = Source_Serif_4({
+const display = Outfit({
   subsets: ["latin"],
-  weight: ["500", "600", "700"],
   variable: "--font-display-face",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
   title: {
-    default: "EHS360 — One Platform. Complete EHS Control.",
-    template: "%s | EHS360",
+    default: "SONIL EHS360 — One Platform. Complete EHS Control.",
+    template: "%s | SONIL EHS360",
   },
   description:
     "Multi-tenant Environment, Health & Safety platform for incidents, CAPA, permits, inspections, and analytics. From the field to the boardroom.",
   manifest: "/manifest.webmanifest",
+  applicationName: "SONIL EHS360",
   icons: {
     icon: [
       { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
@@ -31,26 +33,29 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    title: "EHS360 Field",
+    title: "SONIL EHS360 Field",
     statusBarStyle: "black-translucent",
   },
   openGraph: {
     type: "website",
-    siteName: "EHS360",
-    title: "EHS360 — One Platform. Complete EHS Control.",
+    siteName: "SONIL EHS360",
+    title: "SONIL EHS360 — One Platform. Complete EHS Control.",
     description:
       "Unify incidents, risk, permits, inspections, CAPA, training, and analytics in one multi-tenant EHS SaaS platform.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "EHS360 — One Platform. Complete EHS Control.",
+    title: "SONIL EHS360 — One Platform. Complete EHS Control.",
     description:
       "From the field to the boardroom — complete EHS control on one platform.",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#071f2d",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f4f6f8" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b141c" },
+  ],
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -62,9 +67,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${sans.variable} ${display.variable} antialiased`}>
-        {children}
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );
