@@ -1,71 +1,73 @@
 import { requireOrgContext } from "@/lib/auth/org-context";
-import { completeFieldCapaAction } from "@/app/actions/field";
-
-async function submitCapaForm(formData: FormData) {
-  "use server";
-  await completeFieldCapaAction(formData);
-}
+import {
+  completeFieldActionItemAction,
+  completeFieldCapaAction,
+} from "@/app/actions/field";
+import { ActionCompleteCard, CapaCompleteCard } from "@/components/field/field-submit-form";
+import { FieldEmpty, FieldPageHeader, FieldSection } from "@/components/field/field-ui";
 
 export default async function FieldActionsPage() {
   const { supabase, user, organization } = await requireOrgContext();
-  const [{ data: actions }, { data: capas }] = await Promise.all([
-    supabase
-      .from("action_items")
-      .select("id, title, status, due_date")
-      .eq("organization_id", organization.id)
-      .eq("owner_id", user.id)
-      .in("status", ["open", "in_progress"])
-      .is("deleted_at", null),
-    supabase
-      .from("capa_items")
-      .select("id, title, status, due_date")
-      .eq("organization_id", organization.id)
-      .eq("owner_id", user.id)
-      .in("status", ["open", "in_progress"])
-      .is("deleted_at", null),
-  ]);
+  const [{ data: actions, error: actionError }, { data: capas, error: capaError }] =
+    await Promise.all([
+      supabase
+        .from("action_items")
+        .select("id, title, status, due_date")
+        .eq("organization_id", organization.id)
+        .eq("owner_id", user.id)
+        .in("status", ["open", "in_progress"])
+        .is("deleted_at", null),
+      supabase
+        .from("capa_items")
+        .select("id, title, status, due_date")
+        .eq("organization_id", organization.id)
+        .eq("owner_id", user.id)
+        .in("status", ["open", "in_progress"])
+        .is("deleted_at", null),
+    ]);
+
+  if (actionError || capaError) {
+    return (
+      <div className="space-y-4">
+        <FieldPageHeader title="My actions" subtitle="CAPA and assigned actions." />
+        <FieldEmpty text={actionError?.message || capaError?.message || "Could not load actions."} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold">My actions</h1>
-      {(actions ?? []).map((a) => (
-        <div key={a.id} className="rounded-xl border border-white/10 bg-slate-900/70 p-3">
-          <p className="font-medium">{a.title}</p>
-          <p className="text-xs text-slate-400">
-            {a.status} · due {a.due_date ?? "—"}
-          </p>
-        </div>
-      ))}
-      <h2 className="pt-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
-        CAPA completion
-      </h2>
-      {(capas ?? []).map((c) => (
-        <form
-          key={c.id}
-          action={submitCapaForm}
-          className="space-y-2 rounded-xl border border-white/10 bg-slate-900/70 p-3"
-        >
-          <input type="hidden" name="capaId" value={c.id} />
-          <p className="font-medium">{c.title}</p>
-          <input
-            name="evidence"
-            placeholder="Photo evidence URL / note"
-            className="w-full rounded-lg border border-white/15 bg-slate-950 px-3 py-3 text-sm"
-          />
-          <textarea
-            name="comment"
-            placeholder="Comment"
-            rows={2}
-            className="w-full rounded-lg border border-white/15 bg-slate-950 px-3 py-3 text-sm"
-          />
-          <button className="w-full rounded-xl bg-teal-500 py-3 text-sm font-bold text-slate-950">
-            Submit completion
-          </button>
-        </form>
-      ))}
-      {!actions?.length && !capas?.length ? (
-        <p className="text-sm text-slate-500">No open actions or CAPA.</p>
-      ) : null}
+      <FieldPageHeader title="My actions" subtitle="Complete with a note or photo evidence." />
+      <FieldSection title="Action items">
+        {(actions ?? []).length ? (
+          (actions ?? []).map((a) => (
+            <ActionCompleteCard
+              key={a.id}
+              id={a.id}
+              title={a.title}
+              meta={`${a.status} · due ${a.due_date ?? "—"}`}
+              action={completeFieldActionItemAction}
+            />
+          ))
+        ) : (
+          <FieldEmpty text="No open action items." />
+        )}
+      </FieldSection>
+      <FieldSection title="CAPA">
+        {(capas ?? []).length ? (
+          (capas ?? []).map((c) => (
+            <CapaCompleteCard
+              key={c.id}
+              id={c.id}
+              title={c.title}
+              meta={`${c.status} · due ${c.due_date ?? "—"}`}
+              action={completeFieldCapaAction}
+            />
+          ))
+        ) : (
+          <FieldEmpty text="No open CAPA assigned to you." />
+        )}
+      </FieldSection>
     </div>
   );
 }

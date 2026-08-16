@@ -1,87 +1,78 @@
 import { requireOrgContext } from "@/lib/auth/org-context";
-import { canFieldAction, fieldRoleFromCodes } from "@/lib/auth/field-roles";
+import { canFieldAction } from "@/lib/auth/field-roles";
 import { permitCountdown } from "@/lib/services/permits";
-import { transitionPermit } from "@/lib/services/permits";
-
-async function approvePermitAction(formData: FormData) {
-  "use server";
-  const { supabase, user, organization } = await requireOrgContext();
-  const permitId = String(formData.get("permitId") || "");
-  await transitionPermit(supabase, {
-    organizationId: organization.id,
-    userId: user.id,
-    permitId,
-    toStatus: "active",
-    signatureName: String(formData.get("signature") || user.email),
-  });
-}
+import { resolveFieldRole } from "@/lib/field/resolve-role";
+import {
+  acknowledgeFieldPermitAction,
+  approveFieldPermitAction,
+} from "@/app/actions/field";
+import { FieldSubmitForm } from "@/components/field/field-submit-form";
+import {
+  FieldCard,
+  FieldEmpty,
+  FieldPageHeader,
+  fieldControlClass,
+} from "@/components/field/field-ui";
 
 export default async function FieldPermitsPage() {
-  const { supabase, user, organization } = await requireOrgContext();
-  const { data: membership } = await supabase
-    .from("organization_members")
-    .select("id")
-    .eq("user_id", user.id)
-    .eq("organization_id", organization.id)
-    .maybeSingle();
-  const { data: memberRoles } = membership
-    ? await supabase
-        .from("member_roles")
-        .select("roles:role_id(code)")
-        .eq("member_id", membership.id)
-        .is("deleted_at", null)
-    : { data: [] };
-  const role = fieldRoleFromCodes(
-    (memberRoles ?? [])
-      .map((m) => (m.roles as { code?: string } | null)?.code)
-      .filter(Boolean) as string[],
-  );
+  const { supabase, user, organization, membershipId } = await requireOrgContext();
+  const role = await resolveFieldRole(supabase, membershipId);
+  const canApprove = canFieldAction(role, "approve_permit");
 
-  const { data: permits } = await supabase
+  const { data: permits, error } = await supabase
     .from("permits")
-    .select("id, permit_number, title, status, valid_to")
+    .select("id, permit_number, title, status, valid_to, requester_id, issuer_id")
     .eq("organization_id", organization.id)
-    .or(`requester_id.eq.${user.id},issuer_id.eq.${user.id},status.eq.authorization`)
+    .or(`requester_id.eq.${user.id},issuer_id.eq.${user.id},status.eq.authorization,status.eq.active`)
     .is("deleted_at", null)
     .order("valid_to", { ascending: true })
     .limit(20);
 
+  const { data: acks } = await supabase
+    .from("permit_approvals")
+    .select("permit_id")
+    .eq("organization_id", organization.id)
+    .eq("approver_id", user.id)
+    .eq("approver_role", "field_ack");
+
+  const acked = new Set((acks ?? []).map((a) => a.permit_id));
+
   return (
-    <div className="space-y-3">
-      <h1 className="text-xl font-semibold">My permits</h1>
+    <div className="space-y-4">
+      <FieldPageHeader title="My permits" subtitle="View, acknowledge, or approve when authorized." />
+      {error ? <FieldEmpty text={error.message} /> : null}
       {(permits ?? []).map((p) => {
         const c = permitCountdown(p.valid_to);
         return (
-          <div key={p.id} className="rounded-xl border border-white/10 bg-slate-900/70 p-3">
-            <p className="font-medium">
-              {p.permit_number} · {p.title}
-            </p>
-            <p className="mt-1 text-xs capitalize text-slate-400">
-              {p.status}
-              {c
-                ? c.expired
-                  ? " · EXPIRED"
-                  : ` · ${c.hours}h ${c.minutes}m left`
-                : ""}
-            </p>
-            {p.status === "authorization" && canFieldAction(role, "approve_permit") ? (
-              <form action={approvePermitAction} className="mt-3 space-y-2">
+          <FieldCard key={p.id} className="space-y-3">
+            <div>
+              <p className="font-medium text-foreground">
+                {p.permit_number} · {p.title}
+              </p>
+              <p className="mt-1 text-xs capitalize text-muted-foreground">
+                {p.status}
+                {c ? (c.expired ? " · EXPIRED" : ` · ${c.hours}h ${c.minutes}m left`) : ""}
+              </p>
+            </div>
+            {p.status === "authorization" && canApprove ? (
+              <FieldSubmitForm action={approveFieldPermitAction} submitLabel="Approve">
                 <input type="hidden" name="permitId" value={p.id} />
-                <input
-                  name="signature"
-                  placeholder="Signature name"
-                  required
-                  className="w-full rounded-lg border border-white/15 bg-slate-950 px-3 py-3 text-sm"
-                />
-                <button className="w-full rounded-xl bg-teal-500 py-3 text-sm font-bold text-slate-950">
-                  Approve
-                </button>
-              </form>
+                <input name="signature" placeholder="Signature name" required className={fieldControlClass} />
+              </FieldSubmitForm>
             ) : null}
-          </div>
+            {p.status === "active" && !acked.has(p.id) ? (
+              <FieldSubmitForm action={acknowledgeFieldPermitAction} submitLabel="Acknowledge">
+                <input type="hidden" name="permitId" value={p.id} />
+                <input name="signature" placeholder="Signature name" required className={fieldControlClass} />
+              </FieldSubmitForm>
+            ) : null}
+            {p.status === "active" && acked.has(p.id) ? (
+              <p className="text-xs font-medium text-[var(--success-ink)]">Acknowledged</p>
+            ) : null}
+          </FieldCard>
         );
       })}
-      {!permits?.length ? <p className="text-sm text-slate-500">No permits assigned.</p> : null}
+      {!permits?.length && !error ? <FieldEmpty text="No permits assigned." /> : null}
     </div>
   );
 }

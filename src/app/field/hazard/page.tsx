@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
-export default function LegacyHazardRedirect() {
+export default function FieldHazardAliasRedirect() {
   redirect("/field/lmra");
 }

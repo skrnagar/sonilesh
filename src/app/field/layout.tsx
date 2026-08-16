@@ -6,7 +6,7 @@ import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { requireOrgContext } from "@/lib/auth/org-context";
 
 export default async function FieldLayout({ children }: { children: React.ReactNode }) {
-  const { user, profile, organization } = await requireOrgContext();
+  const { organization } = await requireOrgContext();
 
   if (organization.status === "suspended") redirect("/app/dashboard");
 
@@ -24,19 +24,14 @@ export default async function FieldLayout({ children }: { children: React.ReactN
             <ThemeToggle compact />
             <Link
               href="/app/dashboard"
-              className="rounded-xl border border-border bg-card px-3 py-2.5 text-xs font-medium text-foreground transition-colors hover:bg-muted"
+              className="min-h-11 rounded-xl border border-border bg-card px-3 py-2.5 text-xs font-medium text-foreground transition-colors hover:bg-muted"
             >
               Desktop
             </Link>
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-lg px-4 pb-32 pt-4">
-        <p className="mb-3 text-xs text-muted-foreground">
-          {profile?.full_name || profile?.email || user.email}
-        </p>
-        {children}
-      </main>
+      <main className="mx-auto max-w-lg px-4 pb-32 pt-5">{children}</main>
       <FieldTabBar />
     </div>
   );

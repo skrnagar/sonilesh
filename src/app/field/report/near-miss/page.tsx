@@ -1,11 +1,5 @@
-import { QuickReportForm } from "@/components/field/quick-report-form";
-import { submitFieldReportAction } from "@/app/actions/field";
+import { redirect } from "next/navigation";
 
-export default function FieldNearMissPage() {
-  return (
-    <div className="space-y-4">
-      <h1 className="text-xl font-semibold">Report near miss</h1>
-      <QuickReportForm mode="near-miss" action={submitFieldReportAction} />
-    </div>
-  );
+export default function LegacyNearMissRedirect() {
+  redirect("/field/near-miss");
 }
