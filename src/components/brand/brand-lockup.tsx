@@ -95,7 +95,7 @@ export function BrandLockup({
       {markOnly ? (
         <span className="sr-only">{brand.name}</span>
       ) : (
-        <span className="min-w-0 leading-none">
+        <span className={cn("min-w-0 leading-none", chrome && "sidebar-copy")}>
           <span
             className={cn(
               "font-display flex items-baseline gap-1.5 whitespace-nowrap tracking-[0.05em]",

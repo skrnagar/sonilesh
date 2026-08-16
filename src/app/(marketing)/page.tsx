@@ -35,11 +35,8 @@ import {
 export default function HomePage() {
   return (
     <>
-      <section className="relative overflow-hidden bg-[var(--mkt-hero)] text-white">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_18%_0%,rgba(15,118,110,0.38),transparent_46%),radial-gradient(ellipse_at_88%_12%,rgba(31,111,139,0.22),transparent_40%),linear-gradient(180deg,#050d12_0%,#071f2d_52%,#0a3044_100%)]"
-        />
+      <section className="relative overflow-hidden border-b border-white/10 bg-[var(--mkt-hero)] text-white">
+        <div aria-hidden className="mkt-hero-wash pointer-events-none absolute inset-0" />
         <div aria-hidden className="mkt-grid-fade pointer-events-none absolute inset-0 opacity-80" />
         <Container className="relative grid min-h-[min(88vh,840px)] items-center gap-10 pb-20 pt-24 md:gap-12 md:pb-28 md:pt-28 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-16 lg:pb-32">
           <FadeIn className="max-w-xl">
@@ -49,7 +46,7 @@ export default function HomePage() {
             <h1 className="font-display mt-5 text-[2.35rem] font-semibold leading-[0.96] tracking-[-0.05em] sm:text-5xl md:text-[3.75rem] md:leading-[0.94]">
               {brand.tagline}
             </h1>
-            <p className="mt-5 max-w-md text-lg leading-relaxed text-slate-300 md:text-xl">
+            <p className="mt-5 max-w-md text-lg leading-relaxed text-white/80 md:text-xl">
               {brand.supporting} Unify incidents, risk, permits, CAPA, and analytics in one multi-tenant system of record.
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
@@ -68,7 +65,7 @@ export default function HomePage() {
                 <Link href="/platform">Explore platform</Link>
               </Button>
             </div>
-            <ul className="mt-8 grid gap-2 text-sm text-slate-400 sm:grid-cols-3 sm:gap-4">
+            <ul className="mt-8 grid gap-2 text-sm text-white/65 sm:grid-cols-3 sm:gap-4">
               <li>Field capture to boardroom</li>
               <li>Multi-tenant by design</li>
               <li>No invented certifications</li>

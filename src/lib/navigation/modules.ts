@@ -46,28 +46,28 @@ export const ADMIN_NAV = [
 ];
 
 export const ADMIN_NAV_GROUPS = [
-  { label: "Menu", items: [{ href: "/admin", label: "Dashboard" }] },
+  { label: "Menu", items: [{ href: "/admin", label: "Dashboard", icon: "LayoutDashboard" }] },
   {
     label: "Tenants",
     items: [
-      { href: "/admin/organizations", label: "Organizations" },
-      { href: "/admin/users", label: "Platform Users" },
+      { href: "/admin/organizations", label: "Organizations", icon: "Building2" },
+      { href: "/admin/users", label: "Platform Users", icon: "Users" },
     ],
   },
   {
     label: "Commercial",
     items: [
-      { href: "/admin/plans", label: "Plans" },
-      { href: "/admin/features", label: "Features" },
-      { href: "/admin/billing", label: "Billing Config" },
+      { href: "/admin/plans", label: "Plans", icon: "CreditCard" },
+      { href: "/admin/features", label: "Features", icon: "Puzzle" },
+      { href: "/admin/billing", label: "Billing Config", icon: "CreditCard" },
     ],
   },
   {
     label: "Governance",
     items: [
-      { href: "/admin/support", label: "Support" },
-      { href: "/admin/audit", label: "Audit Logs" },
-      { href: "/admin/settings", label: "Platform Settings" },
+      { href: "/admin/support", label: "Support", icon: "LifeBuoy" },
+      { href: "/admin/audit", label: "Audit Logs", icon: "ScrollText" },
+      { href: "/admin/settings", label: "Platform Settings", icon: "Settings" },
     ],
   },
 ] as const;

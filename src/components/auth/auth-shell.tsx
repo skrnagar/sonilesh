@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BrandLockup } from "@/components/brand/brand-lockup";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 export function AuthShell({
   title,
@@ -37,11 +38,16 @@ export function AuthShell({
       </div>
       <div className="flex items-center justify-center bg-background px-6 py-10">
         <div className="w-full max-w-md">
-          <Link href="/" className="mb-8 inline-flex md:hidden">
-            <BrandLockup />
-          </Link>
+          <div className="mb-8 flex items-center justify-between gap-3">
+            <Link href="/" className="inline-flex md:hidden">
+              <BrandLockup />
+            </Link>
+            <div className="ml-auto">
+              <ThemeToggle compact />
+            </div>
+          </div>
           <div className="rounded-xl border border-border bg-card p-7 shadow-[var(--shadow-md)]">
-            <h1 className="text-xl font-semibold tracking-tight text-primary">{title}</h1>
+            <h1 className="text-xl font-semibold tracking-tight text-foreground">{title}</h1>
             <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{subtitle}</p>
             <div className="mt-6">{children}</div>
           </div>

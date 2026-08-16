@@ -89,26 +89,26 @@ export default async function DashboardPage({
           title="Near miss vs incidents"
           empty="No events in this period."
           data={snapshot.nearMissSeries}
-          color="#b45309"
+          color="var(--chart-2)"
         />
         <NamedBarChart
           title="CAPA aging"
           empty="No open CAPA to age."
           data={snapshot.capaAging}
-          color="#b42318"
+          color="var(--chart-5)"
         />
         <RiskHeatMap cells={snapshot.riskHeat} />
         <NamedBarChart
           title="Inspection status"
           empty="No inspection assignments yet."
           data={snapshot.inspectionSeries}
-          color="#0f766e"
+          color="var(--chart-3)"
         />
         <NamedBarChart
           title="Training status"
           empty="No training assignments yet."
           data={snapshot.trainingSeries}
-          color="#1f6f8b"
+          color="var(--chart-4)"
         />
         <ContractorScoreChart data={snapshot.contractorSeries} />
       </div>

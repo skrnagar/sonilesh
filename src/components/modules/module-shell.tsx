@@ -19,7 +19,7 @@ export async function ModuleShell({
   if (!access.entitled && featureCode) {
     return (
       <div className="space-y-4">
-        <h1 className="text-xl font-semibold text-primary">{title}</h1>
+        <h1 className="text-xl font-semibold text-foreground">{title}</h1>
         <UpgradeState featureName={title} />
       </div>
     );
@@ -28,7 +28,7 @@ export async function ModuleShell({
   if (!access.permitted) {
     return (
       <div className="space-y-4">
-        <h1 className="text-xl font-semibold text-primary">{title}</h1>
+        <h1 className="text-xl font-semibold text-foreground">{title}</h1>
         <ForbiddenState />
       </div>
     );
@@ -37,7 +37,7 @@ export async function ModuleShell({
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-semibold text-primary">{title}</h1>
+        <h1 className="text-xl font-semibold text-foreground">{title}</h1>
         <p className="text-sm text-muted-foreground">{description}</p>
       </div>
       {children ?? (

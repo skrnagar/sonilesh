@@ -28,7 +28,12 @@ export function ThemeToggle({
         className,
       )}
       aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-      onClick={() => setTheme(dark ? "light" : "dark")}
+      aria-pressed={dark}
+      disabled={!mounted}
+      onClick={() => {
+        if (!mounted) return;
+        setTheme(dark ? "light" : "dark");
+      }}
     >
       {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
     </button>

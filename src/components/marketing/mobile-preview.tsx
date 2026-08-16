@@ -12,10 +12,10 @@ export function MobilePreview({ className }: { className?: string }) {
       <div className="overflow-hidden rounded-[1.1rem] bg-[#f4f7fa] text-[#0f172a]">
         <div className="bg-[#0b3a53] px-4 pb-4 pt-3 text-white">
           <p className="text-[10px] uppercase tracking-[0.14em] text-white/60">Field</p>
-          <p className="mt-1 text-sm font-semibold">Quick report</p>
+          <p className="mt-1 text-sm font-semibold">Field capture</p>
         </div>
         <div className="space-y-2 p-3">
-          {["Incident", "Near miss", "Hazard", "Permit check"].map((item, i) => (
+          {["Incident", "Near miss", "LMRA", "Permit check"].map((item, i) => (
             <div
               key={item}
               className={cn(

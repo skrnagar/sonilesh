@@ -29,7 +29,7 @@ export default async function PermitPrintPage({
   const { data: permit } = await query.maybeSingle();
 
   return (
-    <div className="mx-auto max-w-3xl space-y-4 bg-white p-8 text-black">
+    <div className="mx-auto max-w-3xl space-y-4 bg-card p-8 text-foreground print:bg-white print:text-black">
       <header className="border-b-2 border-black pb-3">
         <h1 className="text-2xl font-bold tracking-tight">PERMIT TO WORK</h1>
         <p className="text-sm">{access.organization.name}</p>

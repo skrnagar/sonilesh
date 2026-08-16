@@ -5,33 +5,37 @@ import { SidebarNavLink } from "@/components/layout/sidebar-nav-link";
 
 export function AdminSidebar() {
   return (
-    <aside className="flex h-screen w-64 shrink-0 flex-col overflow-hidden border-r border-[var(--sidebar-border)] bg-sidebar text-sidebar-foreground">
-      <div className="border-b border-[var(--sidebar-border)] px-4 py-4">
+    <aside className="flex h-dvh shrink-0 flex-col overflow-hidden border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
+      <div className="sidebar-brand flex items-center border-b border-sidebar-border px-3 py-3.5">
         <BrandLockup chrome size="sm" />
-        <p className="sidebar-copy mt-1.5 text-xs text-[var(--sidebar-muted)]">Admin console</p>
       </div>
-      <nav className="flex-1 overflow-y-auto px-2.5 py-3">
+      <p className="sidebar-copy px-4 pb-2 pt-3 text-xs text-sidebar-muted">Admin console</p>
+      <nav className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-2 py-2" aria-label="Administration">
         {ADMIN_NAV_GROUPS.map((group) => (
-          <div key={group.label} className="mb-4">
-            <p className="sidebar-copy px-2.5 pb-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--sidebar-muted)]">
+          <div key={group.label} className="mb-3">
+            <p className="sidebar-copy px-2.5 pb-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-sidebar-muted">
               {group.label}
             </p>
             <ul className="space-y-0.5">
               {group.items.map((item) => (
                 <li key={item.href}>
-                  <SidebarNavLink href={item.href} label={item.label} />
+                  <SidebarNavLink href={item.href} label={item.label} icon={item.icon} />
                 </li>
               ))}
             </ul>
           </div>
         ))}
       </nav>
-      <div className="border-t border-[var(--sidebar-border)] p-3">
+      <div className="border-t border-sidebar-border p-2.5">
         <Link
           href="/app/dashboard"
-          className="sidebar-copy block rounded-xl px-2.5 py-2 text-xs text-[var(--sidebar-muted)] transition-colors hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-foreground)]"
+          title="Back to customer app"
+          className="sidebar-nav-link flex items-center rounded-xl px-2.5 py-2 text-xs text-sidebar-muted transition-colors hover:bg-sidebar-hover hover:text-sidebar-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          Back to customer app
+          <span className="sidebar-copy">Back to customer app</span>
+          <span className="sidebar-glyph-collapsed mx-auto h-8 w-8 items-center justify-center text-[11px] font-semibold">
+            App
+          </span>
         </Link>
       </div>
     </aside>

@@ -22,7 +22,7 @@ export default async function RiskPrintPage() {
     .limit(20);
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6 bg-white p-8 text-black print:p-0">
+    <div className="mx-auto max-w-3xl space-y-6 bg-card p-8 text-foreground print:bg-white print:p-0 print:text-black">
       <header className="border-b border-neutral-300 pb-4">
         <h1 className="text-2xl font-semibold">Risk Assessment Register</h1>
         <p className="text-sm text-neutral-600">{access.organization.name}</p>

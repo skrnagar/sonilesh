@@ -71,12 +71,12 @@ export function WorkspaceShell({
   return (
     <div
       className={cn(
-        "workspace-shell flex min-h-screen bg-background",
+        "workspace-shell flex h-dvh overflow-hidden bg-background text-foreground",
         collapsed && "is-collapsed",
       )}
     >
       {sidebar}
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <header
           ref={headerRef}
           className="app-shell-header sticky top-0 z-20 flex h-[4.25rem] items-center gap-3 border-b border-border px-4 shadow-[var(--shadow-header)] md:px-5"
@@ -85,6 +85,7 @@ export function WorkspaceShell({
             type="button"
             className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-expanded={!collapsed}
             onClick={toggleCollapsed}
           >
             <PanelLeft className="h-4 w-4" />
@@ -171,7 +172,7 @@ export function WorkspaceShell({
             </div>
           </div>
         </header>
-        <main className="flex-1 overflow-auto p-4 md:p-6">{children}</main>
+        <main className="min-h-0 flex-1 overflow-auto p-4 md:p-6">{children}</main>
       </div>
     </div>
   );

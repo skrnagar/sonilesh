@@ -29,7 +29,7 @@ export function EventList({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold text-primary">{title}</h1>
+        <h1 className="text-xl font-semibold text-foreground">{title}</h1>
         <Button asChild>
           <Link href={createHref}>Report</Link>
         </Button>

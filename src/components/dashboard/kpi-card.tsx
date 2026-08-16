@@ -37,8 +37,8 @@ const ICONS: Record<string, LucideIcon> = {
 };
 
 const ACCENT: Record<string, string> = {
-  navy: "bg-[#0b3a53]/10 text-[#0b3a53] dark:bg-[#7eb8cc]/15 dark:text-[#7eb8cc]",
-  blue: "bg-[#1f6f8b]/12 text-[#1f6f8b] dark:bg-[#4aa0b8]/15 dark:text-[#4aa0b8]",
+  navy: "bg-primary/10 text-primary",
+  blue: "bg-accent/12 text-accent",
   green: "bg-[var(--success-soft)] text-[var(--success-ink)]",
   amber: "bg-[var(--warning-soft)] text-[var(--warning-ink)]",
   red: "bg-[var(--danger-soft)] text-[var(--danger-ink)]",

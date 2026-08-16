@@ -254,7 +254,7 @@ export type ModuleSlug = (typeof modules)[number]["slug"];
 export const platformPillars = [
   {
     title: "Field",
-    body: "Fast capture for incidents, hazards, permits, and inspections where work happens.",
+    body: "Fast capture for incidents, LMRA, permits, and inspections where work happens.",
   },
   {
     title: "Operations",

@@ -54,7 +54,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f4f6f8" },
+    { media: "(prefers-color-scheme: light)", color: "#eef2f6" },
     { media: "(prefers-color-scheme: dark)", color: "#0b141c" },
   ],
   width: "device-width",
@@ -69,7 +69,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${sans.variable} ${display.variable} antialiased`}>
+      <body className={`${sans.variable} ${display.variable} bg-background text-foreground antialiased`}>
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>

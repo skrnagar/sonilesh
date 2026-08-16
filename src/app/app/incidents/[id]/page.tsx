@@ -57,7 +57,7 @@ export default async function IncidentDetailPage({
       </div>
 
       {duplicates?.length ? (
-        <div className="border border-warning/40 bg-[#fffbeb] px-4 py-3 text-sm text-[#92400e]">
+        <div className="border border-warning/40 bg-[var(--warning-soft)] px-4 py-3 text-sm text-[var(--warning-ink)]">
           Possible duplicate warning: {duplicates.length} similar event(s) found near this
           time/location/type. Review before continuing.
         </div>

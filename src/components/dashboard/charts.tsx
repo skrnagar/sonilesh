@@ -15,6 +15,17 @@ import {
 
 const AXIS = { fontSize: 11, fill: "var(--muted-foreground)" };
 const GRID = { stroke: "var(--border)", strokeDasharray: "3 3" };
+const TOOLTIP = {
+  contentStyle: {
+    background: "var(--card)",
+    border: "1px solid var(--border)",
+    borderRadius: 12,
+    color: "var(--foreground)",
+    boxShadow: "var(--shadow-md)",
+  },
+  labelStyle: { color: "var(--foreground)" },
+  itemStyle: { color: "var(--muted-foreground)" },
+};
 
 function ChartFrame({
   title,
@@ -58,9 +69,9 @@ export function IncidentTrendChart({
           <CartesianGrid {...GRID} />
           <XAxis dataKey="label" tick={AXIS} />
           <YAxis allowDecimals={false} tick={AXIS} width={28} />
-          <Tooltip />
-          <Area type="monotone" dataKey="incidents" stroke="#0b3a53" fill="#0b3a53" fillOpacity={0.18} />
-          <Area type="monotone" dataKey="nearMisses" stroke="#b45309" fill="#b45309" fillOpacity={0.12} />
+          <Tooltip {...TOOLTIP} />
+          <Area type="monotone" dataKey="incidents" stroke="var(--chart-1)" fill="var(--chart-1)" fillOpacity={0.18} />
+          <Area type="monotone" dataKey="nearMisses" stroke="var(--chart-2)" fill="var(--chart-2)" fillOpacity={0.12} />
         </AreaChart>
       </ResponsiveContainer>
     </ChartFrame>
@@ -80,10 +91,10 @@ export function SeverityChart({
           <CartesianGrid {...GRID} />
           <XAxis dataKey="label" tick={AXIS} />
           <YAxis allowDecimals={false} tick={AXIS} width={28} />
-          <Tooltip />
+          <Tooltip {...TOOLTIP} />
           <Bar dataKey="value" radius={[6, 6, 0, 0]}>
             {data.map((entry) => (
-              <Cell key={entry.label} fill={entry.color || "#1f6f8b"} />
+              <Cell key={entry.label} fill={entry.color || "var(--chart-4)"} />
             ))}
           </Bar>
         </BarChart>
@@ -96,7 +107,7 @@ export function NamedBarChart({
   title,
   empty,
   data,
-  color = "#1f6f8b",
+  color = "var(--chart-4)",
 }: {
   title: string;
   empty: string;
@@ -111,7 +122,7 @@ export function NamedBarChart({
           <CartesianGrid {...GRID} />
           <XAxis dataKey="label" tick={AXIS} />
           <YAxis allowDecimals={false} tick={AXIS} width={28} />
-          <Tooltip />
+          <Tooltip {...TOOLTIP} />
           <Bar dataKey="value" fill={color} radius={[6, 6, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
@@ -135,8 +146,8 @@ export function ContractorScoreChart({
           <CartesianGrid {...GRID} />
           <XAxis type="number" domain={[0, 100]} tick={AXIS} />
           <YAxis type="category" dataKey="label" width={90} tick={AXIS} />
-          <Tooltip />
-          <Bar dataKey="score" fill="#0f766e" radius={[0, 6, 6, 0]} />
+          <Tooltip {...TOOLTIP} />
+          <Bar dataKey="score" fill="var(--chart-3)" radius={[0, 6, 6, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </ChartFrame>
@@ -165,12 +176,12 @@ export function RiskHeatMap({
               const score = cell.l * cell.c;
               const bg =
                 score >= 15
-                  ? "bg-[#b42318]"
+                  ? "bg-destructive"
                   : score >= 10
-                    ? "bg-[#b45309]"
+                    ? "bg-warning"
                     : score >= 6
-                      ? "bg-[#ca8a04]"
-                      : "bg-[#0f766e]";
+                      ? "bg-[var(--warning-ink)]"
+                      : "bg-success";
               return (
                 <div
                   key={`${cell.l}-${cell.c}`}

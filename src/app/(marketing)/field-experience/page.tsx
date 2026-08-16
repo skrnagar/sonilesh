@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 export const metadata: Metadata = {
   title: "Field Experience",
   description:
-    "SONIL EHS360 field experience for fast incident, hazard, permit, and inspection capture where work happens.",
+    "SONIL EHS360 field experience for fast incident, LMRA, permit, and inspection capture where work happens.",
 };
 
 export default function FieldExperiencePage() {
@@ -20,7 +20,7 @@ export default function FieldExperiencePage() {
       <PageHero
         eyebrow="Field"
         title="Capture that keeps pace with the job"
-        description="A focused field experience for supervisors and crews — quick reports, clear severity, and less form friction. Product field UI remains at /field for signed-in users."
+        description="A focused field experience for supervisors and crews — incident, near miss, and LMRA capture, clear severity, and less form friction. Product field UI remains at /field for signed-in users."
         secondaryHref="/platform"
         secondaryLabel="Platform overview"
       >
@@ -38,8 +38,8 @@ export default function FieldExperiencePage() {
           />
           <div className="mt-14 grid gap-10 md:grid-cols-3">
             <FeatureCard
-              title="Quick report paths"
-              body="Incident, near miss, hazard, and related checks without navigating a full desktop IA."
+              title="Field capture paths"
+              body="Incident, near miss, LMRA (last minute risk assessment), and related checks without navigating a full desktop IA."
             />
             <FeatureCard
               title="Context that travels"
