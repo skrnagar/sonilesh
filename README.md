@@ -40,6 +40,40 @@ Optional: `NEXT_PUBLIC_APP_NAME`, `SUPABASE_JWKS_URL`, `SUPABASE_PROJECT_REF`.
 
 After changing env vars, redeploy so the Next.js build picks up `NEXT_PUBLIC_*` values.
 
+## Vercel production URL (platform 404)
+
+A successful `next build` is **not** the same as a public hostname being assigned.
+
+If the browser shows Vercel’s gray page:
+
+```
+404: NOT_FOUND
+Code: NOT_FOUND
+ID: bom1::…
+```
+
+that is **platform `DEPLOYMENT_NOT_FOUND`**, not the Next.js app 404. The request never reached `/`. Confirm with response header `x-vercel-error: NOT_FOUND` and `content-type: text/plain`.
+
+GitHub (commit `df9549c`) reports the ready deployment as:
+
+- Dashboard: [vercel.com/skrnagars-projects/sonilesh](https://vercel.com/skrnagars-projects/sonilesh)
+- Hashed URL: `https://sonilesh-ghf8cq30g-skrnagars-projects.vercel.app`
+- Project alias: `https://sonilesh-skrnagars-projects.vercel.app`
+- Branch alias: `https://sonilesh-git-main-skrnagars-projects.vercel.app`
+
+Those three hostnames **exist** (they 302 to Vercel SSO when Deployment Protection is on). **`https://sonilesh.vercel.app` is not assigned** and returns the platform 404.
+
+### What to click in the Vercel dashboard
+
+1. Open **[sonilesh → Deployments](https://vercel.com/skrnagars-projects/sonilesh)** and open the **Ready** production deployment for `main` / `df9549c`.
+2. Copy **Visit** / the unique `*.vercel.app` URL from that deployment (not a guessed `sonilesh.vercel.app`).
+3. **Settings → Domains**: add / assign **`sonilesh.vercel.app`** (and any custom domain) to this project, Production. If the name is on another empty Vercel project, remove it there first.
+4. **Settings → General → Build & Development Settings**: Framework Preset **Next.js**, Root Directory **`.`** (empty / repo root). Do **not** set Output Directory to `.next` or `out`.
+5. **Settings → Deployment Protection**: for a public marketing site, set Production to **None** (Standard Protection on Preview is fine). Until you do this, even the correct URL asks for Vercel login instead of serving `/` as HTTP 200.
+6. On the Ready deployment, use **⋯ → Promote to Production** if Production still points at an older/failed deploy.
+
+Set `NEXT_PUBLIC_APP_URL` to the hostname you actually assigned (no trailing slash), then Redeploy.
+
 Promote a platform admin:
 
 ```sql
