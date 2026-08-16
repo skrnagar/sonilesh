@@ -17,7 +17,7 @@ export default function SolutionsPage() {
       <PageHero
         eyebrow="Solutions"
         title="Industry-shaped EHS control"
-        description="One platform core, configured for the risk patterns, contractor models, and assurance rhythms of your sector."
+        description="One platform core, configured for construction, EPC packages, power corridors, renewables, plants, and industrial sites — including LMRA at the workfront."
         compact
       />
       <section className="py-12 md:py-16">

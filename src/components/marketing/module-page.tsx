@@ -35,6 +35,10 @@ export function ModulePage({ slug }: { slug: string }) {
             title={`What ${mod.name} delivers`}
             description="Configured per tenant, entitled by plan, and governed by role-based access."
           />
+          <div className="mt-10 grid gap-6 md:grid-cols-2">
+            <FeatureCard title="In the field" body={mod.field} />
+            <FeatureCard title="In the dashboard" body={mod.dashboard} />
+          </div>
           <div className="mt-10 grid gap-8 md:grid-cols-2">
             {mod.capabilities.map((cap) => (
               <FeatureCard key={cap} title={cap} body="Available in the customer workspace when entitled." />

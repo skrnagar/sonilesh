@@ -29,7 +29,6 @@ export function ThemeToggle({
       )}
       aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
       aria-pressed={dark}
-      disabled={!mounted}
       onClick={() => {
         if (!mounted) return;
         setTheme(dark ? "light" : "dark");

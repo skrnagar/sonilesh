@@ -15,7 +15,7 @@ export default function RequestDemoPage() {
       <PageHero
         eyebrow="Demo"
         title="Request a product walkthrough"
-        description="Tell us about your industry, sites, and modules of interest. We’ll tailor the conversation from field capture to leadership visibility."
+        description="Tell us about your industry, sites, and modules of interest. We’ll map field LMRA and capture through CAPA and leadership dashboards."
         primaryHref="/contact"
         primaryLabel="Contact sales"
         compact
@@ -34,9 +34,10 @@ export default function RequestDemoPage() {
             </p>
             <ol className="mt-8 space-y-5">
               {[
-                ["01", "Context", "Industry, sites, and the modules you actually need."],
-                ["02", "Walkthrough", "Field capture through CAPA, then leadership visibility."],
-                ["03", "Fit", "Tenancy, roles, and packaging — without invented price tags."],
+                ["01", "Context", "Industry, sites, contractors, and the modules you actually need."],
+                ["02", "Field", "LMRA, incident, near-miss, and permit capture on a phone."],
+                ["03", "Control room", "Investigations, CAPA, and leadership dashboards on the same records."],
+                ["04", "Fit", "Tenancy, roles, and packaging — without invented price tags."],
               ].map(([n, title, body]) => (
                 <li key={n} className="border-l border-[var(--mkt-safety)]/70 pl-5">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">

@@ -25,8 +25,8 @@ export function PricingCard({
       className={cn(
         "relative flex flex-col rounded-xl border bg-card p-6 transition-[box-shadow,border-color] duration-200 motion-reduce:transition-none",
         featured
-          ? "border-[var(--mkt-safety)]/50 shadow-[var(--shadow-md)]"
-          : "border-border hover:border-accent/30 hover:shadow-[var(--shadow-sm)]",
+          ? "border-[var(--mkt-safety)] bg-card shadow-[var(--shadow-md)]"
+          : "border-border bg-card shadow-[var(--shadow-sm)] hover:border-accent/40",
       )}
     >
       {featured ? (
@@ -39,11 +39,11 @@ export function PricingCard({
         {featured ? "Most requested" : "Plan"}
       </p>
       <h3 className="mt-3 font-display text-2xl font-semibold tracking-tight text-primary">{name}</h3>
-      <p className="mt-2 text-sm text-muted-foreground">{audience}</p>
+      <p className="mt-2 text-sm text-foreground/80">{audience}</p>
       <p className="mt-6 text-sm font-medium text-primary">Custom commercial packaging</p>
       <ul className="mt-6 flex-1 space-y-3">
         {points.map((point) => (
-          <li key={point} className="flex gap-2 text-sm text-muted-foreground">
+          <li key={point} className="flex gap-2 text-sm text-foreground/80">
             <Check className="mt-0.5 h-4 w-4 shrink-0 text-[var(--mkt-safety)]" aria-hidden />
             <span>{point}</span>
           </li>

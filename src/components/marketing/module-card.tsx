@@ -6,10 +6,12 @@ type ModuleCardProps = {
   name: string;
   summary: string;
   href: string;
+  field?: string;
+  dashboard?: string;
   className?: string;
 };
 
-export function ModuleCard({ name, summary, href, className }: ModuleCardProps) {
+export function ModuleCard({ name, summary, href, field, dashboard, className }: ModuleCardProps) {
   return (
     <Link
       href={href}
@@ -23,6 +25,22 @@ export function ModuleCard({ name, summary, href, className }: ModuleCardProps) 
         <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-150 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-accent motion-reduce:transition-none" />
       </div>
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{summary}</p>
+      {field || dashboard ? (
+        <dl className="mt-4 grid gap-2 border-t border-border pt-3 text-xs leading-relaxed">
+          {field ? (
+            <div>
+              <dt className="font-semibold uppercase tracking-[0.14em] text-[var(--mkt-safety)]">Field</dt>
+              <dd className="mt-0.5 text-muted-foreground">{field}</dd>
+            </div>
+          ) : null}
+          {dashboard ? (
+            <div>
+              <dt className="font-semibold uppercase tracking-[0.14em] text-[var(--mkt-infra)]">Dashboard</dt>
+              <dd className="mt-0.5 text-muted-foreground">{dashboard}</dd>
+            </div>
+          ) : null}
+        </dl>
+      ) : null}
     </Link>
   );
 }

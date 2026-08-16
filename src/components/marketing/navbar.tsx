@@ -22,7 +22,6 @@ export function Navbar() {
   const headerRef = useRef<HTMLElement>(null);
   const closeTimer = useRef<number | null>(null);
   const openedBy = useRef<"hover" | "click" | null>(null);
-  const inverse = pathname === "/" && !scrolled && !mobileOpen && !openMenu;
 
   function clearCloseTimer() {
     if (closeTimer.current) {
@@ -89,23 +88,15 @@ export function Navbar() {
     };
   }, [mobileOpen]);
 
-  const navLink = cn(
-    "inline-flex min-h-11 items-center gap-1 rounded-lg px-2.5 py-2 text-[13px] font-medium tracking-[-0.01em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none xl:px-3",
-    inverse
-      ? "text-white/80 hover:bg-white/10 hover:text-white"
-      : "text-foreground/80 hover:bg-muted hover:text-foreground",
-  );
+  const navLink =
+    "inline-flex min-h-11 shrink-0 items-center gap-0.5 whitespace-nowrap rounded-lg px-2 py-2 text-[13px] font-semibold tracking-[-0.01em] text-foreground opacity-100 transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none xl:gap-1 xl:px-2.5";
 
   return (
     <header
       ref={headerRef}
-      className={cn(
-        "sticky top-0 z-50 border-b transition-[background-color,box-shadow,border-color,color] duration-200 motion-reduce:transition-none",
-        inverse
-          ? "border-transparent bg-transparent"
-          : scrolled
-            ? "border-border/80 bg-card/95 shadow-[var(--shadow-header)] backdrop-blur-xl"
-            : "border-border/60 bg-card/90 backdrop-blur-xl",
+        className={cn(
+        "sticky top-0 z-50 isolate overflow-visible border-b border-border bg-card text-foreground shadow-[var(--shadow-header)] backdrop-blur-xl transition-[box-shadow] duration-200 motion-reduce:transition-none",
+        scrolled && "shadow-[var(--shadow-md)]",
       )}
     >
       <Container className="flex h-14 items-center justify-between gap-2 md:h-16 md:gap-3 lg:h-[4.25rem]">
@@ -115,14 +106,13 @@ export function Navbar() {
           onClick={() => setMobileOpen(false)}
         >
           <BrandLockup
-            inverse={inverse}
             size="sm"
             className="transition-opacity duration-200 group-hover:opacity-90 motion-reduce:transition-none md:[&_svg]:h-9 md:[&_svg]:w-9"
           />
         </Link>
 
-        <nav className="hidden items-center lg:flex" aria-label="Primary">
-          {primaryNav.map((item, index) => {
+        <nav className="hidden min-w-0 flex-1 items-center justify-end gap-0.5 overflow-visible lg:flex xl:justify-center" aria-label="Primary">
+          {primaryNav.map((item) => {
             const hasMega = Boolean(item.columns?.length);
             const isOpen = openMenu === item.label;
             return (
@@ -146,10 +136,7 @@ export function Navbar() {
                   <>
                     <button
                       type="button"
-                      className={cn(
-                        navLink,
-                        isOpen && (inverse ? "bg-white/10 text-white" : "bg-muted text-foreground"),
-                      )}
+                      className={cn(navLink, isOpen && "bg-muted text-foreground")}
                       aria-expanded={isOpen}
                       aria-haspopup="menu"
                       aria-controls={`${menuId}-${item.label}`}
@@ -165,29 +152,32 @@ export function Navbar() {
                       {item.label}
                       <ChevronDown
                         className={cn(
-                          "h-3.5 w-3.5 opacity-70 transition-transform duration-200 motion-reduce:transition-none",
+                          "h-3.5 w-3.5 text-foreground transition-transform duration-200 motion-reduce:transition-none",
                           isOpen && "rotate-180",
                         )}
                       />
                     </button>
                     <div
                       className={cn(
-                        "absolute top-full z-[60] pt-2",
-                        index > 2 ? "right-0" : "left-0",
+                        "fixed inset-x-0 z-[80] border-b border-border bg-card shadow-[var(--shadow-lg)]",
+                        scrolled ? "top-14 md:top-16 lg:top-[4.25rem]" : "top-14 md:top-16 lg:top-[4.25rem]",
                         isOpen ? "pointer-events-auto" : "pointer-events-none",
                       )}
                       onMouseEnter={clearCloseTimer}
                     >
                       {isOpen ? (
-                        <MegaMenu
-                          id={`${menuId}-${item.label}`}
-                          columns={item.columns!}
-                          open
-                          onNavigate={() => {
-                            setOpenMenu(null);
-                            openedBy.current = null;
-                          }}
-                        />
+                        <Container>
+                          <MegaMenu
+                            id={`${menuId}-${item.label}`}
+                            columns={item.columns!}
+                            open
+                            panel
+                            onNavigate={() => {
+                              setOpenMenu(null);
+                              openedBy.current = null;
+                            }}
+                          />
+                        </Container>
                       ) : null}
                     </div>
                   </>
@@ -202,21 +192,8 @@ export function Navbar() {
         </nav>
 
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-          <ThemeToggle
-            compact
-            className={cn(
-              "min-h-11 min-w-11",
-              inverse && "border-white/20 bg-white/10 text-white shadow-none hover:bg-white/15",
-            )}
-          />
-          <Button
-            asChild
-            variant="ghost"
-            className={cn(
-              "hidden min-h-11 lg:inline-flex",
-              inverse ? "text-white/85 hover:bg-white/10 hover:text-white" : "text-foreground/90",
-            )}
-          >
+          <ThemeToggle compact className="min-h-11 min-w-11" />
+          <Button asChild variant="ghost" className="hidden min-h-11 text-foreground lg:inline-flex">
             <Link href="/login">Sign in</Link>
           </Button>
           <Button asChild variant="safety" className="h-11 min-h-11 px-3 text-sm sm:px-4">
@@ -227,12 +204,7 @@ export function Navbar() {
           </Button>
           <button
             type="button"
-            className={cn(
-              "inline-flex h-11 w-11 min-h-11 min-w-11 items-center justify-center rounded-lg border lg:hidden",
-              inverse
-                ? "border-white/20 bg-white/10 text-white"
-                : "border-border bg-card",
-            )}
+            className="inline-flex h-11 w-11 min-h-11 min-w-11 items-center justify-center rounded-lg border border-border bg-card lg:hidden"
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
             onClick={() => setMobileOpen((v) => !v)}

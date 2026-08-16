@@ -25,7 +25,7 @@ const features = [
   {
     icon: Smartphone,
     title: "Field-first capture",
-    body: "Report incidents, near misses, hazards, and checks quickly from the field experience.",
+    body: "Report incidents, near misses, hazards, and LMRA quickly from the field experience.",
   },
   {
     icon: ClipboardCheck,
@@ -60,7 +60,7 @@ export default function FeaturesPage() {
       <PageHero
         eyebrow="Features"
         title="Capabilities across the EHS lifecycle"
-        description="A practical feature set for programs that need control — not another dashboard wallpaper."
+        description="Field capture, investigations, CAPA, contractors, and leadership dashboards — a practical feature set for programs that need control, not wallpaper."
         secondaryHref="/modules"
         secondaryLabel="Browse modules"
       >

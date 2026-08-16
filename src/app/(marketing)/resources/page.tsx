@@ -16,19 +16,23 @@ export default function ResourcesPage() {
       <PageHero
         eyebrow="Resources"
         title="Practical guides as the library grows"
-        description="These are intentional placeholders — not fabricated whitepapers or case studies."
+        description="These are intentional placeholders — not fabricated whitepapers or case studies. Request a demo if you need a live walkthrough now."
         compact
       />
       <section className="py-12 md:py-16">
         <Container>
           <div className="grid gap-4 md:grid-cols-2">
             {resources.map((item) => (
-              <article key={item.title} className="border border-border bg-card p-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              <article
+                id={item.id}
+                key={item.id}
+                className="scroll-mt-28 rounded-xl border border-border bg-card p-6 shadow-[var(--shadow-sm)]"
+              >
+                <p className="inline-flex rounded-full bg-[var(--mkt-safety)]/12 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--mkt-safety)]">
                   {item.status}
                 </p>
-                <h2 className="mt-3 text-xl font-semibold text-primary">{item.title}</h2>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.body}</p>
+                <h2 className="mt-3 font-display text-xl font-semibold text-primary">{item.title}</h2>
+                <p className="mt-2 text-sm leading-relaxed text-foreground/80">{item.body}</p>
               </article>
             ))}
           </div>

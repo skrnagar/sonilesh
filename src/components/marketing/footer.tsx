@@ -2,7 +2,7 @@ import Link from "next/link";
 import { BrandLockup } from "@/components/brand/brand-lockup";
 import { Container } from "@/components/marketing/container";
 import { footerColumns } from "@/lib/marketing/nav";
-import { brand } from "@/lib/marketing/content";
+import { brand, company } from "@/lib/marketing/content";
 
 export function Footer() {
   return (
@@ -18,6 +18,19 @@ export function Footer() {
             </p>
             <p className="mt-2 text-sm leading-relaxed text-white/60">
               {brand.supporting}
+            </p>
+            <p className="mt-4 text-xs leading-relaxed text-white/45">
+              {company.legalEntity}
+              <br />
+              {company.hq} {company.pin}
+              <br />
+              <a className="text-white/70 hover:text-white" href={`mailto:${company.email}`}>
+                {company.email}
+              </a>
+              {" · "}
+              <a className="text-white/70 hover:text-white" href={`tel:${company.phone.replace(/\s/g, "")}`}>
+                {company.phone}
+              </a>
             </p>
           </div>
           {footerColumns.map((column) => (
@@ -42,7 +55,7 @@ export function Footer() {
         </div>
         <div className="mt-16 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between">
           <p>© 2026 {brand.legalName}</p>
-          <p>Enterprise Environment, Health & Safety platform</p>
+          <p>Multi-tenant Environment, Health & Safety SaaS</p>
         </div>
       </Container>
     </footer>

@@ -54,6 +54,8 @@ export function IndustryPage({ slug }: { slug: string }) {
                 key={mod.slug}
                 name={mod.name}
                 summary={mod.summary}
+                field={mod.field}
+                dashboard={mod.dashboard}
                 href={`/modules/${mod.slug}`}
               />
             ))}

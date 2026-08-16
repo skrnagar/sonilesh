@@ -17,7 +17,7 @@ export default function ModulesHubPage() {
       <PageHero
         eyebrow="Modules"
         title="Compose a complete EHS program"
-        description="Modules are entitlement-aware and role-governed — available in each tenant only when your plan and permissions allow."
+        description="Each module is told as field work plus dashboard control. Capabilities appear in a tenant only when your plan and permissions allow."
         compact
       />
       <section className="py-12 md:py-16">
@@ -28,6 +28,8 @@ export default function ModulesHubPage() {
                 key={mod.slug}
                 name={mod.name}
                 summary={mod.summary}
+                field={mod.field}
+                dashboard={mod.dashboard}
                 href={`/modules/${mod.slug}`}
               />
             ))}

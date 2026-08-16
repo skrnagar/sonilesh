@@ -37,7 +37,7 @@ export default function PricingPage() {
         </Container>
       </section>
 
-      <section className="mkt-section border-y border-border mkt-band">
+      <section id="compare" className="mkt-section scroll-mt-28 border-y border-border mkt-band">
         <Container>
           <SectionHeader
             eyebrow="Compare"

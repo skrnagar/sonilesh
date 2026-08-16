@@ -18,7 +18,7 @@ const display = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: "SONIL EHS360 — One Platform. Complete EHS Control.",
+    default: "SONIL EHS360 — EHS control built for how infrastructure gets executed.",
     template: "%s | SONIL EHS360",
   },
   description:
@@ -40,9 +40,9 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "SONIL EHS360",
-    title: "SONIL EHS360 — One Platform. Complete EHS Control.",
+    title: "SONIL EHS360 — EHS control built for how infrastructure gets executed.",
     description:
-      "Unify incidents, risk, permits, inspections, CAPA, training, and analytics in one multi-tenant EHS SaaS platform.",
+      "Unify incidents, LMRA, risk, permits, inspections, CAPA, training, and analytics in one multi-tenant EHS SaaS platform.",
   },
   twitter: {
     card: "summary_large_image",

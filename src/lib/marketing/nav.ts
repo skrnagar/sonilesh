@@ -37,7 +37,7 @@ export const primaryNav: {
           {
             label: "Field",
             href: "/field-experience",
-            description: "Mobile-first capture for crews",
+            description: "LMRA and mobile capture for crews",
             icon: "Smartphone",
           },
         ],
@@ -62,6 +62,12 @@ export const primaryNav: {
             href: "/platform#ai-ready",
             description: "Assistive potential — no overclaim",
             icon: "Sparkles",
+          },
+          {
+            label: "Enterprise",
+            href: "/enterprise",
+            description: "Org isolation, sites, entitlements",
+            icon: "Building2",
           },
         ],
       },
@@ -232,41 +238,85 @@ export const primaryNav: {
     ],
   },
   {
-    label: "Enterprise",
-    href: "/enterprise",
+    label: "Resources",
+    href: "/resources",
     columns: [
       {
-        title: "Enterprise",
+        title: "Library",
         links: [
           {
-            label: "Multi-tenant SaaS",
-            href: "/enterprise",
-            description: "Org isolation, sites, entitlements",
+            label: "Resources",
+            href: "/resources",
+            description: "Guides as the library grows — no fabricated papers",
+            icon: "BookOpen",
+          },
+          {
+            label: "Implementation",
+            href: "/resources#implementation",
+            description: "Sites, roles, and module rollout",
+            icon: "Layers3",
+          },
+          {
+            label: "Field adoption",
+            href: "/resources#field-adoption",
+            description: "LMRA and reporting in the moment",
+            icon: "Smartphone",
+          },
+        ],
+      },
+      {
+        title: "Company",
+        links: [
+          {
+            label: "About SONIL",
+            href: "/about",
+            description: "EHS360 and SONIL Buildcon",
             icon: "Building2",
+          },
+          {
+            label: "Contact",
+            href: "/contact",
+            description: "Sales and product conversations",
+            icon: "Mail",
           },
           {
             label: "Security",
             href: "/security",
             description: "Controls without fake certifications",
-            icon: "Lock",
-          },
-          {
-            label: "Configuration",
-            href: "/enterprise#configuration",
-            description: "Categories, workflows, forms",
-            icon: "Settings2",
+            icon: "Shield",
           },
         ],
       },
     ],
   },
   {
-    label: "Resources",
-    href: "/resources",
-  },
-  {
     label: "Pricing",
     href: "/pricing",
+    columns: [
+      {
+        title: "Packaging",
+        links: [
+          {
+            label: "Plans overview",
+            href: "/pricing",
+            description: "Team, Business, Enterprise — Contact Sales",
+            icon: "Layers3",
+          },
+          {
+            label: "Compare packages",
+            href: "/pricing#compare",
+            description: "Capability direction, not fake price tags",
+            icon: "ListChecks",
+          },
+          {
+            label: "Contact sales",
+            href: "/contact",
+            description: "Commercial terms for your sites",
+            icon: "Mail",
+          },
+        ],
+      },
+    ],
   },
 ];
 
@@ -305,10 +355,10 @@ export const footerColumns: { title: string; links: NavLink[] }[] = [
     title: "Company",
     links: [
       { label: "About", href: "/about" },
+      { label: "SONIL Buildcon", href: "https://www.sonilbuildcon.com/" },
       { label: "Resources", href: "/resources" },
       { label: "Contact", href: "/contact" },
       { label: "Request demo", href: "/request-demo" },
-      { label: "Sign in", href: "/login" },
     ],
   },
 ];

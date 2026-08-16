@@ -14,7 +14,7 @@ type CTASectionProps = {
 
 export function CTASection({
   title = "See SONIL EHS360 on your operations.",
-  description = "Request a demo to walk through field capture, investigations, CAPA, and leadership visibility — mapped to your industry.",
+  description = "Request a demo to walk LMRA and field capture, investigations, CAPA, and leadership dashboards — mapped to your industry.",
   primaryHref = "/request-demo",
   primaryLabel = "Request demo",
   secondaryHref = "/contact",

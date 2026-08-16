@@ -5,6 +5,7 @@ import {
   AlertTriangle,
   ArrowRight,
   BarChart3,
+  BookOpen,
   Building2,
   ClipboardCheck,
   Factory,
@@ -15,10 +16,12 @@ import {
   GraduationCap,
   HardHat,
   Landmark,
+  Layers3,
   LayoutGrid,
   Leaf,
   ListChecks,
   Lock,
+  Mail,
   Mountain,
   Puzzle,
   Radar,
@@ -38,6 +41,7 @@ const ICONS: Record<string, LucideIcon> = {
   AlertTriangle,
   ArrowRight,
   BarChart3,
+  BookOpen,
   Building2,
   ClipboardCheck,
   Factory,
@@ -48,10 +52,12 @@ const ICONS: Record<string, LucideIcon> = {
   GraduationCap,
   HardHat,
   Landmark,
+  Layers3,
   LayoutGrid,
   Leaf,
   ListChecks,
   Lock,
+  Mail,
   Mountain,
   Puzzle,
   Radar,
@@ -69,9 +75,10 @@ type MegaMenuProps = {
   open: boolean;
   id?: string;
   onNavigate?: () => void;
+  panel?: boolean;
 };
 
-export function MegaMenu({ columns, open, id, onNavigate }: MegaMenuProps) {
+export function MegaMenu({ columns, open, id, onNavigate, panel = false }: MegaMenuProps) {
   const wide = columns.some((c) => c.links.length > 4) || columns.length > 1;
 
   return (
@@ -80,8 +87,13 @@ export function MegaMenu({ columns, open, id, onNavigate }: MegaMenuProps) {
       role="menu"
       hidden={!open}
       className={cn(
-        "overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-[var(--shadow-lg)]",
-        wide ? "w-[min(42rem,calc(100vw-1.5rem))]" : "w-[min(22rem,calc(100vw-1.5rem))]",
+        "relative z-[80] max-h-[min(70vh,40rem)] overflow-y-auto overflow-x-hidden bg-card text-card-foreground",
+        panel
+          ? "w-full rounded-none border-0 shadow-none"
+          : cn(
+              "rounded-2xl border border-border shadow-[var(--shadow-lg)]",
+              wide ? "w-[min(42rem,calc(100vw-1.5rem))]" : "w-[min(22rem,calc(100vw-1.5rem))]",
+            ),
       )}
     >
       <div className="h-px bg-[linear-gradient(90deg,var(--mkt-safety),transparent_70%)]" />
@@ -109,7 +121,7 @@ export function MegaMenu({ columns, open, id, onNavigate }: MegaMenuProps) {
                         className="flex min-h-11 items-start gap-2.5 rounded-xl px-2 py-2 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none"
                       >
                         {Icon ? (
-                          <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted text-primary">
+                          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-primary ring-1 ring-border">
                             <Icon className="h-4 w-4" aria-hidden />
                           </span>
                         ) : null}

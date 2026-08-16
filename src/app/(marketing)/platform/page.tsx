@@ -24,7 +24,7 @@ export default function PlatformPage() {
       <PageHero
         eyebrow="Platform"
         title="Complete EHS control on one SaaS foundation"
-        description="From mobile field capture to multi-tenant administration and leadership analytics — without stitching five tools together."
+        description="From LMRA and mobile capture to multi-tenant administration and leadership analytics — without stitching five tools together."
         secondaryHref="/field-experience"
         secondaryLabel="Field experience"
       >
@@ -38,7 +38,7 @@ export default function PlatformPage() {
           <SectionHeader
             eyebrow="Architecture of work"
             title="Five connected planes"
-            description="Each plane shares identity, entitlements, and evidence — so closure is real."
+            description="Each plane shares identity, entitlements, and evidence — so an LMRA, incident, or permit can close as CAPA with verification."
           />
           <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {platformPillars.map((p) => (
@@ -53,7 +53,7 @@ export default function PlatformPage() {
           <SectionHeader
             eyebrow="Lifecycle"
             title="Closed-loop by default"
-            description="Reporting is only the start. Investigation, CAPA, verification, and closure stay in one system of record."
+            description="Reporting is only the start. Investigation, CAPA, verification, and closure stay in one system of record — field and dashboard on the same data."
           />
           <div className="mt-10">
             <WorkflowDiagram />

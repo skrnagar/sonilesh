@@ -20,7 +20,7 @@ export default function FieldExperiencePage() {
       <PageHero
         eyebrow="Field"
         title="Capture that keeps pace with the job"
-        description="A focused field experience for supervisors and crews — incident, near miss, and LMRA capture, clear severity, and less form friction. Product field UI remains at /field for signed-in users."
+        description="A focused field experience for supervisors and crews — incident, near miss, and LMRA (last minute risk assessment) capture, clear severity, and less form friction. Product field UI remains at /field for signed-in users."
         secondaryHref="/platform"
         secondaryLabel="Platform overview"
       >
@@ -39,7 +39,7 @@ export default function FieldExperiencePage() {
           <div className="mt-14 grid gap-10 md:grid-cols-3">
             <FeatureCard
               title="Field capture paths"
-              body="Incident, near miss, LMRA (last minute risk assessment), and related checks without navigating a full desktop IA."
+              body="Incident, near miss, LMRA (last minute risk assessment), permit checks, and related inspections without navigating a full desktop IA."
             />
             <FeatureCard
               title="Context that travels"
