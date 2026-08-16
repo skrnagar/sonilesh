@@ -28,7 +28,7 @@ export function FieldTabBar() {
 
   return (
     <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md">
-      <div className="mx-auto grid max-w-lg grid-cols-4 gap-1 px-2 py-2">
+      <div className="mx-auto grid max-w-lg grid-cols-4 gap-1 px-2 py-1.5">
         {tabs.map((item) => {
           const active = item.match(pathname);
           const Icon = item.icon;
@@ -37,7 +37,7 @@ export function FieldTabBar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex min-h-14 flex-col items-center justify-center rounded-xl text-[11px] font-semibold uppercase tracking-wide transition-colors",
+                "flex min-h-14 flex-col items-center justify-center rounded-xl px-1 text-xs font-semibold transition-colors",
                 active
                   ? "bg-[var(--sidebar-active)] text-primary"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground",

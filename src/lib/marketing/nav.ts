@@ -2,6 +2,7 @@ export type NavLink = {
   label: string;
   href: string;
   description?: string;
+  icon?: string;
 };
 
 export type MegaColumn = {
@@ -25,16 +26,19 @@ export const primaryNav: {
             label: "Platform",
             href: "/platform",
             description: "Field to boardroom control system",
+            icon: "LayoutGrid",
           },
           {
             label: "Features",
             href: "/features",
             description: "Capabilities across the EHS lifecycle",
+            icon: "ListChecks",
           },
           {
             label: "Field",
             href: "/field-experience",
             description: "Mobile-first capture for crews",
+            icon: "Smartphone",
           },
         ],
       },
@@ -45,16 +49,19 @@ export const primaryNav: {
             label: "Analytics",
             href: "/modules/analytics",
             description: "Operational and leadership visibility",
+            icon: "BarChart3",
           },
           {
             label: "Security",
             href: "/security",
             description: "Isolation, auth, and auditability",
+            icon: "Shield",
           },
           {
             label: "AI-ready",
             href: "/platform#ai-ready",
             description: "Assistive potential — no overclaim",
+            icon: "Sparkles",
           },
         ],
       },
@@ -67,21 +74,71 @@ export const primaryNav: {
       {
         title: "Industries",
         links: [
-          { label: "Construction", href: "/solutions/construction" },
-          { label: "EPC", href: "/solutions/epc" },
-          { label: "Power & Energy", href: "/solutions/power-energy" },
-          { label: "Renewable Energy", href: "/solutions/renewable-energy" },
-          { label: "Manufacturing", href: "/solutions/manufacturing" },
+          {
+            label: "Construction",
+            href: "/solutions/construction",
+            description: "Projects, contractors, high-risk work",
+            icon: "HardHat",
+          },
+          {
+            label: "EPC",
+            href: "/solutions/epc",
+            description: "Packages, handoffs, joint ventures",
+            icon: "Building2",
+          },
+          {
+            label: "Power & Energy",
+            href: "/solutions/power-energy",
+            description: "Generation, outages, permits",
+            icon: "Zap",
+          },
+          {
+            label: "Renewable Energy",
+            href: "/solutions/renewable-energy",
+            description: "Wind, solar, and construction risk",
+            icon: "Leaf",
+          },
+          {
+            label: "Manufacturing",
+            href: "/solutions/manufacturing",
+            description: "Lines, contractors, and CAPA",
+            icon: "Factory",
+          },
         ],
       },
       {
         title: "More",
         links: [
-          { label: "Oil & Gas", href: "/solutions/oil-gas" },
-          { label: "Infrastructure", href: "/solutions/infrastructure" },
-          { label: "Mining", href: "/solutions/mining" },
-          { label: "Logistics", href: "/solutions/logistics" },
-          { label: "All solutions", href: "/solutions", description: "Browse every vertical" },
+          {
+            label: "Oil & Gas",
+            href: "/solutions/oil-gas",
+            description: "Upstream to downstream control",
+            icon: "Flame",
+          },
+          {
+            label: "Infrastructure",
+            href: "/solutions/infrastructure",
+            description: "Linear projects and public works",
+            icon: "Landmark",
+          },
+          {
+            label: "Mining",
+            href: "/solutions/mining",
+            description: "Pit, plant, and contractor safety",
+            icon: "Mountain",
+          },
+          {
+            label: "Logistics",
+            href: "/solutions/logistics",
+            description: "Yards, fleets, and warehouses",
+            icon: "Truck",
+          },
+          {
+            label: "All solutions",
+            href: "/solutions",
+            description: "Browse every vertical",
+            icon: "ArrowRight",
+          },
         ],
       },
     ],
@@ -93,23 +150,83 @@ export const primaryNav: {
       {
         title: "Control",
         links: [
-          { label: "Incidents", href: "/modules/incidents" },
-          { label: "Risk Management", href: "/modules/risk-management" },
-          { label: "Permit to Work", href: "/modules/permit-to-work" },
-          { label: "Inspections", href: "/modules/inspections" },
-          { label: "Audits", href: "/modules/audits" },
-          { label: "CAPA", href: "/modules/capa" },
+          {
+            label: "Incidents",
+            href: "/modules/incidents",
+            description: "Capture, investigate, close",
+            icon: "AlertTriangle",
+          },
+          {
+            label: "Risk Management",
+            href: "/modules/risk-management",
+            description: "Registers, heat maps, residual risk",
+            icon: "Radar",
+          },
+          {
+            label: "Permit to Work",
+            href: "/modules/permit-to-work",
+            description: "Authorization and isolation",
+            icon: "FileBadge",
+          },
+          {
+            label: "Inspections",
+            href: "/modules/inspections",
+            description: "Checklists and findings",
+            icon: "ClipboardCheck",
+          },
+          {
+            label: "Audits",
+            href: "/modules/audits",
+            description: "Program assurance",
+            icon: "FileSearch",
+          },
+          {
+            label: "CAPA",
+            href: "/modules/capa",
+            description: "Actions with verification",
+            icon: "ListChecks",
+          },
         ],
       },
       {
         title: "Enablement",
         links: [
-          { label: "Training", href: "/modules/training" },
-          { label: "Contractors", href: "/modules/contractor-management" },
-          { label: "PPE", href: "/modules/ppe" },
-          { label: "Document Control", href: "/modules/document-control" },
-          { label: "Analytics", href: "/modules/analytics" },
-          { label: "All modules", href: "/modules" },
+          {
+            label: "Training",
+            href: "/modules/training",
+            description: "Assignments and competency",
+            icon: "GraduationCap",
+          },
+          {
+            label: "Contractors",
+            href: "/modules/contractor-management",
+            description: "Onboarding and scores",
+            icon: "Users",
+          },
+          {
+            label: "PPE",
+            href: "/modules/ppe",
+            description: "Issue and compliance",
+            icon: "HardHat",
+          },
+          {
+            label: "Document Control",
+            href: "/modules/document-control",
+            description: "Controlled procedures",
+            icon: "FolderOpen",
+          },
+          {
+            label: "Analytics",
+            href: "/modules/analytics",
+            description: "Leading and lagging signals",
+            icon: "BarChart3",
+          },
+          {
+            label: "All modules",
+            href: "/modules",
+            description: "Compose the program you need",
+            icon: "Puzzle",
+          },
         ],
       },
     ],
@@ -125,16 +242,19 @@ export const primaryNav: {
             label: "Multi-tenant SaaS",
             href: "/enterprise",
             description: "Org isolation, sites, entitlements",
+            icon: "Building2",
           },
           {
             label: "Security",
             href: "/security",
             description: "Controls without fake certifications",
+            icon: "Lock",
           },
           {
             label: "Configuration",
             href: "/enterprise#configuration",
             description: "Categories, workflows, forms",
+            icon: "Settings2",
           },
         ],
       },

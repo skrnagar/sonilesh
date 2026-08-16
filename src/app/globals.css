@@ -141,6 +141,7 @@ html {
   scroll-behavior: smooth;
   background: var(--background);
   color-scheme: light;
+  overflow-x: clip;
 }
 
 html.dark {
@@ -153,6 +154,7 @@ body {
   font-family: var(--font-sans);
   font-size: 1.0125rem;
   line-height: 1.6;
+  overflow-x: clip;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -306,6 +308,44 @@ a {
 
 .workspace-shell.is-collapsed .sidebar-glyph-collapsed {
   display: flex;
+}
+
+@media (max-width: 1023px) {
+  .workspace-shell aside {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 40;
+    width: min(20rem, calc(100vw - 2.75rem)) !important;
+    transform: translateX(-110%);
+    pointer-events: none;
+    visibility: hidden;
+    transition: transform 0.2s ease, width 0.2s ease;
+  }
+
+  .workspace-shell.is-mobile-nav-open aside {
+    transform: translateX(0);
+    pointer-events: auto;
+    visibility: visible;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .workspace-shell.is-mobile-nav-open .sidebar-copy {
+    display: block !important;
+  }
+
+  .workspace-shell.is-mobile-nav-open .sidebar-brand {
+    justify-content: flex-start;
+    padding-inline: 0.75rem;
+  }
+
+  .workspace-shell.is-mobile-nav-open .sidebar-nav-link {
+    justify-content: flex-start;
+    padding-inline: 0.625rem;
+  }
+
+  .workspace-shell.is-mobile-nav-open .sidebar-glyph-collapsed {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

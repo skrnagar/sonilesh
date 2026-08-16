@@ -123,7 +123,7 @@ export function FieldRow({
     </>
   );
   const className =
-    "block rounded-2xl border border-border bg-card px-3.5 py-3.5 shadow-[var(--shadow-sm)]";
+    "block min-h-11 rounded-2xl border border-border bg-card px-3.5 py-3.5 shadow-[var(--shadow-sm)]";
   if (href) {
     return (
       <Link href={href} className={className}>

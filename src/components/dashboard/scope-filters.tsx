@@ -74,7 +74,7 @@ export function ScopeFilters({
 
   return (
     <>
-      <Button type="button" variant="outline" className="rounded-xl" onClick={() => setOpen(true)}>
+      <Button type="button" variant="outline" className="h-11 min-h-11 rounded-xl" onClick={() => setOpen(true)}>
         <SlidersHorizontal className="h-4 w-4" />
         Filter
         {activeCount ? (
@@ -85,27 +85,28 @@ export function ScopeFilters({
       </Button>
       {open ? (
         <div
-          className="fixed inset-0 z-50 flex items-start justify-center bg-black/40 p-4 pt-[8vh] backdrop-blur-[2px]"
+          className="fixed inset-0 z-50 flex items-stretch justify-center bg-black/40 backdrop-blur-[2px] sm:items-start sm:p-4 sm:pt-[8vh]"
           onClick={() => setOpen(false)}
         >
           <div
             role="dialog"
+            aria-modal="true"
             aria-labelledby="scope-filters-title"
-            className="w-full max-w-2xl rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-lg)]"
+            className="flex h-full w-full max-w-2xl flex-col overflow-y-auto rounded-none border-0 border-border bg-card p-4 shadow-[var(--shadow-lg)] sm:h-auto sm:max-h-[min(88vh,720px)] sm:rounded-2xl sm:border sm:p-5"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between gap-3">
-              <div>
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
                 <h2 id="scope-filters-title" className="font-display text-lg font-semibold">
                   Dashboard filters
                 </h2>
-                <p className="text-sm text-muted-foreground">
+                <p className="mt-1 text-sm text-muted-foreground">
                   Tenant-scoped views by date, site, project, department, severity, status, owner, and business unit.
                 </p>
               </div>
               <button
                 type="button"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border hover:bg-muted"
+                className="inline-flex h-11 w-11 min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl border border-border hover:bg-muted"
                 aria-label="Close filters"
                 onClick={() => setOpen(false)}
               >
@@ -199,11 +200,11 @@ export function ScopeFilters({
                   ))}
                 </Select>
               </label>
-              <div className="flex flex-wrap gap-2 sm:col-span-2 sm:justify-end">
-                <Button type="button" variant="outline" className="rounded-xl" asChild>
+              <div className="mt-auto flex flex-col-reverse gap-2 pt-2 sm:col-span-2 sm:flex-row sm:justify-end">
+                <Button type="button" variant="outline" className="h-12 min-h-12 rounded-xl sm:h-10" asChild>
                   <Link href={`/app/dashboard?range=${params.range || "monthly"}`}>Reset</Link>
                 </Button>
-                <Button type="submit" className="rounded-xl">
+                <Button type="submit" className="h-12 min-h-12 rounded-xl sm:h-10">
                   Apply filters
                 </Button>
               </div>

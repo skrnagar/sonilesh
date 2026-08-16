@@ -39,11 +39,11 @@ function ChartFrame({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-border bg-card shadow-[var(--shadow-sm)]">
+    <div className="min-w-0 overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-sm)]">
       <div className="border-b border-border px-4 py-3">
         <h3 className="text-sm font-semibold tracking-tight">{title}</h3>
       </div>
-      <div className="h-64 p-3">
+      <div className="h-52 min-w-0 p-2 sm:h-64 sm:p-3">
         {hasData ? (
           children
         ) : (
@@ -142,10 +142,10 @@ export function ContractorScoreChart({
       hasData={data.length > 0}
     >
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} layout="vertical" margin={{ left: 24 }}>
+        <BarChart data={data} layout="vertical" margin={{ left: 8, right: 8 }}>
           <CartesianGrid {...GRID} />
           <XAxis type="number" domain={[0, 100]} tick={AXIS} />
-          <YAxis type="category" dataKey="label" width={90} tick={AXIS} />
+          <YAxis type="category" dataKey="label" width={72} tick={AXIS} />
           <Tooltip {...TOOLTIP} />
           <Bar dataKey="score" fill="var(--chart-3)" radius={[0, 6, 6, 0]} />
         </BarChart>
@@ -161,11 +161,11 @@ export function RiskHeatMap({
 }) {
   const max = Math.max(0, ...cells.map((c) => c.count));
   return (
-    <div className="rounded-2xl border border-border bg-card shadow-[var(--shadow-sm)]">
+    <div className="min-w-0 overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-sm)]">
       <div className="border-b border-border px-4 py-3">
         <h3 className="text-sm font-semibold tracking-tight">Residual risk matrix</h3>
       </div>
-      <div className="p-4">
+      <div className="overflow-x-auto p-4">
         {max === 0 ? (
           <p className="py-10 text-center text-sm text-muted-foreground">
             Risk assessments with likelihood and consequence will populate this heat map.

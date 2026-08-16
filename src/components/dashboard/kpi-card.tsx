@@ -108,7 +108,7 @@ export function KpiCard({
         ) : null}
       </div>
       <div className="mt-3 flex items-end justify-between gap-3">
-        <p className="font-display text-3xl font-semibold tabular-nums tracking-tight text-foreground">
+        <p className="font-display text-2xl font-semibold tabular-nums tracking-tight text-foreground sm:text-3xl">
           {value}
         </p>
         {spark && spark.length > 1 ? <Sparkline values={spark} /> : null}
@@ -131,7 +131,7 @@ export function KpiCard({
   );
 
   const className =
-    "block rounded-2xl border border-border bg-card p-4 shadow-[var(--shadow-sm)] transition-colors hover:border-accent/40";
+    "block min-w-0 rounded-2xl border border-border bg-card p-4 shadow-[var(--shadow-sm)] transition-colors hover:border-accent/40";
 
   if (href) {
     return (

@@ -25,7 +25,7 @@ export function PeriodToggle({ value }: { value: DashboardRange }) {
     <div
       role="tablist"
       aria-label="Dashboard period"
-      className="inline-flex rounded-xl border border-border bg-card p-1 shadow-[var(--shadow-sm)]"
+      className="inline-flex w-full min-w-0 rounded-xl border border-border bg-card p-1 shadow-[var(--shadow-sm)] sm:w-auto"
     >
       {OPTIONS.map((option) => {
         const active = option.value === value;
@@ -36,7 +36,7 @@ export function PeriodToggle({ value }: { value: DashboardRange }) {
             role="tab"
             aria-selected={active}
             className={cn(
-              "rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors",
+              "min-h-11 flex-1 rounded-lg px-2 py-1.5 text-xs font-semibold transition-colors sm:flex-none sm:px-3",
               active
                 ? "bg-[var(--sidebar-active)] text-primary"
                 : "text-muted-foreground hover:text-foreground",

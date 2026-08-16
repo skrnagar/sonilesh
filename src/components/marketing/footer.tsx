@@ -8,7 +8,7 @@ export function Footer() {
   return (
     <footer className="border-t border-white/10 bg-[var(--mkt-hero)] text-white/75">
       <Container className="py-16 md:py-20">
-        <div className="grid gap-12 md:grid-cols-[1.5fr_repeat(4,minmax(0,1fr))] md:gap-10">
+        <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-[1.5fr_repeat(4,minmax(0,1fr))] md:gap-10">
           <div className="max-w-sm">
             <Link href="/" className="inline-flex">
               <BrandLockup inverse />
@@ -30,7 +30,7 @@ export function Footer() {
                   <li key={link.href + link.label}>
                     <Link
                       href={link.href}
-                      className="text-sm text-white/75 transition-colors hover:text-white motion-reduce:transition-none"
+                      className="inline-flex min-h-11 items-center text-sm text-white/75 transition-colors hover:text-white motion-reduce:transition-none"
                     >
                       {link.label}
                     </Link>

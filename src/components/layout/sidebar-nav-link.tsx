@@ -84,7 +84,7 @@ export function SidebarNavLink({
       href={href}
       title={label}
       className={cn(
-        "sidebar-nav-link flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "sidebar-nav-link flex min-h-11 items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         active
           ? "bg-sidebar-active font-medium text-primary"
           : "text-sidebar-muted hover:bg-sidebar-hover hover:text-sidebar-foreground",

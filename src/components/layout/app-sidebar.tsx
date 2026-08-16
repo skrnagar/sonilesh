@@ -64,7 +64,7 @@ export function AppSidebar({
         <Link
           href="/field"
           title="Open Field app"
-          className="flex items-center justify-center gap-2 rounded-xl bg-[var(--mkt-safety)] px-3 py-2.5 text-sm font-semibold text-[var(--mkt-safety-ink)] transition-colors hover:bg-[var(--mkt-safety-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[var(--mkt-safety)] px-3 py-2.5 text-sm font-semibold text-[var(--mkt-safety-ink)] transition-colors hover:bg-[var(--mkt-safety-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <Smartphone className="h-4 w-4 shrink-0" />
           <span className="sidebar-copy">Open Field app</span>

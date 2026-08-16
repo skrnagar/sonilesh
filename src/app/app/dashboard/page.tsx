@@ -37,18 +37,18 @@ export default async function DashboardPage({
   const snapshot = await getDashboardSnapshot(supabase, organization.id, organization.name, params);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
+    <div className="min-w-0 space-y-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
+        <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--mkt-safety)]">
             Operations
           </p>
-          <h1 className="mt-1 font-display text-2xl font-semibold text-foreground">EHS dashboard</h1>
+          <h1 className="mt-1 font-display text-xl font-semibold text-foreground sm:text-2xl">EHS dashboard</h1>
           <p className="text-sm text-muted-foreground">
             Tenant-scoped control for {organization.name}. Counts respect organization RLS.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
           <Suspense fallback={<div className="h-9 w-48 rounded-xl border border-border bg-card" />}>
             <PeriodToggle value={snapshot.range} />
           </Suspense>
@@ -64,7 +64,7 @@ export default async function DashboardPage({
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {snapshot.kpis.map((kpi) => (
           <KpiCard
             key={kpi.key}
@@ -82,7 +82,7 @@ export default async function DashboardPage({
         ))}
       </div>
 
-      <div className="grid gap-4 xl:grid-cols-2">
+      <div className="grid min-w-0 gap-4 xl:grid-cols-2">
         <IncidentTrendChart data={snapshot.incidentTrend} />
         <SeverityChart data={snapshot.severitySeries} />
         <NamedBarChart
@@ -113,7 +113,7 @@ export default async function DashboardPage({
         <ContractorScoreChart data={snapshot.contractorSeries} />
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[1.3fr_0.7fr]">
+      <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)]">
         <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-sm)]">
           <div className="flex items-center justify-between border-b border-border px-4 py-3">
             <h3 className="text-sm font-semibold tracking-tight">Recent events</h3>

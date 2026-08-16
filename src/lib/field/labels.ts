@@ -13,7 +13,7 @@ export const FIELD_LABELS = {
   lmra: {
     short: "LMRA",
     title: "LMRA",
-    subtitle: "Last minute risk assessment",
+    subtitle: "Last minute risk assessment — stop, think, control before the task",
   },
   inspection: { short: "Inspection", title: "Inspection" },
   actions: { short: "Actions", title: "My actions" },

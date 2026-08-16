@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { Bell, PanelLeft, Search } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Bell, Menu, PanelLeft, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 
@@ -20,7 +21,9 @@ export function WorkspaceShell({
   notificationCount?: number;
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [notesOpen, setNotesOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
@@ -32,10 +35,21 @@ export function WorkspaceShell({
   }, []);
 
   useEffect(() => {
+    setMobileNavOpen(false);
+    setNotesOpen(false);
+    setUserOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         searchRef.current?.focus();
+      }
+      if (e.key === "Escape") {
+        setMobileNavOpen(false);
+        setNotesOpen(false);
+        setUserOpen(false);
       }
     };
     window.addEventListener("keydown", onKey);
@@ -52,6 +66,15 @@ export function WorkspaceShell({
     window.addEventListener("mousedown", onClick);
     return () => window.removeEventListener("mousedown", onClick);
   }, []);
+
+  useEffect(() => {
+    if (!mobileNavOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [mobileNavOpen]);
 
   function toggleCollapsed() {
     setCollapsed((prev) => {
@@ -73,33 +96,51 @@ export function WorkspaceShell({
       className={cn(
         "workspace-shell flex h-dvh overflow-hidden bg-background text-foreground",
         collapsed && "is-collapsed",
+        mobileNavOpen && "is-mobile-nav-open",
       )}
     >
       {sidebar}
+      {mobileNavOpen ? (
+        <button
+          type="button"
+          className="fixed inset-0 z-30 bg-black/40 lg:hidden"
+          aria-label="Close navigation"
+          onClick={() => setMobileNavOpen(false)}
+        />
+      ) : null}
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <header
           ref={headerRef}
-          className="app-shell-header sticky top-0 z-20 flex h-[4.25rem] items-center gap-3 border-b border-border px-4 shadow-[var(--shadow-header)] md:px-5"
+          className="app-shell-header sticky top-0 z-20 flex h-14 items-center gap-2 border-b border-border px-3 shadow-[var(--shadow-header)] sm:gap-3 sm:px-4 md:h-[4.25rem] md:px-5"
         >
           <button
             type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="inline-flex h-11 w-11 min-h-11 min-w-11 items-center justify-center rounded-xl border border-border bg-card text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:hidden"
+            aria-label={mobileNavOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileNavOpen}
+            onClick={() => setMobileNavOpen((v) => !v)}
+          >
+            <Menu className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            className="hidden h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:inline-flex"
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             aria-expanded={!collapsed}
             onClick={toggleCollapsed}
           >
             <PanelLeft className="h-4 w-4" />
           </button>
-          <div className="hidden min-w-0 sm:block">
-            <p className="font-display text-sm font-semibold tracking-tight text-foreground">
+          <div className="min-w-0 flex-1 lg:flex-none">
+            <p className="truncate font-display text-sm font-semibold tracking-tight text-foreground">
               {title}
             </p>
-            <p className="truncate text-xs text-muted-foreground">{userLabel}</p>
+            <p className="hidden truncate text-xs text-muted-foreground sm:block">{userLabel}</p>
           </div>
           <form
             action="/app/incidents"
             method="get"
-            className="relative ml-auto hidden min-w-0 flex-1 max-w-md md:block"
+            className="relative hidden min-w-0 flex-1 max-w-md md:block"
           >
             <label htmlFor={searchId} className="sr-only">
               Search records
@@ -117,11 +158,11 @@ export function WorkspaceShell({
               ⌘K
             </kbd>
           </form>
-          <div className="ml-auto flex items-center gap-2 md:ml-0">
+          <div className="ml-auto flex items-center gap-1.5 sm:gap-2 md:ml-0">
             <div className="relative">
               <button
                 type="button"
-                className="relative inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="relative inline-flex h-11 w-11 min-h-11 min-w-11 items-center justify-center rounded-xl border border-border bg-card hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 aria-label="Notifications"
                 aria-expanded={notesOpen}
                 onClick={() => {
@@ -135,7 +176,7 @@ export function WorkspaceShell({
                 ) : null}
               </button>
               {notesOpen ? (
-                <div className="absolute right-0 top-[calc(100%+8px)] z-30 w-80 rounded-xl border border-border bg-card p-4 shadow-[var(--shadow-lg)]">
+                <div className="absolute right-0 top-[calc(100%+8px)] z-30 w-[min(20rem,calc(100vw-1.5rem))] rounded-xl border border-border bg-card p-4 shadow-[var(--shadow-lg)]">
                   <p className="font-display text-sm font-semibold">Notifications</p>
                   <p className="mt-2 text-sm text-muted-foreground">
                     {notificationCount > 0
@@ -145,11 +186,11 @@ export function WorkspaceShell({
                 </div>
               ) : null}
             </div>
-            <ThemeToggle />
+            <ThemeToggle className="min-h-11 min-w-11" />
             <div className="relative">
               <button
                 type="button"
-                className="inline-flex h-10 items-center gap-2 rounded-xl border border-border bg-card pl-1.5 pr-2.5 text-sm hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="inline-flex h-11 min-h-11 items-center gap-2 rounded-xl border border-border bg-card pl-1.5 pr-2.5 text-sm hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 aria-expanded={userOpen}
                 onClick={() => {
                   setUserOpen((v) => !v);
@@ -164,7 +205,7 @@ export function WorkspaceShell({
                 </span>
               </button>
               {userOpen ? (
-                <div className="absolute right-0 top-[calc(100%+8px)] z-30 w-56 rounded-xl border border-border bg-card p-2 shadow-[var(--shadow-lg)]">
+                <div className="absolute right-0 top-[calc(100%+8px)] z-30 w-56 max-w-[calc(100vw-1.5rem)] rounded-xl border border-border bg-card p-2 shadow-[var(--shadow-lg)]">
                   <p className="truncate px-2 py-2 text-xs text-muted-foreground">{userLabel}</p>
                   <div className="px-1 pb-1">{signOut}</div>
                 </div>
@@ -172,7 +213,9 @@ export function WorkspaceShell({
             </div>
           </div>
         </header>
-        <main className="min-h-0 flex-1 overflow-auto p-4 md:p-6">{children}</main>
+        <main className="min-h-0 min-w-0 flex-1 overflow-auto p-3 sm:p-4 md:p-6">
+          {children}
+        </main>
       </div>
     </div>
   );

@@ -11,8 +11,8 @@ export default async function FieldLayout({ children }: { children: React.ReactN
   if (organization.status === "suspended") redirect("/app/dashboard");
 
   return (
-    <div className="min-h-dvh bg-background text-foreground">
-      <header className="sticky top-0 z-20 border-b border-border bg-card/95 px-4 py-3 backdrop-blur-md">
+    <div className="min-h-dvh overflow-x-clip bg-background text-foreground">
+      <header className="sticky top-0 z-20 border-b border-border bg-card/95 px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur-md">
         <div className="mx-auto flex max-w-lg items-center justify-between gap-3">
           <div className="min-w-0">
             <BrandLockup chrome size="sm" />
@@ -24,14 +24,16 @@ export default async function FieldLayout({ children }: { children: React.ReactN
             <ThemeToggle compact />
             <Link
               href="/app/dashboard"
-              className="min-h-11 rounded-xl border border-border bg-card px-3 py-2.5 text-xs font-medium text-foreground transition-colors hover:bg-muted"
+              className="inline-flex min-h-11 items-center rounded-xl border border-border bg-card px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted"
             >
               Desktop
             </Link>
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-lg px-4 pb-32 pt-5">{children}</main>
+      <main className="mx-auto max-w-lg px-4 pb-[calc(7.5rem+env(safe-area-inset-bottom))] pt-5">
+        {children}
+      </main>
       <FieldTabBar />
     </div>
   );

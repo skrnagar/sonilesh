@@ -39,7 +39,7 @@ export function ProductScreenshot({
   if (!stage) return frame;
 
   return (
-    <div className={cn("relative", className)}>
+    <div className={cn("relative min-w-0 overflow-x-clip", className)}>
       <div aria-hidden className="mkt-product-glow" />
       <div className="mkt-product-tilt">{frame}</div>
     </div>

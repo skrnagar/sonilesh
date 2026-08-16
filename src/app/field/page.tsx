@@ -91,7 +91,7 @@ export default async function FieldHomePage() {
       action: "report_hazard",
       href: "/field/lmra",
       label: FIELD_LABELS.lmra.short,
-      hint: FIELD_LABELS.lmra.subtitle,
+      hint: "Last-minute risk",
       tone: "navy",
       icon: ScanSearch,
     },

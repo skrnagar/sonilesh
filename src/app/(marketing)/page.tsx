@@ -35,22 +35,22 @@ import {
 export default function HomePage() {
   return (
     <>
-      <section className="relative overflow-hidden border-b border-white/10 bg-[var(--mkt-hero)] text-white">
+      <section className="relative -mt-14 overflow-x-clip border-b border-white/10 bg-[var(--mkt-hero)] text-white md:-mt-16 lg:-mt-[4.25rem]">
         <div aria-hidden className="mkt-hero-wash pointer-events-none absolute inset-0" />
         <div aria-hidden className="mkt-grid-fade pointer-events-none absolute inset-0 opacity-80" />
-        <Container className="relative grid min-h-[min(88vh,840px)] items-center gap-10 pb-20 pt-24 md:gap-12 md:pb-28 md:pt-28 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-16 lg:pb-32">
-          <FadeIn className="max-w-xl">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-teal-200/85">
+        <Container className="relative grid items-center gap-8 pb-14 pt-[5.5rem] md:gap-12 md:pb-24 md:pt-28 lg:min-h-[min(88vh,840px)] lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-16 lg:pb-32 lg:pt-32">
+          <FadeIn className="max-w-xl min-w-0">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-teal-200/85 sm:tracking-[0.22em]">
               {brand.name} · Enterprise EHS SaaS
             </p>
-            <h1 className="font-display mt-5 text-[2.35rem] font-semibold leading-[0.96] tracking-[-0.05em] sm:text-5xl md:text-[3.75rem] md:leading-[0.94]">
+            <h1 className="font-display mt-4 text-[2.05rem] font-semibold leading-[1.02] tracking-[-0.045em] sm:mt-5 sm:text-5xl sm:leading-[0.96] md:text-[3.75rem] md:leading-[0.94]">
               {brand.tagline}
             </h1>
-            <p className="mt-5 max-w-md text-lg leading-relaxed text-white/80 md:text-xl">
+            <p className="mt-4 max-w-md text-base leading-relaxed text-white/80 sm:mt-5 sm:text-lg md:text-xl">
               {brand.supporting} Unify incidents, risk, permits, CAPA, and analytics in one multi-tenant system of record.
             </p>
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <Button asChild size="lg" className="mkt-btn-safety h-12 px-6">
+            <div className="mt-7 flex flex-col gap-3 sm:mt-9 sm:flex-row sm:flex-wrap">
+              <Button asChild size="lg" className="mkt-btn-safety h-12 min-h-12 px-6">
                 <Link href="/request-demo">
                   Request demo
                   <ArrowRight className="h-4 w-4" aria-hidden />
@@ -60,22 +60,22 @@ export default function HomePage() {
                 asChild
                 size="lg"
                 variant="outline"
-                className="h-12 border-white/25 bg-transparent px-6 text-white hover:bg-white/10 hover:text-white"
+                className="h-12 min-h-12 border-white/25 bg-transparent px-6 text-white hover:bg-white/10 hover:text-white"
               >
                 <Link href="/platform">Explore platform</Link>
               </Button>
             </div>
-            <ul className="mt-8 grid gap-2 text-sm text-white/65 sm:grid-cols-3 sm:gap-4">
+            <ul className="mt-7 grid gap-2 text-sm text-white/65 sm:mt-8 sm:grid-cols-3 sm:gap-4">
               <li>Field capture to boardroom</li>
               <li>Multi-tenant by design</li>
               <li>No invented certifications</li>
             </ul>
           </FadeIn>
-          <FadeIn delay={0.1} className="relative min-w-0">
+          <FadeIn delay={0.1} className="relative min-w-0 overflow-x-clip">
             <ProductScreenshot title="SONIL EHS360 · Control board" stage>
               <DashboardPreview />
             </ProductScreenshot>
-            <div className="pointer-events-none absolute -bottom-10 -left-2 hidden lg:block xl:-left-8">
+            <div className="pointer-events-none absolute -bottom-10 -left-2 hidden xl:block">
               <MobilePreview className="scale-[0.88] shadow-[var(--shadow-lg)]" />
             </div>
           </FadeIn>
@@ -87,7 +87,7 @@ export default function HomePage() {
           <p className="text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             Built for high-risk industries
           </p>
-          <div className="-mx-1 mt-5 flex gap-x-6 gap-y-2 overflow-x-auto px-1 pb-1 text-sm font-medium text-foreground/75 md:flex-wrap md:justify-center md:overflow-visible">
+          <div className="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm font-medium text-foreground/75">
             {trustIndustries.map((name) => (
               <span key={name} className="shrink-0 whitespace-nowrap">
                 {name}
