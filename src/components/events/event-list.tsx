@@ -31,7 +31,7 @@ export function EventList({
       <div className="flex items-center justify-between gap-3">
         <h1 className="text-xl font-semibold text-foreground">{title}</h1>
         <Button asChild>
-          <Link href={createHref}>Report</Link>
+          <Link href={createHref}>New report</Link>
         </Button>
       </div>
 

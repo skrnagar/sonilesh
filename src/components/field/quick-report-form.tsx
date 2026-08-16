@@ -47,7 +47,13 @@ export function QuickCaptureForm({ mode, action }: Props) {
     );
   }
 
-  async function onSubmit(formData: FormData) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const submitter = (e.nativeEvent as SubmitEvent).submitter;
+    if (submitter instanceof HTMLButtonElement && submitter.name) {
+      formData.set(submitter.name, submitter.value);
+    }
     setPending(true);
     setError(null);
     formData.set("gps", coords);
@@ -63,7 +69,7 @@ export function QuickCaptureForm({ mode, action }: Props) {
   }
 
   return (
-    <form action={onSubmit} className="space-y-4">
+    <form onSubmit={onSubmit} className="space-y-4">
       <label className="block space-y-1.5">
         <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
           Photo

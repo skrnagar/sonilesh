@@ -86,14 +86,14 @@ export function SidebarNavLink({
       className={cn(
         "sidebar-nav-link flex min-h-11 items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         active
-          ? "bg-sidebar-active font-medium text-primary"
-          : "text-sidebar-muted hover:bg-sidebar-hover hover:text-sidebar-foreground",
+          ? "bg-primary font-medium text-white dark:text-[#071f2d]"
+          : "text-sidebar-foreground hover:bg-sidebar-hover hover:text-sidebar-foreground",
       )}
     >
       <span
         className={cn(
           "sidebar-glyph !flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
-          active ? "bg-card text-primary" : "bg-sidebar-active text-primary",
+          active ? "bg-white/15 text-white dark:bg-card dark:text-[#071f2d]" : "bg-sidebar-active text-primary",
         )}
       >
         {Icon ? <Icon className="h-4 w-4" /> : label.slice(0, 1)}

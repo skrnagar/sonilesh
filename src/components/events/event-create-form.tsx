@@ -1,4 +1,7 @@
+"use client";
+
 import { createEventAction } from "@/app/actions/events";
+import { ActionForm } from "@/components/shared/action-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,8 +19,14 @@ export function EventCreateForm({
   sites: Array<{ id: string; name: string }>;
   severities: Array<{ id: string; name: string }>;
 }) {
+  const occurredDefault = (() => {
+    const now = new Date();
+    const tz = new Date(now.getTime() - now.getTimezoneOffset() * 60_000);
+    return tz.toISOString().slice(0, 16);
+  })();
+
   return (
-    <form action={createEventAction} className="space-y-4 rounded-lg border border-border bg-card p-5">
+    <ActionForm action={createEventAction} className="space-y-4 rounded-lg border border-border bg-card p-5">
       <input type="hidden" name="organizationId" value={organizationId} />
       <input type="hidden" name="eventTypeCode" value={eventTypeCode} />
 
@@ -54,7 +63,7 @@ export function EventCreateForm({
             id="occurredAt"
             name="occurredAt"
             type="datetime-local"
-            defaultValue={new Date().toISOString().slice(0, 16)}
+            defaultValue={occurredDefault}
           />
         </div>
         <div className="space-y-2">
@@ -67,8 +76,8 @@ export function EventCreateForm({
             id="description"
             name="description"
             required
-            minLength={20}
-            placeholder="Describe what happened (minimum 20 characters)"
+            minLength={8}
+            placeholder="Describe what happened (minimum 8 characters)"
           />
         </div>
         <div className="space-y-2 md:col-span-2">
@@ -78,13 +87,13 @@ export function EventCreateForm({
       </div>
 
       <div className="flex flex-wrap gap-2">
-        <Button type="submit" name="submit" value="false" variant="outline">
+        <Button type="submit" name="intent" value="draft" variant="outline">
           Save draft
         </Button>
-        <Button type="submit" name="submit" value="true">
+        <Button type="submit" name="intent" value="submit">
           Submit
         </Button>
       </div>
-    </form>
+    </ActionForm>
   );
 }

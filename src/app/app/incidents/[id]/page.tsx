@@ -4,6 +4,7 @@ import {
   createCapaAction,
   transitionEventAction,
 } from "@/app/actions/events";
+import { ActionForm } from "@/components/shared/action-form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -101,7 +102,7 @@ export default async function IncidentDetailPage({
         <section className="space-y-4">
           <div className="border border-border bg-card p-4">
             <h2 className="text-sm font-semibold">Workflow</h2>
-            <form action={transitionEventAction} className="mt-3 space-y-3">
+            <ActionForm action={transitionEventAction} className="mt-3 space-y-3">
               <input type="hidden" name="organizationId" value={access.organization.id} />
               <input type="hidden" name="eventId" value={event.id} />
               <div className="space-y-2">
@@ -139,12 +140,12 @@ export default async function IncidentDetailPage({
               <Button type="submit" className="w-full">
                 Apply transition
               </Button>
-            </form>
+            </ActionForm>
           </div>
 
           <div className="border border-border bg-card p-4">
             <h2 className="text-sm font-semibold">Add CAPA</h2>
-            <form action={createCapaAction} className="mt-3 space-y-3">
+            <ActionForm action={createCapaAction} className="mt-3 space-y-3">
               <input type="hidden" name="organizationId" value={access.organization.id} />
               <input type="hidden" name="eventId" value={event.id} />
               <Input name="title" placeholder="CAPA title" required />
@@ -153,7 +154,7 @@ export default async function IncidentDetailPage({
               <Button type="submit" variant="outline" className="w-full">
                 Create CAPA
               </Button>
-            </form>
+            </ActionForm>
           </div>
         </section>
       </div>

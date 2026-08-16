@@ -38,6 +38,13 @@ export function canTransition(from: EhsEventStatus, to: EhsEventStatus) {
   return TRANSITIONS[from]?.includes(to) ?? false;
 }
 
+function toIsoTimestamp(value?: string) {
+  if (!value) return undefined;
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return undefined;
+  return parsed.toISOString();
+}
+
 async function getEventType(
   supabase: SupabaseClient,
   eventTypeId: string,
@@ -109,13 +116,29 @@ export async function createEhsEvent(
   await requireFeature(supabase, input.organizationId, feature);
   await requirePermission(supabase, input.organizationId, input.userId, permission);
 
-  const { data: eventType } = await supabase
+  let { data: eventType, error: eventTypeError } = await supabase
     .from("event_types")
     .select("id, code")
     .eq("code", input.eventTypeCode)
     .is("organization_id", null)
     .maybeSingle();
-  if (!eventType) throw new Error("Event type seed missing");
+  if (eventTypeError) throw new Error(eventTypeError.message);
+  if (!eventType) {
+    const fallback = await supabase
+      .from("event_types")
+      .select("id, code")
+      .eq("code", input.eventTypeCode)
+      .eq("is_active", true)
+      .limit(1)
+      .maybeSingle();
+    if (fallback.error) throw new Error(fallback.error.message);
+    eventType = fallback.data;
+  }
+  if (!eventType) {
+    throw new Error(
+      `Event type "${input.eventTypeCode}" is not seeded. Apply supabase migrations, then retry.`,
+    );
+  }
 
   let investigationRequired = false;
   if (input.severityId) {
@@ -143,14 +166,16 @@ export async function createEhsEvent(
       p_prefix: prefixMap[input.eventTypeCode] ?? "EVT-",
     },
   );
-  if (numberError) throw new Error(numberError.message);
+  if (numberError) throw new Error(`Numbering RPC failed: ${numberError.message}`);
+  if (!numberData) throw new Error("Numbering RPC returned no event number");
 
+  const occurredAt = toIsoTimestamp(input.occurredAt) ?? new Date().toISOString();
   const status: EhsEventStatus = input.submit ? "submitted" : "draft";
   const duplicates = await findPossibleDuplicates(supabase, {
     organizationId: input.organizationId,
     siteId: input.siteId,
     eventTypeId: eventType.id,
-    occurredAt: input.occurredAt ?? new Date().toISOString(),
+    occurredAt,
   });
 
   const { data, error } = await supabase
@@ -167,7 +192,7 @@ export async function createEhsEvent(
       status,
       title: input.title ?? null,
       description: input.description,
-      occurred_at: input.occurredAt ?? new Date().toISOString(),
+      occurred_at: occurredAt,
       reported_at: input.submit ? new Date().toISOString() : null,
       reporter_id: input.isAnonymous ? null : input.userId,
       is_anonymous: Boolean(input.isAnonymous),
@@ -185,22 +210,32 @@ export async function createEhsEvent(
 
   if (error) throw new Error(error.message);
 
-  await supabase.from("ehs_event_activity").insert({
+  const { error: activityError } = await supabase.from("ehs_event_activity").insert({
     organization_id: input.organizationId,
     event_id: data.id,
     actor_user_id: input.userId,
     activity_type: "created",
     message: `Event ${data.event_number} created as ${status}`,
   });
+  if (activityError) {
+    console.error("[ehs_event] activity insert failed", activityError.message);
+  }
 
-  await writeAuditLog(supabase, {
-    organizationId: input.organizationId,
-    actorUserId: input.userId,
-    action: "ehs_event.created",
-    entityType: "ehs_event",
-    entityId: data.id,
-    newValues: data,
-  });
+  try {
+    await writeAuditLog(supabase, {
+      organizationId: input.organizationId,
+      actorUserId: input.userId,
+      action: "ehs_event.created",
+      entityType: "ehs_event",
+      entityId: data.id,
+      newValues: data,
+    });
+  } catch (auditError) {
+    console.error(
+      "[ehs_event] audit log failed",
+      auditError instanceof Error ? auditError.message : auditError,
+    );
+  }
 
   return { event: data, possibleDuplicates: duplicates };
 }

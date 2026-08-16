@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { saveInvestigationAction } from "@/app/actions/events";
+import { ActionForm } from "@/components/shared/action-form";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
@@ -38,7 +39,7 @@ export default async function InvestigationPage({
           {bundle.event.event_number} · Root cause methods: 5-Why / Fishbone / Free text
         </p>
       </div>
-      <form action={saveInvestigationAction} className="space-y-4 border border-border bg-card p-5">
+      <ActionForm action={saveInvestigationAction} className="space-y-4 border border-border bg-card p-5">
         <input type="hidden" name="organizationId" value={access.organization.id} />
         <input type="hidden" name="eventId" value={id} />
         <div className="space-y-2">
@@ -67,7 +68,7 @@ export default async function InvestigationPage({
           />
         </div>
         <Button type="submit">Save investigation</Button>
-      </form>
+      </ActionForm>
     </div>
   );
 }

@@ -39,8 +39,8 @@ export function FieldTabBar() {
               className={cn(
                 "flex min-h-14 flex-col items-center justify-center rounded-xl px-1 text-xs font-semibold transition-colors",
                 active
-                  ? "bg-[var(--sidebar-active)] text-primary"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                  ? "bg-primary text-white dark:text-[#071f2d]"
+                  : "text-foreground hover:bg-muted hover:text-foreground",
               )}
             >
               <Icon className="mb-1 h-5 w-5" />

@@ -8,6 +8,7 @@ import { transitionCapa, type CapaStatus } from "@/lib/services/capa";
 import { recordResponse } from "@/lib/services/checklists";
 import { transitionPermit } from "@/lib/services/permits";
 import { createToolboxTalk } from "@/lib/services/supporting";
+import { formatSupabaseUserError } from "@/lib/supabase/errors";
 
 type ActionResult = { ok: true; id?: string } | { ok: false; error: string };
 
@@ -61,6 +62,14 @@ export async function submitFieldReportAction(formData: FormData): Promise<Actio
           ? String(formData.get("category") || "hazard")
           : "incident";
 
+    if (
+      !["incident", "near_miss", "unsafe_act", "unsafe_condition", "hazard"].includes(
+        eventTypeCode,
+      )
+    ) {
+      return { ok: false, error: `Unsupported report type: ${eventTypeCode}` };
+    }
+
     const gps = String(formData.get("gps") || formData.get("location_text") || "");
     const immediate = String(formData.get("immediate_action") || "");
     const people = String(formData.get("people") || "");
@@ -97,9 +106,9 @@ export async function submitFieldReportAction(formData: FormData): Promise<Actio
       title: description.slice(0, 80),
       immediateAction: immediate || undefined,
       occurredAt: String(formData.get("occurred_at") || new Date().toISOString()),
-      submit: intent === "submit",
-      siteId: site?.id,
-      projectId: project?.id,
+      submit: intent === "submit" || intent === "true",
+      siteId: site?.id || undefined,
+      projectId: project?.id || undefined,
     });
 
     const event = "event" in created ? created.event : created;
@@ -133,7 +142,7 @@ export async function submitFieldReportAction(formData: FormData): Promise<Actio
     revalidateField();
     return { ok: true, id: event.id };
   } catch (e) {
-    return { ok: false, error: e instanceof Error ? e.message : "Failed" };
+    return { ok: false, error: formatSupabaseUserError(e) };
   }
 }
 
@@ -185,7 +194,7 @@ export async function completeFieldCapaAction(formData: FormData): Promise<Actio
     revalidateField();
     return { ok: true };
   } catch (e) {
-    return { ok: false, error: e instanceof Error ? e.message : "Failed" };
+    return { ok: false, error: formatSupabaseUserError(e) };
   }
 }
 
@@ -208,7 +217,7 @@ export async function completeFieldActionItemAction(formData: FormData): Promise
     revalidateField();
     return { ok: true };
   } catch (e) {
-    return { ok: false, error: e instanceof Error ? e.message : "Failed" };
+    return { ok: false, error: formatSupabaseUserError(e) };
   }
 }
 
@@ -272,7 +281,7 @@ export async function submitFieldInspectionAction(formData: FormData): Promise<A
     revalidateField();
     return { ok: true, id: assignmentId };
   } catch (e) {
-    return { ok: false, error: e instanceof Error ? e.message : "Failed" };
+    return { ok: false, error: formatSupabaseUserError(e) };
   }
 }
 
@@ -291,7 +300,7 @@ export async function approveFieldPermitAction(formData: FormData): Promise<Acti
     revalidateField();
     return { ok: true };
   } catch (e) {
-    return { ok: false, error: e instanceof Error ? e.message : "Failed" };
+    return { ok: false, error: formatSupabaseUserError(e) };
   }
 }
 
@@ -315,7 +324,7 @@ export async function acknowledgeFieldPermitAction(formData: FormData): Promise<
     revalidateField();
     return { ok: true };
   } catch (e) {
-    return { ok: false, error: e instanceof Error ? e.message : "Failed" };
+    return { ok: false, error: formatSupabaseUserError(e) };
   }
 }
 
@@ -337,7 +346,7 @@ export async function completeFieldTrainingAction(formData: FormData): Promise<A
     revalidateField();
     return { ok: true };
   } catch (e) {
-    return { ok: false, error: e instanceof Error ? e.message : "Failed" };
+    return { ok: false, error: formatSupabaseUserError(e) };
   }
 }
 
@@ -355,6 +364,6 @@ export async function createFieldToolboxAction(formData: FormData): Promise<Acti
     revalidateField();
     return { ok: true, id: talk.id };
   } catch (e) {
-    return { ok: false, error: e instanceof Error ? e.message : "Failed" };
+    return { ok: false, error: formatSupabaseUserError(e) };
   }
 }

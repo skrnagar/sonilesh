@@ -106,7 +106,7 @@ export default async function AdminOrganizationDetailPage({
             key={item}
             href={`?tab=${item}`}
             className={`rounded-md px-2.5 py-1 text-xs font-medium capitalize ${
-              tab === item ? "bg-primary text-primary-foreground" : "bg-muted text-foreground"
+              tab === item ? "bg-primary text-white dark:text-[#071f2d]" : "bg-muted text-foreground"
             }`}
           >
             {item}

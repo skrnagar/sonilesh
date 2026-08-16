@@ -9,13 +9,15 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-[var(--shadow-sm)] hover:bg-primary/90",
+          "bg-primary text-white shadow-[var(--shadow-sm)] hover:bg-primary/90 hover:text-white dark:text-[#071f2d] dark:hover:text-[#071f2d]",
         safety:
-          "bg-[var(--mkt-safety)] text-[var(--mkt-safety-ink)] shadow-[var(--shadow-sm)] hover:bg-[var(--mkt-safety-hover)]",
-        secondary: "bg-muted text-foreground hover:bg-muted/80",
-        outline: "border border-border bg-card hover:bg-muted hover:border-border",
-        ghost: "hover:bg-muted",
-        destructive: "bg-destructive text-primary-foreground hover:bg-destructive/90",
+          "bg-[var(--mkt-safety)] text-[var(--mkt-safety-ink)] shadow-[var(--shadow-sm)] hover:bg-[var(--mkt-safety-hover)] hover:text-[var(--mkt-safety-ink)]",
+        secondary: "bg-muted text-foreground hover:bg-muted/80 hover:text-foreground",
+        outline:
+          "border border-border bg-card text-foreground hover:bg-muted hover:border-border hover:text-foreground",
+        ghost: "text-foreground hover:bg-muted hover:text-foreground",
+        destructive:
+          "bg-destructive text-white hover:bg-destructive/90 hover:text-white",
         link: "text-accent underline-offset-4 hover:underline",
       },
       size: {
@@ -43,7 +45,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? Slot : "button";
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={cn(buttonVariants({ variant, size }), className)}
         ref={ref}
         {...props}
       />

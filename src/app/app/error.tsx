@@ -32,7 +32,7 @@ export default function AppError({
         {needsSetup ? (
           <Link
             href="/setup?reason=schema"
-            className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground"
+            className="rounded-md bg-primary px-4 py-2 text-sm text-white"
           >
             Open setup
           </Link>
