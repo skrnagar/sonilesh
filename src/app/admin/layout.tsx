@@ -9,14 +9,14 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { profile, user } = await requirePlatformAdmin();
+  const { profile, user, platformRole } = await requirePlatformAdmin();
   const userLabel = profile?.full_name || user.email || "Admin";
 
   return (
     <WorkspaceShell
       title="SaaS Administration"
       userLabel={userLabel}
-      sidebar={<AdminSidebar />}
+      sidebar={<AdminSidebar platformRole={platformRole} />}
       signOut={
         <form action={signOutAction}>
           <Button type="submit" variant="outline" size="sm" className="w-full rounded-xl">

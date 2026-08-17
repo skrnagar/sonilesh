@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 type PageHeroProps = {
   eyebrow?: string;
   title: string;
-  description: string;
+  description?: string;
   primaryHref?: string;
   primaryLabel?: string;
   secondaryHref?: string;
@@ -22,8 +22,8 @@ export function PageHero({
   eyebrow,
   title,
   description,
-  primaryHref = "/request-demo",
-  primaryLabel = "Request demo",
+  primaryHref = "/book-a-demo",
+  primaryLabel = "Book a Demo",
   secondaryHref,
   secondaryLabel,
   children,
@@ -54,9 +54,11 @@ export function PageHero({
             <h1 className="max-w-2xl font-display text-[2.15rem] font-semibold leading-[1.04] tracking-[-0.05em] text-primary sm:text-4xl md:text-[2.9rem] md:leading-[1.05]">
               {title}
             </h1>
-            <p className="mt-5 max-w-xl text-[1.05rem] leading-relaxed text-muted-foreground md:text-lg">
-              {description}
-            </p>
+            {description ? (
+              <p className="mt-5 max-w-xl text-[1.05rem] leading-relaxed text-muted-foreground md:text-lg">
+                {description}
+              </p>
+            ) : null}
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Button asChild size="lg" variant="safety" className="h-12 px-6">
                 <Link href={primaryHref}>

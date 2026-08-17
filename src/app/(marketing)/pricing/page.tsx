@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { PageHero } from "@/components/marketing/page-hero";
 import { Container } from "@/components/marketing/container";
 import { SectionHeader } from "@/components/marketing/section-header";
@@ -6,12 +5,9 @@ import { PricingCard } from "@/components/marketing/pricing-card";
 import { ComparisonTable } from "@/components/marketing/comparison-table";
 import { CTASection } from "@/components/marketing/cta-section";
 import { pricingTiers } from "@/lib/marketing/content";
+import { metadataForPath } from "@/lib/marketing/seo";
 
-export const metadata: Metadata = {
-  title: "Pricing",
-  description:
-    "SONIL EHS360 pricing is Contact Sales / Custom Enterprise — plans and entitlements without fake dollar amounts.",
-};
+export const metadata = metadataForPath("/pricing");
 
 export default function PricingPage() {
   return (
@@ -22,8 +18,8 @@ export default function PricingPage() {
         description="No invented price tags. Choose a packaging direction, then Contact Sales for commercial terms that match your sites, modules, and governance needs."
         primaryHref="/contact"
         primaryLabel="Contact sales"
-        secondaryHref="/request-demo"
-        secondaryLabel="Request demo"
+        secondaryHref="/book-a-demo"
+        secondaryLabel="Book a Demo"
         compact
       />
 

@@ -1,13 +1,10 @@
-import type { Metadata } from "next";
 import { PageHero } from "@/components/marketing/page-hero";
 import { Container } from "@/components/marketing/container";
 import { DemoForm } from "@/components/marketing/demo-form";
 import { company } from "@/lib/marketing/content";
+import { metadataForPath } from "@/lib/marketing/seo";
 
-export const metadata: Metadata = {
-  title: "Contact",
-  description: "Contact SONIL EHS360 sales — Indore HQ details published by SONIL Buildcon.",
-};
+export const metadata = metadataForPath("/contact");
 
 export default function ContactPage() {
   return (
@@ -16,8 +13,8 @@ export default function ContactPage() {
         eyebrow="Contact"
         title="Talk to the SONIL EHS360 team"
         description="Sales, security reviews, and packaging conversations. Company contact details below are the public numbers published on sonilbuildcon.com."
-        primaryHref="/request-demo"
-        primaryLabel="Request demo"
+        primaryHref="/book-a-demo"
+        primaryLabel="Book a Demo"
         compact
       />
       <section className="pb-20">

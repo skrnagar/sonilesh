@@ -1,6 +1,9 @@
-import { EventCreateForm } from "@/components/events/event-create-form";
+import { DynamicReportForm } from "@/components/events/dynamic-report-form";
 import { ForbiddenState, UpgradeState } from "@/components/shared/state-panels";
 import { requireModuleAccess } from "@/lib/auth/org-context";
+import { loadReportFormContext } from "@/lib/reporting/form-context";
+import type { ReportTypeCode } from "@/lib/reporting/types";
+import { REPORT_TYPE_META } from "@/lib/reporting/types";
 
 export default async function NewHazardPage({
   searchParams,
@@ -8,10 +11,13 @@ export default async function NewHazardPage({
   searchParams: Promise<{ type?: string }>;
 }) {
   const params = await searchParams;
-  const type =
-    params.type === "unsafe_act" || params.type === "unsafe_condition"
+  const type = (
+    ["hazard", "unsafe_act", "unsafe_condition", "safety_observation"].includes(
+      params.type ?? "",
+    )
       ? params.type
-      : "hazard";
+      : "hazard"
+  ) as ReportTypeCode;
 
   const access = await requireModuleAccess({
     featureCode: "hazard_reporting",
@@ -19,31 +25,19 @@ export default async function NewHazardPage({
   });
   if (!access.entitled) return <UpgradeState featureName="Hazard Reporting" />;
   if (!access.permitted) return <ForbiddenState />;
-
-  const [{ data: sites }, { data: severities }] = await Promise.all([
-    access.supabase
-      .from("sites")
-      .select("id, name")
-      .eq("organization_id", access.organization.id)
-      .is("deleted_at", null),
-    access.supabase
-      .from("severity_levels")
-      .select("id, name")
-      .is("organization_id", null)
-      .eq("is_active", true)
-      .order("rank"),
-  ]);
+  const ctx = await loadReportFormContext(access, type);
+  const meta = REPORT_TYPE_META[type];
 
   return (
     <div className="space-y-4">
-      <h1 className="text-xl font-semibold text-primary">
-        Report {type.replace("_", " ")}
-      </h1>
-      <EventCreateForm
+      <div>
+        <h1 className="text-xl font-semibold">Report {meta.label.toLowerCase()}</h1>
+        <p className="text-sm text-muted-foreground">Dynamic fields for {meta.label}.</p>
+      </div>
+      <DynamicReportForm
         organizationId={access.organization.id}
         eventTypeCode={type}
-        sites={sites ?? []}
-        severities={severities ?? []}
+        {...ctx}
       />
     </div>
   );

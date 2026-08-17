@@ -14,6 +14,7 @@
 # next.js
 /.next/
 /out/
+supabase/_combined_migrations.sql
 
 # production
 /build

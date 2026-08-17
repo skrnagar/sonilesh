@@ -2,7 +2,15 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { writeAuditLog } from "@/lib/services/audit";
 import { requireFeature } from "@/lib/services/entitlements";
 import { requirePermission } from "@/lib/services/rbac";
+import { notifySiteSupervisors, notifyUsers } from "@/lib/services/notifications";
 import { assertSourceClosable } from "@/lib/services/capa";
+import { startWorkflow } from "@/lib/services/workflow";
+import { saveCustomFieldValues } from "@/lib/services/attachments";
+import {
+  REPORT_TYPE_META,
+  type ReportTypeCode,
+  capaSourceModuleForType,
+} from "@/lib/reporting/types";
 import type { EhsEventStatus } from "@/types/database";
 
 const TRANSITIONS: Record<EhsEventStatus, EhsEventStatus[]> = {
@@ -18,21 +26,13 @@ const TRANSITIONS: Record<EhsEventStatus, EhsEventStatus[]> = {
   cancelled: [],
 };
 
-const FEATURE_BY_TYPE: Record<string, string> = {
-  incident: "incident_management",
-  near_miss: "near_miss",
-  unsafe_act: "hazard_reporting",
-  unsafe_condition: "hazard_reporting",
-  hazard: "hazard_reporting",
-};
+const FEATURE_BY_TYPE: Record<string, string> = Object.fromEntries(
+  Object.entries(REPORT_TYPE_META).map(([code, meta]) => [code, meta.featureCode]),
+);
 
-const PERMISSION_CREATE: Record<string, string> = {
-  incident: "incidents.create",
-  near_miss: "near_miss.create",
-  unsafe_act: "hazards.create",
-  unsafe_condition: "hazards.create",
-  hazard: "hazards.create",
-};
+const PERMISSION_CREATE: Record<string, string> = Object.fromEntries(
+  Object.entries(REPORT_TYPE_META).map(([code, meta]) => [code, meta.permissionCreate]),
+);
 
 export function canTransition(from: EhsEventStatus, to: EhsEventStatus) {
   return TRANSITIONS[from]?.includes(to) ?? false;
@@ -57,6 +57,36 @@ async function getEventType(
   if (error) throw new Error(error.message);
   if (!data) throw new Error("Event type not found");
   return data;
+}
+
+async function allocateEventNumber(
+  supabase: SupabaseClient,
+  organizationId: string,
+  sequenceKey: string,
+  prefix: string,
+) {
+  const { data, error } = await supabase.rpc("next_event_number", {
+    p_organization_id: organizationId,
+    p_sequence_key: sequenceKey,
+    p_prefix: prefix,
+  });
+  if (!error && data) return String(data);
+
+  const { count, error: countError } = await supabase
+    .from("ehs_events")
+    .select("id", { count: "exact", head: true })
+    .eq("organization_id", organizationId)
+    .is("deleted_at", null);
+  if (countError) {
+    throw new Error(
+      error?.message
+        ? `Numbering RPC failed (${error.message}). Fallback count also failed: ${countError.message}`
+        : countError.message,
+    );
+  }
+  const next = (count ?? 0) + 1;
+  const year = new Date().getUTCFullYear();
+  return `${prefix}${year}-${String(next).padStart(5, "0")}`;
 }
 
 export async function findPossibleDuplicates(
@@ -101,27 +131,65 @@ export async function createEhsEvent(
     projectId?: string;
     departmentId?: string;
     locationId?: string;
+    businessUnitId?: string;
     severityId?: string;
+    potentialSeverityId?: string;
+    categoryId?: string;
     occurredAt?: string;
     immediateAction?: string;
     equipmentAssets?: string;
     isAnonymous?: boolean;
     submit?: boolean;
+    requiresCapa?: boolean;
+    latitude?: number | null;
+    longitude?: number | null;
+    source?: "web" | "field" | "api" | "import" | "email";
+    observationPolarity?: "positive" | "negative" | "neutral" | null;
+    peopleInvolved?: string;
+    recommendedControl?: string;
+    existingControl?: string;
+    customFieldValues?: Array<{
+      fieldDefinitionId: string;
+      valueText?: string | null;
+      valueNumber?: number | null;
+      valueBoolean?: boolean | null;
+      valueDate?: string | null;
+      valueJson?: unknown;
+    }>;
   },
 ) {
-  const feature = FEATURE_BY_TYPE[input.eventTypeCode];
-  const permission = PERMISSION_CREATE[input.eventTypeCode];
+  const typeMeta = REPORT_TYPE_META[input.eventTypeCode as ReportTypeCode];
+  const feature = FEATURE_BY_TYPE[input.eventTypeCode] ?? typeMeta?.featureCode;
+  const permission = PERMISSION_CREATE[input.eventTypeCode] ?? typeMeta?.permissionCreate;
   if (!feature || !permission) throw new Error("Unsupported event type");
 
   await requireFeature(supabase, input.organizationId, feature);
   await requirePermission(supabase, input.organizationId, input.userId, permission);
 
-  let { data: eventType, error: eventTypeError } = await supabase
+  for (const [label, id, table] of [
+    ["Site", input.siteId, "sites"],
+    ["Project", input.projectId, "projects"],
+    ["Department", input.departmentId, "departments"],
+    ["Location", input.locationId, "locations"],
+  ] as const) {
+    if (!id) continue;
+    const { data: ref } = await supabase
+      .from(table)
+      .select("id")
+      .eq("id", id)
+      .eq("organization_id", input.organizationId)
+      .maybeSingle();
+    if (!ref) throw new Error(`${label} must belong to this organization`);
+  }
+
+  const eventTypeResult = await supabase
     .from("event_types")
     .select("id, code")
     .eq("code", input.eventTypeCode)
     .is("organization_id", null)
     .maybeSingle();
+  let eventType = eventTypeResult.data;
+  const eventTypeError = eventTypeResult.error;
   if (eventTypeError) throw new Error(eventTypeError.message);
   if (!eventType) {
     const fallback = await supabase
@@ -140,43 +208,34 @@ export async function createEhsEvent(
     );
   }
 
-  let investigationRequired = false;
-  if (input.severityId) {
-    const { data: severity } = await supabase
-      .from("severity_levels")
-      .select("requires_investigation")
-      .eq("id", input.severityId)
-      .maybeSingle();
-    investigationRequired = Boolean(severity?.requires_investigation);
-  }
-
-  const prefixMap: Record<string, string> = {
-    incident: "INC-",
-    near_miss: "NM-",
-    unsafe_act: "UA-",
-    unsafe_condition: "UC-",
-    hazard: "HZ-",
-  };
-
-  const { data: numberData, error: numberError } = await supabase.rpc(
-    "next_event_number",
-    {
-      p_organization_id: input.organizationId,
-      p_sequence_key: input.eventTypeCode,
-      p_prefix: prefixMap[input.eventTypeCode] ?? "EVT-",
-    },
-  );
-  if (numberError) throw new Error(`Numbering RPC failed: ${numberError.message}`);
-  if (!numberData) throw new Error("Numbering RPC returned no event number");
-
+  const prefix = typeMeta?.prefix ?? "EVT-";
   const occurredAt = toIsoTimestamp(input.occurredAt) ?? new Date().toISOString();
   const status: EhsEventStatus = input.submit ? "submitted" : "draft";
-  const duplicates = await findPossibleDuplicates(supabase, {
-    organizationId: input.organizationId,
-    siteId: input.siteId,
-    eventTypeId: eventType.id,
-    occurredAt,
-  });
+
+  const [numberData, duplicates, severity] = await Promise.all([
+    allocateEventNumber(
+      supabase,
+      input.organizationId,
+      input.eventTypeCode,
+      prefix,
+    ),
+    findPossibleDuplicates(supabase, {
+      organizationId: input.organizationId,
+      siteId: input.siteId,
+      eventTypeId: eventType.id,
+      occurredAt,
+    }),
+    input.severityId
+      ? supabase
+          .from("severity_levels")
+          .select("requires_investigation")
+          .eq("id", input.severityId)
+          .maybeSingle()
+          .then((res) => res.data)
+      : Promise.resolve(null),
+  ]);
+
+  const investigationRequired = Boolean(severity?.requires_investigation);
 
   const { data, error } = await supabase
     .from("ehs_events")
@@ -188,7 +247,10 @@ export async function createEhsEvent(
       project_id: input.projectId ?? null,
       department_id: input.departmentId ?? null,
       location_id: input.locationId ?? null,
+      business_unit_id: input.businessUnitId ?? null,
+      event_category_id: input.categoryId ?? null,
       severity_id: input.severityId ?? null,
+      potential_severity_id: input.potentialSeverityId ?? null,
       status,
       title: input.title ?? null,
       description: input.description,
@@ -199,10 +261,18 @@ export async function createEhsEvent(
       immediate_action: input.immediateAction ?? null,
       equipment_assets: input.equipmentAssets ?? null,
       investigation_required: investigationRequired,
+      requires_capa: Boolean(input.requiresCapa) || investigationRequired,
+      latitude: input.latitude ?? null,
+      longitude: input.longitude ?? null,
+      source: input.source ?? "web",
+      observation_polarity: input.observationPolarity ?? null,
       created_by: input.userId,
       updated_by: input.userId,
       metadata: {
         possible_duplicates: duplicates.map((d) => d.id),
+        recommended_control: input.recommendedControl ?? null,
+        existing_control: input.existingControl ?? null,
+        people_involved: input.peopleInvolved ?? null,
       },
     })
     .select("*")
@@ -210,34 +280,193 @@ export async function createEhsEvent(
 
   if (error) throw new Error(error.message);
 
-  const { error: activityError } = await supabase.from("ehs_event_activity").insert({
-    organization_id: input.organizationId,
-    event_id: data.id,
-    actor_user_id: input.userId,
-    activity_type: "created",
-    message: `Event ${data.event_number} created as ${status}`,
-  });
-  if (activityError) {
-    console.error("[ehs_event] activity insert failed", activityError.message);
+  if (input.peopleInvolved) {
+    await supabase.from("ehs_event_people").insert({
+      organization_id: input.organizationId,
+      event_id: data.id,
+      person_name: input.peopleInvolved.slice(0, 200),
+      person_role: "involved",
+    });
   }
 
-  try {
-    await writeAuditLog(supabase, {
+  if (input.customFieldValues?.length) {
+    await saveCustomFieldValues(supabase, {
+      organizationId: input.organizationId,
+      eventId: data.id,
+      values: input.customFieldValues,
+    });
+  }
+
+  await startWorkflow(supabase, {
+    organizationId: input.organizationId,
+    reportId: data.id,
+    userId: input.userId,
+    currentStatus: status,
+    initialStatus: status,
+  }).catch(() => undefined);
+
+  const detailPath = `${typeMeta?.listPath ?? "/app/hazards"}/${data.id}`;
+
+  await Promise.all([
+    supabase
+      .from("ehs_event_activity")
+      .insert({
+        organization_id: input.organizationId,
+        event_id: data.id,
+        actor_user_id: input.userId,
+        activity_type: "created",
+        message: `Report ${data.event_number} created as ${status}`,
+      })
+      .then(({ error: activityError }) => {
+        if (activityError) console.error("[ehs_event] activity insert failed", activityError.message);
+      }),
+    writeAuditLog(supabase, {
       organizationId: input.organizationId,
       actorUserId: input.userId,
       action: "ehs_event.created",
       entityType: "ehs_event",
       entityId: data.id,
-      newValues: data,
-    });
-  } catch (auditError) {
-    console.error(
-      "[ehs_event] audit log failed",
-      auditError instanceof Error ? auditError.message : auditError,
-    );
-  }
+      newValues: { id: data.id, event_number: data.event_number, status, type: input.eventTypeCode },
+    }).catch((auditError) => {
+      console.error(
+        "[ehs_event] audit log failed",
+        auditError instanceof Error ? auditError.message : auditError,
+      );
+    }),
+    notifySiteSupervisors(supabase, {
+      organizationId: input.organizationId,
+      siteId: input.siteId,
+      actorUserId: input.userId,
+      eventKey: "ehs_event.created",
+      title: `New ${typeMeta?.label ?? input.eventTypeCode} ${input.submit ? "submitted" : "drafted"}`,
+      body: data.event_number,
+      link: detailPath,
+    }).catch((notifyError) => {
+      console.error("[ehs_event] notify failed", notifyError);
+    }),
+  ]);
 
   return { event: data, possibleDuplicates: duplicates };
+}
+
+export async function assignReport(
+  supabase: SupabaseClient,
+  input: {
+    organizationId: string;
+    userId: string;
+    eventId: string;
+    assigneeId: string;
+    note?: string;
+  },
+) {
+  const { data: event } = await supabase
+    .from("ehs_events")
+    .select("id, event_number, assigned_to, event_types:event_type_id(code)")
+    .eq("id", input.eventId)
+    .eq("organization_id", input.organizationId)
+    .maybeSingle();
+  if (!event) throw new Error("Report not found");
+
+  const { data: membership } = await supabase
+    .from("organization_members")
+    .select("id")
+    .eq("organization_id", input.organizationId)
+    .eq("user_id", input.assigneeId)
+    .eq("status", "active")
+    .is("deleted_at", null)
+    .maybeSingle();
+  if (!membership) throw new Error("Assignee must be an active organization member");
+
+  const { data, error } = await supabase
+    .from("ehs_events")
+    .update({ assigned_to: input.assigneeId, updated_by: input.userId })
+    .eq("id", input.eventId)
+    .select("*")
+    .single();
+  if (error) throw new Error(error.message);
+
+  await supabase.from("ehs_event_activity").insert({
+    organization_id: input.organizationId,
+    event_id: input.eventId,
+    actor_user_id: input.userId,
+    activity_type: "assigned",
+    message: "Report assigned",
+    metadata: { assignee_id: input.assigneeId, note: input.note ?? null },
+  });
+
+  await writeAuditLog(supabase, {
+    organizationId: input.organizationId,
+    actorUserId: input.userId,
+    action: "report.assigned",
+    entityType: "ehs_event",
+    entityId: input.eventId,
+    previousValues: { assigned_to: event.assigned_to },
+    newValues: { assigned_to: input.assigneeId },
+  });
+
+  const typeCode = (event.event_types as { code?: string } | null)?.code;
+  const assignMeta = REPORT_TYPE_META[typeCode as ReportTypeCode];
+  await notifyUsers(supabase, {
+    organizationId: input.organizationId,
+    userIds: [input.assigneeId],
+    actorUserId: input.userId,
+    eventKey: "ehs_event.assigned",
+    title: `Report assigned: ${event.event_number}`,
+    body: input.note ?? "You have been assigned an EHS report",
+    link: `${assignMeta?.listPath ?? "/app/incidents"}/${input.eventId}`,
+  }).catch(() => undefined);
+
+  return data;
+}
+
+export async function addReportComment(
+  supabase: SupabaseClient,
+  input: {
+    organizationId: string;
+    userId: string;
+    eventId: string;
+    body: string;
+  },
+) {
+  const body = input.body.trim();
+  if (!body) throw new Error("Comment body required");
+  const { data: event } = await supabase
+    .from("ehs_events")
+    .select("id")
+    .eq("id", input.eventId)
+    .eq("organization_id", input.organizationId)
+    .maybeSingle();
+  if (!event) throw new Error("Report not found");
+
+  const { data, error } = await supabase
+    .from("ehs_event_comments")
+    .insert({
+      organization_id: input.organizationId,
+      event_id: input.eventId,
+      author_id: input.userId,
+      body,
+    })
+    .select("*")
+    .single();
+  if (error) throw new Error(error.message);
+
+  await supabase.from("ehs_event_activity").insert({
+    organization_id: input.organizationId,
+    event_id: input.eventId,
+    actor_user_id: input.userId,
+    activity_type: "comment_added",
+    message: "Comment added",
+  });
+
+  await writeAuditLog(supabase, {
+    organizationId: input.organizationId,
+    actorUserId: input.userId,
+    action: "report.comment_added",
+    entityType: "ehs_event_comment",
+    entityId: data.id,
+  });
+
+  return data;
 }
 
 export async function transitionEhsEvent(
@@ -250,6 +479,7 @@ export async function transitionEhsEvent(
     note?: string;
     acceptNoActionRequired?: boolean;
     noActionReason?: string;
+    forceClose?: boolean;
   },
 ) {
   const { data: event, error } = await supabase
@@ -273,6 +503,19 @@ export async function transitionEhsEvent(
     FEATURE_BY_TYPE[typeCode];
   if (feature) await requireFeature(supabase, input.organizationId, feature);
 
+  if (fromStatus === "investigation" && ["capa", "verification", "approval", "closed"].includes(input.toStatus)) {
+    const { count } = await supabase
+      .from("capa_items")
+      .select("id", { count: "exact", head: true })
+      .eq("event_id", input.eventId)
+      .is("deleted_at", null);
+    if (!count) {
+      throw new Error(
+        "At least one linked CAPA item is required before leaving Investigation In Progress.",
+      );
+    }
+  }
+
   if (input.toStatus === "closed") {
     await requirePermission(
       supabase,
@@ -291,17 +534,28 @@ export async function transitionEhsEvent(
 
     const unresolved = openCapas ?? [];
     if (unresolved.length > 0) {
-      if (!input.acceptNoActionRequired) {
+      if (input.forceClose) {
+        await requirePermission(
+          supabase,
+          input.organizationId,
+          input.userId,
+          "incidents.approve",
+        );
+        if (!input.note) {
+          throw new Error("Force-close requires a justification comment.");
+        }
+      } else if (!input.acceptNoActionRequired) {
         throw new Error(
-          "Incident cannot be closed while required CAPA items remain unresolved. An authorized EHS manager must accept No Action Required.",
+          "Incident cannot be closed while required CAPA items remain unresolved. An authorized EHS manager must accept No Action Required or force-close with justification.",
+        );
+      } else {
+        await requirePermission(
+          supabase,
+          input.organizationId,
+          input.userId,
+          "incidents.approve",
         );
       }
-      await requirePermission(
-        supabase,
-        input.organizationId,
-        input.userId,
-        "incidents.approve",
-      );
     }
 
     // BR-001 extended: also block on source_module/source_record_id CAPA links
@@ -310,7 +564,7 @@ export async function transitionEhsEvent(
         await assertSourceClosable(
           supabase,
           input.organizationId,
-          typeCode === "near_miss" ? "near_miss" : typeCode === "hazard" ? "hazard" : "incident",
+          capaSourceModuleForType(typeCode),
           input.eventId,
         );
       } catch (err) {
@@ -333,6 +587,12 @@ export async function transitionEhsEvent(
       patch.no_action_accepted_by = input.userId;
       patch.no_action_accepted_at = new Date().toISOString();
       patch.no_action_reason = input.noActionReason ?? input.note ?? null;
+    }
+    if (input.forceClose) {
+      patch.force_closed = true;
+      patch.force_close_reason = input.note ?? null;
+      patch.force_closed_by = input.userId;
+      patch.force_closed_at = new Date().toISOString();
     }
   }
 
@@ -425,56 +685,5 @@ export async function upsertInvestigation(
   return data;
 }
 
-export async function createCapaForEvent(
-  supabase: SupabaseClient,
-  input: {
-    organizationId: string;
-    userId: string;
-    eventId: string;
-    title: string;
-    description?: string;
-    dueDate?: string;
-    ownerId?: string;
-    priority?: string;
-  },
-) {
-  await requirePermission(supabase, input.organizationId, input.userId, "capa.create");
-  await requireFeature(supabase, input.organizationId, "capa");
-
-  const { data, error } = await supabase
-    .from("capa_items")
-    .insert({
-      organization_id: input.organizationId,
-      source_module: "ehs_event",
-      source_record_id: input.eventId,
-      event_id: input.eventId,
-      title: input.title,
-      description: input.description ?? null,
-      due_date: input.dueDate ?? null,
-      owner_id: input.ownerId ?? null,
-      priority: input.priority ?? "medium",
-      created_by: input.userId,
-      updated_by: input.userId,
-    })
-    .select("*")
-    .single();
-  if (error) throw new Error(error.message);
-
-  await supabase
-    .from("ehs_events")
-    .update({ status: "capa", updated_by: input.userId })
-    .eq("id", input.eventId);
-
-  await writeAuditLog(supabase, {
-    organizationId: input.organizationId,
-    actorUserId: input.userId,
-    action: "capa.created",
-    entityType: "capa_item",
-    entityId: data.id,
-    newValues: data,
-  });
-
-  return data;
-}
-
-export { getEventType };
+export { createCAPAFromReport, createCapaForEvent } from "@/lib/services/capa-bridge";
+export { getEventType, capaSourceModuleForType };

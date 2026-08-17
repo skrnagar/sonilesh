@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireOrgContext } from "@/lib/auth/org-context";
 import { canFieldAction } from "@/lib/auth/field-roles";
 import { permitCountdown } from "@/lib/services/permits";
@@ -5,6 +6,7 @@ import { resolveFieldRole } from "@/lib/field/resolve-role";
 import {
   acknowledgeFieldPermitAction,
   approveFieldPermitAction,
+  requestFieldPermitRenewalAction,
 } from "@/app/actions/field";
 import { FieldSubmitForm } from "@/components/field/field-submit-form";
 import {
@@ -13,20 +15,32 @@ import {
   FieldPageHeader,
   fieldControlClass,
 } from "@/components/field/field-ui";
+import { ForbiddenState } from "@/components/shared/state-panels";
+import { requireFeature } from "@/lib/services/entitlements";
 
 export default async function FieldPermitsPage() {
   const { supabase, user, organization, membershipId } = await requireOrgContext();
+  try {
+    await requireFeature(supabase, organization.id, "permit_to_work");
+  } catch {
+    return <ForbiddenState />;
+  }
   const role = await resolveFieldRole(supabase, membershipId);
+  if (!canFieldAction(role, "my_permits")) return <ForbiddenState />;
   const canApprove = canFieldAction(role, "approve_permit");
 
   const { data: permits, error } = await supabase
     .from("permits")
-    .select("id, permit_number, title, status, valid_to, requester_id, issuer_id")
+    .select(
+      "id, permit_number, title, status, valid_to, requester_id, issuer_id, residual_risk_band, permit_types:permit_type_id(name)",
+    )
     .eq("organization_id", organization.id)
-    .or(`requester_id.eq.${user.id},issuer_id.eq.${user.id},status.eq.authorization,status.eq.active`)
+    .or(
+      `requester_id.eq.${user.id},issuer_id.eq.${user.id},work_leader_id.eq.${user.id},status.eq.approval_required,status.eq.authorization,status.eq.active,status.eq.suspended`,
+    )
     .is("deleted_at", null)
     .order("valid_to", { ascending: true })
-    .limit(20);
+    .limit(30);
 
   const { data: acks } = await supabase
     .from("permit_approvals")
@@ -37,37 +51,72 @@ export default async function FieldPermitsPage() {
 
   const acked = new Set((acks ?? []).map((a) => a.permit_id));
 
+  const needingAction = (permits ?? []).filter(
+    (p) =>
+      ["approval_required", "authorization"].includes(p.status) ||
+      (p.status === "active" && !acked.has(p.id)),
+  );
+
   return (
     <div className="space-y-4">
-      <FieldPageHeader title="My permits" subtitle="View, acknowledge, or approve when authorized." />
+      <FieldPageHeader
+        title="My permits"
+        subtitle="Active site permits and items requiring your action."
+      />
+
+      {needingAction.length ? (
+        <p className="text-sm font-medium text-foreground">
+          {needingAction.length} requiring action
+        </p>
+      ) : null}
+
       {error ? <FieldEmpty text={error.message} /> : null}
       {(permits ?? []).map((p) => {
         const c = permitCountdown(p.valid_to);
+        const typeName = (p.permit_types as { name?: string } | null)?.name;
         return (
           <FieldCard key={p.id} className="space-y-3">
-            <div>
-              <p className="font-medium text-foreground">
-                {p.permit_number} · {p.title}
+            <Link href={`/field/permits/${encodeURIComponent(p.permit_number)}`} className="block">
+              <p className="text-lg font-medium text-foreground">
+                {p.permit_number}
+                {typeName ? ` · ${typeName}` : ""}
               </p>
+              <p className="mt-1 text-sm text-muted-foreground">{p.title}</p>
               <p className="mt-1 text-xs capitalize text-muted-foreground">
-                {p.status}
-                {c ? (c.expired ? " · EXPIRED" : ` · ${c.hours}h ${c.minutes}m left`) : ""}
+                {String(p.status).replace(/_/g, " ")}
+                {p.residual_risk_band ? ` · ${p.residual_risk_band} risk` : ""}
+                {c ? (c.expired ? " · EXPIRED" : ` · ${c.label} left`) : ""}
               </p>
-            </div>
-            {p.status === "authorization" && canApprove ? (
-              <FieldSubmitForm action={approveFieldPermitAction} submitLabel="Approve">
+            </Link>
+            {["approval_required", "authorization"].includes(p.status) && canApprove ? (
+              <FieldSubmitForm action={approveFieldPermitAction} submitLabel="Approve & activate">
                 <input type="hidden" name="permitId" value={p.id} />
-                <input name="signature" placeholder="Signature name" required className={fieldControlClass} />
+                <input
+                  name="signature"
+                  placeholder="Signature name"
+                  required
+                  className={fieldControlClass}
+                />
               </FieldSubmitForm>
             ) : null}
             {p.status === "active" && !acked.has(p.id) ? (
               <FieldSubmitForm action={acknowledgeFieldPermitAction} submitLabel="Acknowledge">
                 <input type="hidden" name="permitId" value={p.id} />
-                <input name="signature" placeholder="Signature name" required className={fieldControlClass} />
+                <input
+                  name="signature"
+                  placeholder="Signature name"
+                  required
+                  className={fieldControlClass}
+                />
               </FieldSubmitForm>
             ) : null}
-            {p.status === "active" && acked.has(p.id) ? (
-              <p className="text-xs font-medium text-[var(--success-ink)]">Acknowledged</p>
+            {p.status === "active" || p.status === "expired" ? (
+              <FieldSubmitForm
+                action={requestFieldPermitRenewalAction}
+                submitLabel="Request renewal"
+              >
+                <input type="hidden" name="permitId" value={p.id} />
+              </FieldSubmitForm>
             ) : null}
           </FieldCard>
         );

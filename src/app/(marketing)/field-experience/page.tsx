@@ -21,8 +21,8 @@ export default function FieldExperiencePage() {
         eyebrow="Field"
         title="Capture that keeps pace with the job"
         description="A focused field experience for supervisors and crews — incident, near miss, and LMRA (last minute risk assessment) capture, clear severity, and less form friction. Product field UI remains at /field for signed-in users."
-        secondaryHref="/platform"
-        secondaryLabel="Platform overview"
+        secondaryHref="/product"
+        secondaryLabel="Product overview"
       >
         <div className="flex justify-center lg:justify-end">
           <MobilePreview />

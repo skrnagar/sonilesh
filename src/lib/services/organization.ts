@@ -1,3 +1,4 @@
+export { INDUSTRIES } from "@/lib/constants/organization";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { slugify } from "@/lib/utils";
 import { writeAuditLog } from "@/lib/services/audit";
@@ -7,25 +8,7 @@ import {
   SCHEMA_SETUP_MESSAGE,
   isSchemaMissingError,
 } from "@/lib/supabase/errors";
-
-const INDUSTRIES = [
-  "EPC",
-  "Construction",
-  "Infrastructure",
-  "Transmission & Distribution",
-  "Power",
-  "Renewable Energy",
-  "Solar",
-  "Manufacturing",
-  "Oil & Gas",
-  "Industrial",
-  "Mining",
-  "Logistics",
-  "Facilities",
-  "General Enterprise EHS",
-] as const;
-
-export { INDUSTRIES };
+import { DEFAULT_PROJECT_TYPES } from "@/lib/constants/organization";
 
 export async function getMemberships(supabase: SupabaseClient, userId: string) {
   const { data, error } = await supabase
@@ -205,6 +188,16 @@ async function insertOrganizationBundle(
     throw new Error(settingsErr.message);
   }
 
+  await client.from("organization_project_types").upsert(
+    DEFAULT_PROJECT_TYPES.map((t) => ({
+      organization_id: org.id,
+      code: t.code,
+      name: t.name,
+      is_active: true,
+    })),
+    { onConflict: "organization_id,code" },
+  );
+
   const { data: member, error: memberErr } = await client
     .from("organization_members")
     .insert({
@@ -337,6 +330,13 @@ export async function completeOnboarding(
     entityType: "organization",
     entityId: organizationId,
   });
+
+  try {
+    const { evaluateApplicability } = await import("@/lib/services/compliance");
+    await evaluateApplicability(supabase, organizationId, userId);
+  } catch (err) {
+    console.error("[onboarding] compliance applicability skipped", err);
+  }
 
   return data;
 }

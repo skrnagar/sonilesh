@@ -1,0 +1,18 @@
+export const INDUSTRIES = [
+  "Construction",
+  "EPC",
+  "Power & Energy",
+  "Transmission & Distribution",
+  "Renewable Energy",
+  "Solar",
+  "Wind",
+  "Manufacturing",
+  "Oil & Gas",
+  "Chemicals",
+  "Mining",
+  "Infrastructure",
+  "Logistics",
+  "Warehousing",
+  "Facilities",
+  "Other",
+] as const;

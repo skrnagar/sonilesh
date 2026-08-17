@@ -1,28 +1,25 @@
-import type { Metadata } from "next";
 import { PageHero } from "@/components/marketing/page-hero";
 import { Container } from "@/components/marketing/container";
 import { IndustryCard } from "@/components/marketing/industry-card";
 import { CTASection } from "@/components/marketing/cta-section";
-import { industries } from "@/lib/marketing/content";
+import { listCanonicalIndustries } from "@/lib/marketing/content";
+import { getSeoEntry, metadataForPath } from "@/lib/marketing/seo";
 
-export const metadata: Metadata = {
-  title: "Solutions",
-  description:
-    "SONIL EHS360 industry solutions for construction, EPC, energy, manufacturing, oil & gas, mining, and more.",
-};
+export const metadata = metadataForPath("/solutions");
 
 export default function SolutionsPage() {
+  const seo = getSeoEntry("/solutions");
   return (
     <>
       <PageHero
         eyebrow="Solutions"
-        title="Industry-shaped EHS control"
-        description="One platform core, configured for construction, EPC packages, power corridors, renewables, plants, and industrial sites — including LMRA at the workfront."
+        title={seo?.h1 ?? "Solutions"}
+        description={seo?.description}
         compact
       />
       <section className="py-12 md:py-16">
         <Container>
-          {industries.map((industry) => (
+          {listCanonicalIndustries().map((industry) => (
             <IndustryCard
               key={industry.slug}
               name={industry.name}
@@ -32,7 +29,7 @@ export default function SolutionsPage() {
           ))}
         </Container>
       </section>
-      <CTASection />
+      <CTASection primaryHref="/book-a-demo" primaryLabel="Book a Demo" />
     </>
   );
 }

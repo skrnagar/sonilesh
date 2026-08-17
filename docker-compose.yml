@@ -1,0 +1,42 @@
+# Self-hosted single-tenant path.
+# Decision: keep Supabase (Auth + Postgres + Storage). Do not drop GoTrue.
+# Run the official supabase/docker stack (or a hosted Supabase project) and point
+# this compose file's `app` service at that URL. The `db` service here is only
+# for a schema-scratch Postgres if you are applying SQL by hand — it is not a
+# full Auth replacement.
+
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env.selfhost
+    environment:
+      DEPLOYMENT_MODE: self_hosted
+      PORT: 3000
+    ports:
+      - "3000:3000"
+
+  worker:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env.selfhost
+    environment:
+      DEPLOYMENT_MODE: self_hosted
+    command: ["node", "scripts/capa-overdue-worker.mjs"]
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    depends_on:
+      - app
+
+volumes:
+  caddy_data:

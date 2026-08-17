@@ -2,9 +2,16 @@ import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import { requireOrgContext } from "@/lib/auth/org-context";
+import { getRoleCodesForUser } from "@/lib/auth/member-roles";
+import { isFieldOnlyRoles } from "@/lib/auth/personas";
 import { listEnabledFeatures } from "@/lib/services/entitlements";
+import {
+  countUnreadNotifications,
+  listNotificationsForUser,
+} from "@/lib/services/notifications";
 import { getUserPermissions } from "@/lib/services/rbac";
 import { signOutAction } from "@/app/actions/auth";
+import { WorkspaceContextSwitchers } from "@/components/layout/workspace-context";
 import { Button } from "@/components/ui/button";
 
 export default async function AppLayout({
@@ -12,10 +19,28 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { supabase, user, profile, organization } = await requireOrgContext();
+  const { supabase, user, profile, organization, organizations, sites, projects, siteId, projectId } =
+    await requireOrgContext();
+
+  const { roleCodes } = await getRoleCodesForUser(supabase, user.id, organization.id);
+  if (isFieldOnlyRoles(roleCodes) && !profile?.is_platform_admin) {
+    redirect("/field/home");
+  }
 
   if (!organization.onboarding_completed_at) {
-    redirect(`/onboarding/plan?org=${organization.id}`);
+    const { data: progress } = await supabase
+      .from("organization_onboarding_progress")
+      .select("current_step, completed_steps")
+      .eq("organization_id", organization.id)
+      .maybeSingle();
+    const step = progress?.current_step ?? "review";
+    if (step === "welcome" || step === "company") {
+      redirect(`/onboarding?org=${organization.id}`);
+    }
+    if (step === "finish") {
+      redirect(`/onboarding/review?org=${organization.id}`);
+    }
+    redirect(`/onboarding/${step}?org=${organization.id}`);
   }
 
   if (organization.status === "suspended") {
@@ -31,41 +56,71 @@ export default async function AppLayout({
     );
   }
 
-  const [enabledFeatures, permissions, overdueCapa] = await Promise.all([
-    listEnabledFeatures(supabase, organization.id),
-    getUserPermissions(supabase, organization.id, user.id),
-    supabase
-      .from("capa_items")
-      .select("id", { count: "exact", head: true })
-      .eq("organization_id", organization.id)
-      .lt("due_date", new Date().toISOString().slice(0, 10))
-      .not("status", "in", '("closed","cancelled","verified")')
-      .is("deleted_at", null),
-  ]);
+  const [enabledFeatures, permissions, { data: orgSettings }, notificationCount, notifications] =
+    await Promise.all([
+      listEnabledFeatures(supabase, organization.id),
+      getUserPermissions(supabase, organization.id, user.id),
+      supabase
+        .from("organization_settings")
+        .select("branding")
+        .eq("organization_id", organization.id)
+        .maybeSingle(),
+      countUnreadNotifications(supabase, organization.id, user.id),
+      listNotificationsForUser(supabase, {
+        organizationId: organization.id,
+        userId: user.id,
+        limit: 12,
+      }),
+    ]);
 
   const userLabel = profile?.full_name || profile?.email || user.email || "User";
+  const branding = (orgSettings?.branding ?? {}) as {
+    primaryColor?: string;
+    secondaryColor?: string;
+  };
+  const tenantStyle: Record<string, string> = {};
+  if (branding.primaryColor) {
+    tenantStyle["--tenant-primary"] = branding.primaryColor;
+    tenantStyle["--primary"] = branding.primaryColor;
+  }
+  if (branding.secondaryColor) {
+    tenantStyle["--tenant-secondary"] = branding.secondaryColor;
+  }
 
   return (
-    <WorkspaceShell
-      title="EHS Workspace"
-      userLabel={userLabel}
-      sidebar={
-        <AppSidebar
-          enabledFeatures={enabledFeatures}
-          permissions={permissions}
-          organizationName={organization.name}
-        />
-      }
-      notificationCount={overdueCapa.count ?? 0}
-      signOut={
-        <form action={signOutAction}>
-          <Button type="submit" variant="outline" size="sm" className="w-full rounded-xl">
-            Sign out
-          </Button>
-        </form>
-      }
-    >
-      {children}
-    </WorkspaceShell>
+    <div style={tenantStyle}>
+      <WorkspaceShell
+        title="EHS Workspace"
+        userLabel={userLabel}
+        sidebar={
+          <AppSidebar
+            enabledFeatures={enabledFeatures}
+            permissions={permissions}
+            organizationName={organization.name}
+          />
+        }
+        notificationCount={notificationCount}
+        notifications={notifications}
+        contextSlot={
+          <WorkspaceContextSwitchers
+            organizations={organizations}
+            organizationId={organization.id}
+            sites={sites}
+            siteId={siteId}
+            projects={projects}
+            projectId={projectId}
+          />
+        }
+        signOut={
+          <form action={signOutAction}>
+            <Button type="submit" variant="outline" size="sm" className="w-full rounded-xl">
+              Sign out
+            </Button>
+          </form>
+        }
+      >
+        {children}
+      </WorkspaceShell>
+    </div>
   );
 }

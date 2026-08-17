@@ -1,15 +1,8 @@
-﻿import type { Metadata } from "next";
-import { IndustryPage } from "@/components/marketing/industry-page";
-import { getIndustry } from "@/lib/marketing/content";
+﻿import { IndustryPage } from "@/components/marketing/industry-page";
+import { metadataForPath } from "@/lib/marketing/seo";
 
-const slug = "renewable-energy";
-const industry = getIndustry(slug);
-
-export const metadata: Metadata = {
-  title: industry?.name ?? "Solution",
-  description: industry?.summary,
-};
+export const metadata = metadataForPath("/solutions/renewable-energy");
 
 export default function Page() {
-  return <IndustryPage slug={slug} />;
+  return <IndustryPage slug="renewable-energy" />;
 }

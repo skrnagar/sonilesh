@@ -5,6 +5,12 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { env } from "@/lib/env";
+import { getRoleCodesForUser } from "@/lib/auth/member-roles";
+import {
+  GENERIC_INVALID_CREDENTIALS,
+  landingPathForSession,
+  type LoginPortal,
+} from "@/lib/auth/personas";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -47,9 +53,42 @@ export async function signInAction(formData: FormData) {
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
-  if (error) return { error: error.message };
+  if (error) return { error: GENERIC_INVALID_CREDENTIALS };
 
-  const next = String(formData.get("next") || "/app/dashboard");
+  const portal = (String(formData.get("portal") || "company") as LoginPortal) || "company";
+  const requestedNext = String(formData.get("next") || "");
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: GENERIC_INVALID_CREDENTIALS };
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_platform_admin")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const { roleCodes } = await getRoleCodesForUser(supabase, user.id);
+  const landing = landingPathForSession({
+    portal,
+    isPlatformAdmin: Boolean(profile?.is_platform_admin),
+    roleCodes,
+  });
+
+  if (!landing) {
+    await supabase.auth.signOut();
+    return { error: GENERIC_INVALID_CREDENTIALS };
+  }
+
+  const next =
+    requestedNext.startsWith("/") &&
+    !requestedNext.startsWith("//") &&
+    portal !== "admin" &&
+    (portal !== "company" || !landing.startsWith("/field"))
+      ? requestedNext
+      : landing;
+
   revalidatePath("/", "layout");
   redirect(next);
 }

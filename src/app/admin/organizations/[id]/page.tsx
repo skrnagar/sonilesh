@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import {
   adminChangePlanAction,
   adminFeatureOverrideAction,
+  adminRemoveOverrideAction,
   adminUpdateOrgStatusAction,
 } from "@/app/actions/admin";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +12,8 @@ import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { requirePlatformAdmin } from "@/lib/auth/session";
 import { formatDate } from "@/lib/utils";
+import { getEffectiveEntitlements } from "@/lib/entitlements/engine";
+import { getLiveUsageSnapshot } from "@/lib/usage/live";
 
 export default async function AdminOrganizationDetailPage({
   params,
@@ -73,6 +76,12 @@ export default async function AdminOrganizationDetailPage({
     supabase.from("features").select("id, code, name").eq("is_active", true).order("code"),
   ]);
 
+  const [effective, liveUsage] = await Promise.all([
+    getEffectiveEntitlements(supabase, id),
+    getLiveUsageSnapshot(supabase, id),
+  ]);
+  const planName = (subscription?.plans as { name?: string } | null)?.name ?? "—";
+
   const tabs = [
     "overview",
     "users",
@@ -92,7 +101,8 @@ export default async function AdminOrganizationDetailPage({
         <div>
           <h1 className="text-xl font-semibold text-primary">{org.name}</h1>
           <p className="text-sm text-muted-foreground">
-            {org.industry ?? "No industry"} · Created {formatDate(org.created_at)}
+            {org.industry ?? "No industry"} · {planName} · {subscription?.status ?? "no subscription"} · Created{" "}
+            {formatDate(org.created_at)}
           </p>
         </div>
         <Badge variant="secondary" className="capitalize">
@@ -119,6 +129,10 @@ export default async function AdminOrganizationDetailPage({
           <div className="border border-border bg-card p-4 text-sm">
             <p>Legal name: {org.legal_name ?? "—"}</p>
             <p>Country: {org.country ?? "—"}</p>
+            <p>Plan: {planName}</p>
+            <p>
+              Usage: {liveUsage.users} users · {liveUsage.sites} sites · {liveUsage.projects} projects
+            </p>
             <p>Trial ends: {formatDate(org.trial_ends_at)}</p>
             <p>Last activity: {formatDate(org.last_activity_at)}</p>
           </div>
@@ -231,20 +245,48 @@ export default async function AdminOrganizationDetailPage({
 
       {tab === "features" ? (
         <div className="grid gap-4 lg:grid-cols-2">
-          <div className="border border-border bg-card p-4">
-            <h2 className="text-sm font-semibold">Overrides</h2>
-            <ul className="mt-3 space-y-2 text-sm">
+          <div className="space-y-3 border border-border bg-card p-4">
+            <h2 className="text-sm font-semibold">Base plan: {planName}</h2>
+            <h3 className="text-xs uppercase tracking-wide text-muted-foreground">Effective features</h3>
+            <ul className="max-h-64 space-y-1 overflow-auto text-sm">
+              {effective
+                .filter((row) => row.enabled)
+                .map((row) => (
+                  <li key={row.featureCode}>
+                    ✓ {row.featureCode.replaceAll("_", " ")}
+                    {row.unlimited
+                      ? " · unlimited"
+                      : row.limitValue != null
+                        ? ` · ${row.limitValue}`
+                        : ""}{" "}
+                    <span className="text-xs text-muted-foreground">({row.source})</span>
+                  </li>
+                ))}
+            </ul>
+            <h3 className="text-xs uppercase tracking-wide text-muted-foreground">Custom overrides</h3>
+            <ul className="space-y-2 text-sm">
               {(overrides ?? []).map((row) => (
-                <li key={row.id} className="border-b border-border py-2">
-                  {(row.features as { name?: string } | null)?.name} · enabled=
-                  {String(row.enabled)} · limit={String(row.limit_value ?? "—")}
+                <li key={row.id} className="flex items-start justify-between gap-2 border-b border-border py-2">
+                  <div>
+                    {(row.features as { name?: string } | null)?.name} · enabled=
+                    {String(row.enabled)} · limit={String(row.limit_value ?? "—")} · {row.override_type}
+                    {row.ends_at ? ` · until ${formatDate(row.ends_at)}` : ""}
+                    {row.reason ? <p className="text-xs text-muted-foreground">{row.reason}</p> : null}
+                  </div>
+                  <form action={adminRemoveOverrideAction}>
+                    <input type="hidden" name="organizationId" value={org.id} />
+                    <input type="hidden" name="overrideId" value={row.id} />
+                    <Button type="submit" size="sm" variant="outline">
+                      Remove
+                    </Button>
+                  </form>
                 </li>
               ))}
             </ul>
           </div>
           <form action={adminFeatureOverrideAction} className="space-y-3 border border-border bg-card p-4">
             <input type="hidden" name="organizationId" value={org.id} />
-            <Label>Add feature override</Label>
+            <Label>Create override</Label>
             <Select name="featureId" defaultValue="">
               <option value="" disabled>
                 Select feature
@@ -259,29 +301,40 @@ export default async function AdminOrganizationDetailPage({
               <option value="true">Enabled</option>
               <option value="false">Disabled</option>
             </Select>
-            <Input name="limitValue" type="number" placeholder="Limit value" />
+            <Input name="limitValue" type="number" placeholder="Additive limit (e.g. +10 sites)" />
             <label className="flex items-center gap-2 text-xs">
               <input type="checkbox" name="unlimited" value="true" /> Unlimited
             </label>
             <label className="flex items-center gap-2 text-xs">
               <input type="checkbox" name="isTemporary" value="true" /> Temporary
             </label>
+            <Input name="startsAt" type="datetime-local" />
             <Input name="endsAt" type="datetime-local" />
-            <Input name="reason" placeholder="Reason" />
+            <Input name="reason" placeholder="Reason (audited)" />
             <Button type="submit">Save override</Button>
           </form>
         </div>
       ) : null}
 
       {tab === "usage" ? (
-        <ul className="space-y-2 text-sm">
-          {(usage ?? []).map((row) => (
-            <li key={row.id} className="border border-border bg-card px-3 py-2">
-              {(row.features as { code?: string } | null)?.code}: {row.usage_value}
-            </li>
-          ))}
-          {!usage?.length ? <li className="text-muted-foreground">No usage metrics yet.</li> : null}
-        </ul>
+        <div className="space-y-3">
+          <div className="grid gap-3 md:grid-cols-3">
+            {(["users", "sites", "projects"] as const).map((metric) => (
+              <div key={metric} className="border border-border bg-card p-3 text-sm">
+                <p className="capitalize text-muted-foreground">{metric}</p>
+                <p className="text-lg font-semibold tabular-nums">{liveUsage[metric]}</p>
+                <p className="text-xs text-muted-foreground">Live application count</p>
+              </div>
+            ))}
+          </div>
+          <ul className="space-y-2 text-sm">
+            {(usage ?? []).map((row) => (
+              <li key={row.id} className="border border-border bg-card px-3 py-2">
+                {(row.features as { code?: string } | null)?.code}: {row.usage_value}
+              </li>
+            ))}
+          </ul>
+        </div>
       ) : null}
 
       {tab === "audit" ? (

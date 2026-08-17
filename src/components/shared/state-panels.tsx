@@ -60,7 +60,12 @@ export function UpgradeState({
   return (
     <EmptyState
       title={`${featureName} is not available on your current plan`}
-      description="Contact your administrator or upgrade your subscription to enable this module. Existing entitlements are resolved from the database — no hard-coded plan checks."
+      description="Upgrade to unlock this module. Existing records stay in the database; new writes are blocked server-side until the plan includes this feature."
+      action={
+        <Button asChild>
+          <a href="/app/settings/subscription">Explore upgrade</a>
+        </Button>
+      }
     />
   );
 }

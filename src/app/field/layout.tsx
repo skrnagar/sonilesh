@@ -1,14 +1,22 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Bell } from "lucide-react";
 import { BrandLockup } from "@/components/brand/brand-lockup";
 import { FieldTabBar } from "@/components/field/field-tab-bar";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { requireOrgContext } from "@/lib/auth/org-context";
+import { getRoleCodesForUser } from "@/lib/auth/member-roles";
+import { isFieldOnlyRoles } from "@/lib/auth/personas";
+import { countUnreadNotifications } from "@/lib/services/notifications";
 
 export default async function FieldLayout({ children }: { children: React.ReactNode }) {
-  const { organization } = await requireOrgContext();
+  const { user, organization, supabase } = await requireOrgContext();
 
-  if (organization.status === "suspended") redirect("/app/dashboard");
+  if (organization.status === "suspended") redirect("/login");
+
+  const { roleCodes } = await getRoleCodesForUser(supabase, user.id, organization.id);
+  const fieldOnly = isFieldOnlyRoles(roleCodes);
+  const unreadCount = await countUnreadNotifications(supabase, organization.id, user.id);
 
   return (
     <div className="min-h-dvh overflow-x-clip bg-background text-foreground">
@@ -21,13 +29,29 @@ export default async function FieldLayout({ children }: { children: React.ReactN
             </p>
           </div>
           <div className="flex shrink-0 items-center gap-2">
-            <ThemeToggle compact />
             <Link
-              href="/app/dashboard"
-              className="inline-flex min-h-11 items-center rounded-xl border border-border bg-card px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted"
+              href="/field/notifications"
+              aria-label={
+                unreadCount > 0
+                  ? `Notifications, ${unreadCount} unread`
+                  : "Notifications"
+              }
+              className="relative inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-card text-foreground transition-colors hover:bg-muted"
             >
-              Desktop
+              <Bell className="h-4 w-4" />
+              {unreadCount > 0 ? (
+                <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-destructive" />
+              ) : null}
             </Link>
+            <ThemeToggle compact />
+            {fieldOnly ? null : (
+              <Link
+                href="/app/dashboard"
+                className="inline-flex min-h-11 items-center rounded-xl border border-border bg-card px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted"
+              >
+                Desktop
+              </Link>
+            )}
           </div>
         </div>
       </header>

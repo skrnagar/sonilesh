@@ -22,18 +22,22 @@ import { MobilePreview } from "@/components/marketing/mobile-preview";
 import { WorkflowDiagram } from "@/components/marketing/workflow-diagram";
 import { PricingCard } from "@/components/marketing/pricing-card";
 import { FadeIn, Reveal } from "@/components/marketing/motion";
+import { productHrefForModule } from "@/lib/marketing/product-routes";
+import { metadataForPath } from "@/lib/marketing/seo";
 import {
+  architectureSteps,
   brand,
   buyerAudiences,
   company,
   executionPillars,
-  industries,
+  listCanonicalIndustries,
   modules,
-  platformPillars,
   pricingTiers,
   productFacts,
   resources,
 } from "@/lib/marketing/content";
+
+export const metadata = metadataForPath("/");
 
 export default function HomePage() {
   return (
@@ -46,18 +50,18 @@ export default function HomePage() {
         <Container className="relative grid items-start gap-8 py-14 md:gap-10 md:py-20 lg:min-h-[min(78vh,760px)] lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-center lg:gap-12 lg:py-24">
           <FadeIn className="max-w-xl min-w-0">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-teal-200 sm:tracking-[0.22em]">
-              {brand.name} · From SONIL Buildcon, Indore
+              {brand.eyebrow}
             </p>
             <h1 className="font-display mt-4 text-[2.05rem] font-semibold leading-[1.02] tracking-[-0.045em] sm:mt-5 sm:text-5xl sm:leading-[0.96] md:text-[3.75rem] md:leading-[0.94]">
               {brand.tagline}
             </h1>
             <p className="mt-4 max-w-md text-base leading-relaxed text-white/80 sm:mt-5 sm:text-lg md:text-xl">
-              {brand.supporting} Incidents, LMRA, permits, inspections, CAPA, and analytics in one system of record — field crews and HSE leads on the same data.
+              {brand.supporting}
             </p>
             <div className="mt-7 flex flex-col items-stretch gap-3 sm:mt-9 sm:flex-row sm:flex-wrap sm:items-center">
               <Button asChild size="lg" variant="safety" className="h-12 min-h-12 px-6">
-                <Link href="/request-demo">
-                  Request demo
+                <Link href="/book-a-demo">
+                  Book a Demo
                   <ArrowRight className="h-4 w-4" aria-hidden />
                 </Link>
               </Button>
@@ -67,12 +71,12 @@ export default function HomePage() {
                 variant="outline"
                 className="h-12 min-h-12 border-white/25 bg-transparent px-6 text-white hover:bg-white/10 hover:text-white"
               >
-                <Link href="/platform">Explore platform</Link>
+                <Link href="/signup">Start Free</Link>
               </Button>
             </div>
             <ul className="mt-7 grid gap-2 text-sm text-white/75 sm:mt-8 sm:grid-cols-3 sm:gap-4">
               <li>LMRA at the workfront</li>
-              <li>CAPA that actually closes</li>
+              <li>BRSR on the same record</li>
               <li>No invented certifications</li>
             </ul>
           </FadeIn>
@@ -92,7 +96,7 @@ export default function HomePage() {
       <section className="border-b border-border mkt-band">
         <Container className="py-8 md:py-10">
           <p className="text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            Built beside civil EPC execution — not a generic office-safety template
+            Built beside civil EPC execution — India-first, not a generic office-safety template
           </p>
           <div className="mt-5 flex flex-wrap justify-center gap-2">
             {buyerAudiences.map((name) => (
@@ -117,6 +121,65 @@ export default function HomePage() {
         <Container>
           <Reveal>
             <SectionHeader
+              eyebrow="The problem"
+              title="EHS, ESG and compliance break when the stacks don’t connect"
+              description="Spreadsheets, WhatsApp trails, and a separate sustainability workbook leave site reality invisible — and filings get re-keyed from numbers nobody can audit back to the event."
+            />
+          </Reveal>
+          <div className="mt-14 grid gap-10 md:grid-cols-3 md:gap-12">
+            <FeatureCard
+              icon={AlertTriangle}
+              title="Fragmented capture"
+              body="Incidents, near misses, and hazards live in different channels — so trends arrive late."
+            />
+            <FeatureCard
+              icon={Workflow}
+              title="Open loops"
+              body="Findings don’t reliably become owned actions with verification of effectiveness."
+            />
+            <FeatureCard
+              icon={Building2}
+              title="Parallel reporting stacks"
+              body="Statutory calendars and ESG questionnaires sit outside the EHS record — two systems, one set of facts."
+            />
+          </div>
+        </Container>
+      </section>
+
+      <section className="mkt-section border-y border-border mkt-band">
+        <Container>
+          <Reveal>
+            <SectionHeader
+              eyebrow="Platform"
+              title="Identify → Assess → Control → Act → Comply → Report → Analyze"
+              description="One configurable loop from workfront capture to statutory tracking, ESG/BRSR views, and leadership analytics — not three disconnected products."
+            />
+          </Reveal>
+          <ol className="mt-12 grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-7">
+            {architectureSteps.map((step, index) => (
+              <li key={step.title} className="bg-background p-5 md:bg-[var(--mkt-band)]">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+                  {String(index + 1).padStart(2, "0")}
+                </p>
+                <p className="mt-3 font-display text-lg font-semibold text-primary">{step.title}</p>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {step.body}
+                </p>
+              </li>
+            ))}
+          </ol>
+          <div className="mt-8">
+            <Button asChild variant="outline">
+              <Link href="/product">Explore the platform</Link>
+            </Button>
+          </div>
+        </Container>
+      </section>
+
+      <section className="mkt-section">
+        <Container>
+          <Reveal>
+            <SectionHeader
               eyebrow="At a glance"
               title="A product you can actually operate"
               description="Facts about SONIL EHS360 — not invented injury rates, customer logos, or certifications."
@@ -134,60 +197,33 @@ export default function HomePage() {
         </Container>
       </section>
 
-      <section className="mkt-section">
-        <Container>
-          <Reveal>
-            <SectionHeader
-              eyebrow="The problem"
-              title="EHS control breaks when tools don’t connect"
-              description="Spreadsheets, WhatsApp trails, and disconnected apps leave site reality invisible to leadership — and CAPA rarely closes with verified effectiveness."
-            />
-          </Reveal>
-          <div className="mt-14 grid gap-10 md:grid-cols-3 md:gap-12">
-            <FeatureCard
-              icon={AlertTriangle}
-              title="Fragmented capture"
-              body="Incidents, near misses, and hazards live in different channels — so trends arrive late."
-            />
-            <FeatureCard
-              icon={Workflow}
-              title="Open loops"
-              body="Findings don’t reliably become owned actions with verification of effectiveness."
-            />
-            <FeatureCard
-              icon={Building2}
-              title="Weak enterprise grip"
-              body="Sites, contractors, and entitlements are hard to govern without a multi-tenant core."
-            />
-          </div>
-        </Container>
-      </section>
-
       <section className="mkt-section border-y border-border mkt-band">
         <Container>
           <Reveal>
             <SectionHeader
-              eyebrow="Platform map"
-              title="One system from workfront to control room"
-              description="SONIL EHS360 connects field capture, operations, risk, assurance, and leadership visibility — the same loop commercial EHS programs expect."
+              eyebrow="Product"
+              title="Every control, from field to filing"
+              description="EHS modules plus compliance tracking and ESG/BRSR — entitled per tenant, governed by role. Contractor management is a company register today, not a full contractor OS."
             />
           </Reveal>
-          <ol className="mt-12 grid gap-px overflow-hidden rounded-xl border border-border bg-border md:grid-cols-5">
-            {platformPillars.map((pillar, index) => (
-              <li key={pillar.title} className="bg-background p-5 md:bg-[var(--mkt-band)]">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-                  {String(index + 1).padStart(2, "0")}
-                </p>
-                <p className="mt-3 font-display text-lg font-semibold text-primary">{pillar.title}</p>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  {pillar.body}
-                </p>
-              </li>
+          <div className="mt-10 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            {modules.slice(0, 6).map((mod) => (
+              <ModuleCard
+                key={mod.slug}
+                name={mod.name}
+                summary={mod.summary}
+                field={mod.field}
+                dashboard={mod.dashboard}
+                href={productHrefForModule(mod.slug)}
+              />
             ))}
-          </ol>
-          <div className="mt-8">
+          </div>
+          <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild variant="outline">
-              <Link href="/platform">Explore the platform</Link>
+              <Link href="/product">Browse product</Link>
+            </Button>
+            <Button asChild>
+              <Link href="/book-a-demo">Book a Demo</Link>
             </Button>
           </div>
         </Container>
@@ -203,17 +239,12 @@ export default function HomePage() {
             />
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild>
-                <Link href="/features">See features</Link>
+                <Link href="/product">See product</Link>
               </Button>
               <Button asChild variant="outline">
-                <Link href="/modules/analytics">Analytics module</Link>
+                <Link href="/product/inspections-audits">Analytics module</Link>
               </Button>
             </div>
-          </Reveal>
-          <Reveal>
-            <ProductScreenshot title="SONIL EHS360 · Analytics" stage>
-              <DashboardPreview />
-            </ProductScreenshot>
           </Reveal>
         </Container>
       </section>
@@ -243,7 +274,7 @@ export default function HomePage() {
                 variant="outline"
                 className="h-12 border-white/25 bg-transparent px-6 text-white hover:bg-white/10 hover:text-white"
               >
-                <Link href="/request-demo">Request demo</Link>
+                <Link href="/book-a-demo">Book a Demo</Link>
               </Button>
             </div>
           </Reveal>
@@ -277,7 +308,7 @@ export default function HomePage() {
           <Reveal>
             <SectionHeader
               eyebrow="Why SONIL"
-              title="Four pillars of EHS execution"
+              title="Four pillars of execution"
               description="Software language aligned to SONIL Buildcon’s execution culture — safety, discipline, depth, and transparency — without copying their site or inventing proof."
             />
           </Reveal>
@@ -294,8 +325,8 @@ export default function HomePage() {
           <Reveal>
             <SectionHeader
               eyebrow="Enterprise"
-              title="Multi-tenant by design"
-              description="Organization isolation, site/project scoping, RBAC, and plan-driven entitlements — ready for portfolios, not single-site tools."
+              title="Multi-tenant by design — self-hosting as an option"
+              description="Organization isolation, site/project scoping, RBAC, and plan-driven entitlements. Cloud SaaS is the default; a privately operated instance is scoped commercially."
             />
             <div className="mt-8 grid gap-6">
               <FeatureCard
@@ -306,12 +337,12 @@ export default function HomePage() {
               <FeatureCard
                 icon={Settings2}
                 title="Configuration without chaos"
-                body="Categories, workflows, and forms adapt to how your HSE program actually runs."
+                body="Categories, workflows, and forms adapt to how your HSE and compliance program actually runs."
               />
             </div>
             <div className="mt-8">
               <Button asChild variant="outline">
-                <Link href="/enterprise">Enterprise overview</Link>
+                <Link href="/self-hosting">Self-hosting</Link>
               </Button>
             </div>
           </Reveal>
@@ -319,7 +350,7 @@ export default function HomePage() {
             <SectionHeader
               eyebrow="Analytics & AI-ready"
               title="Visibility now. Assistive intelligence when you choose it."
-              description="Dashboards for leading and lagging signals. AI is framed as assistive potential — not autonomous EHS."
+              description="Dashboards for leading and lagging signals. AI is framed as assistive potential — not autonomous EHS or auto-filed BRSR."
             />
             <div className="mt-8 grid gap-6">
               <FeatureCard
@@ -364,7 +395,7 @@ export default function HomePage() {
             />
           </Reveal>
           <div className="mt-10">
-            {industries.slice(0, 5).map((industry) => (
+            {listCanonicalIndustries().map((industry) => (
               <IndustryCard
                 key={industry.slug}
                 name={industry.name}
@@ -385,38 +416,6 @@ export default function HomePage() {
         <Container>
           <Reveal>
             <SectionHeader
-              eyebrow="Modules"
-              title="Every control, from field to dashboard"
-              description="Professional EHS modules — incidents, LMRA and risk, e-PTW, inspections, CAPA, contractors — entitled per tenant, governed by role."
-            />
-          </Reveal>
-          <div className="mt-10 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-            {modules.slice(0, 6).map((mod) => (
-              <ModuleCard
-                key={mod.slug}
-                name={mod.name}
-                summary={mod.summary}
-                field={mod.field}
-                dashboard={mod.dashboard}
-                href={`/modules/${mod.slug}`}
-              />
-            ))}
-          </div>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Button asChild variant="outline">
-              <Link href="/modules">Browse all modules</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/request-demo">Request a walkthrough</Link>
-            </Button>
-          </div>
-        </Container>
-      </section>
-
-      <section className="mkt-section border-y border-border mkt-band">
-        <Container>
-          <Reveal>
-            <SectionHeader
               eyebrow="Pricing"
               title="Commercial packaging, not fake price tags"
               description="Team, Business, and Enterprise — sold through Contact Sales. No invented dollar amounts, logos, or G2 badges."
@@ -430,13 +429,13 @@ export default function HomePage() {
         </Container>
       </section>
 
-      <section className="mkt-section">
+      <section className="mkt-section border-y border-border mkt-band">
         <Container>
           <Reveal>
             <SectionHeader
               eyebrow="Resources"
               title="Guides as the product matures"
-              description="Placeholder library for implementation and adoption content — no fabricated whitepapers."
+              description="A glossary, a BRSR applicability checker on the same rules engine as the app, and pillar guides as they are written — no fabricated whitepapers."
             />
           </Reveal>
           <div className="mt-10 grid gap-3 md:grid-cols-2">
@@ -453,9 +452,12 @@ export default function HomePage() {
               </div>
             ))}
           </div>
-          <div className="mt-8">
+          <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild variant="outline">
               <Link href="/resources">Resources</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/resources/brsr-applicability">BRSR checker</Link>
             </Button>
           </div>
         </Container>

@@ -112,6 +112,65 @@ export default async function AdminDashboardPage() {
           ) : null}
         </CardContent>
       </Card>
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card className="rounded-2xl shadow-[var(--shadow-sm)]">
+          <CardHeader>
+            <CardTitle>Feature adoption</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <table className="w-full text-left text-sm">
+              <thead className="border-y border-border bg-muted/50 text-xs uppercase tracking-wide text-muted-foreground">
+                <tr>
+                  <th className="px-4 py-2.5 font-medium">Feature</th>
+                  <th className="px-4 py-2.5 font-medium">Plans enabled</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(metrics.featureAdoption ?? {})
+                  .slice(0, 12)
+                  .map(([name, count]) => (
+                    <tr key={name} className="border-b border-border last:border-0">
+                      <td className="px-4 py-2.5">{name}</td>
+                      <td className="px-4 py-2.5 tabular-nums">{count}</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </CardContent>
+        </Card>
+        <Card className="rounded-2xl shadow-[var(--shadow-sm)]">
+          <CardHeader>
+            <CardTitle>Recent admin activity</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            {(metrics.recentActivity ?? []).map((row) => (
+              <p key={row.id} className="border-b border-border py-1.5 last:border-0">
+                <span className="font-medium">{row.action}</span>
+                <span className="ml-2 text-xs text-muted-foreground">{row.entity_type}</span>
+              </p>
+            ))}
+            {!metrics.recentActivity?.length ? (
+              <p className="text-muted-foreground">No audited admin actions yet.</p>
+            ) : null}
+          </CardContent>
+        </Card>
+      </div>
+      <Card className="rounded-2xl shadow-[var(--shadow-sm)]">
+        <CardHeader>
+          <CardTitle>Usage alerts</CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm text-muted-foreground">
+          {metrics.suspendedOrganizations || metrics.trialOrganizations ? (
+            <p>
+              {metrics.trialOrganizations} trial organizations and {metrics.suspendedOrganizations}{" "}
+              suspended organizations need commercial review. Per-tenant usage bars live on each
+              organization record (live member/site counts, not static counters).
+            </p>
+          ) : (
+            <p>No trial or suspension alerts in the current portfolio.</p>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

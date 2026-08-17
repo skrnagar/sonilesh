@@ -1,12 +1,17 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { writeAuditLog } from "@/lib/services/audit";
 import { requireFeature } from "@/lib/services/entitlements";
+import { notifySiteSupervisors, notifyUsers } from "@/lib/services/notifications";
 import { requirePermission } from "@/lib/services/rbac";
 
 export type CapaSourceModule =
   | "incident"
   | "near_miss"
   | "hazard"
+  | "unsafe_act"
+  | "unsafe_condition"
+  | "safety_observation"
+  | "ehs_report"
   | "risk_assessment"
   | "inspection"
   | "audit"
@@ -107,6 +112,18 @@ export async function createCapa(
     newValues: { title: data.title, source: input.sourceModule },
   });
 
+  if (data.owner_id && data.owner_id !== input.userId) {
+    await notifyUsers(supabase, {
+      organizationId: input.organizationId,
+      userIds: [data.owner_id],
+      actorUserId: input.userId,
+      eventKey: "capa.assigned",
+      title: `CAPA assigned: ${data.title}`,
+      body: data.description ?? "A corrective action was assigned to you.",
+      link: "/field/actions",
+    }).catch((err) => console.error("[capa] notify owner failed", err));
+  }
+
   return data;
 }
 
@@ -142,11 +159,19 @@ export async function transitionCapa(
   };
   if (input.evidence) patch.evidence = input.evidence;
   if (input.toStatus === "verified") {
+    if (current.owner_id && current.owner_id === input.userId) {
+      throw new Error("The CAPA owner cannot verify their own action. Another person must verify.");
+    }
+    await requirePermission(supabase, input.organizationId, input.userId, "capa.verify");
     patch.verified_by = input.userId;
     patch.verified_at = new Date().toISOString();
   }
   if (input.toStatus === "closed") {
+    if (current.owner_id && current.owner_id === input.userId) {
+      throw new Error("The CAPA owner cannot close their own action after completing it.");
+    }
     patch.closed_at = new Date().toISOString();
+    patch.closed_by = input.userId;
   }
   if (from === "pending_verification" && input.toStatus === "in_progress") {
     patch.rework_count = (current.rework_count ?? 0) + 1;
@@ -169,6 +194,50 @@ export async function transitionCapa(
     notes: input.notes ?? null,
     actor_id: input.userId,
   });
+
+  try {
+    if (input.toStatus === "pending_verification") {
+      await notifySiteSupervisors(supabase, {
+        organizationId: input.organizationId,
+        actorUserId: input.userId,
+        eventKey: "capa.pending_verification",
+        title: `CAPA ready for verification: ${current.title}`,
+        body: input.notes ?? "An action is pending verification.",
+        link: "/app/capa",
+      });
+    } else if (
+      input.toStatus === "in_progress" &&
+      from === "pending_verification" &&
+      current.owner_id &&
+      current.owner_id !== input.userId
+    ) {
+      await notifyUsers(supabase, {
+        organizationId: input.organizationId,
+        userIds: [current.owner_id],
+        actorUserId: input.userId,
+        eventKey: "capa.rework",
+        title: `CAPA returned for rework: ${current.title}`,
+        body: input.notes ?? "Verification was not accepted.",
+        link: "/field/actions",
+      });
+    } else if (
+      (input.toStatus === "verified" || input.toStatus === "closed") &&
+      current.owner_id &&
+      current.owner_id !== input.userId
+    ) {
+      await notifyUsers(supabase, {
+        organizationId: input.organizationId,
+        userIds: [current.owner_id],
+        actorUserId: input.userId,
+        eventKey: `capa.${input.toStatus}`,
+        title: `CAPA ${input.toStatus}: ${current.title}`,
+        body: input.notes ?? `Your action was ${input.toStatus}.`,
+        link: "/field/actions",
+      });
+    }
+  } catch (err) {
+    console.error("[capa] notify failed", err);
+  }
 
   return data;
 }

@@ -29,6 +29,8 @@ export function AppSidebar({
     { key: "assurance", label: "Assurance" },
     { key: "support", label: "Programs" },
     { key: "insights", label: "Insights" },
+    { key: "compliance", label: "Compliance" },
+    { key: "esg", label: "ESG / BRSR" },
     { key: "system", label: "System" },
   ] as const;
 

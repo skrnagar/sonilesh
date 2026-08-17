@@ -6,6 +6,7 @@ import { ModuleCard } from "@/components/marketing/module-card";
 import { CTASection } from "@/components/marketing/cta-section";
 import { FeatureCard } from "@/components/marketing/feature-card";
 import { getIndustry, modules } from "@/lib/marketing/content";
+import { productHrefForModule } from "@/lib/marketing/product-routes";
 import { notFound } from "next/navigation";
 
 export function IndustryPage({ slug }: { slug: string }) {
@@ -30,7 +31,7 @@ export function IndustryPage({ slug }: { slug: string }) {
           <SectionHeader
             eyebrow="Challenges"
             title={`What ${industry.name} teams wrestle with`}
-            description="SONIL EHS360 is designed to replace fragmented tools with one operational control system."
+            description="SONIL EHS360 is designed to replace fragmented tools with one operational system — EHS, and ESG/compliance when those modules are entitled."
           />
           <ul className="space-y-4">
             {industry.challenges.map((challenge) => (
@@ -56,7 +57,7 @@ export function IndustryPage({ slug }: { slug: string }) {
                 summary={mod.summary}
                 field={mod.field}
                 dashboard={mod.dashboard}
-                href={`/modules/${mod.slug}`}
+                href={productHrefForModule(mod.slug)}
               />
             ))}
           </div>
@@ -70,8 +71,8 @@ export function IndustryPage({ slug }: { slug: string }) {
         </Container>
       </section>
       <CTASection
-        title={`Run ${industry.name} EHS on one platform`}
-        description="Request a demo focused on your sites, contractors, and assurance model."
+        title={`Run ${industry.name} on one platform`}
+        description="Request a demo focused on your sites, contractors, and whether EHS operations, ESG/BRSR, or statutory tracking comes first."
       />
     </>
   );

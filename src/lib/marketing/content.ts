@@ -7,10 +7,12 @@ export const brand = {
   wordmark: "SONIL",
   legalName: "SONIL BUILDCON PRIVATE LIMITED",
   product: "EHS360",
-  tagline: "EHS control from the workfront to the control room.",
-  supporting: "Built for how infrastructure gets executed — LMRA on site, investigations and CAPA in the office.",
+  eyebrow: "The modern EHS + ESG platform",
+  tagline: "One Platform for EHS, ESG & Compliance.",
+  supporting:
+    "Connect field safety, risk management, regulatory compliance, sustainability reporting and management analytics in one configurable platform.",
   description:
-    "Multi-tenant EHS SaaS for incidents, risk, permits, inspections, CAPA, training, and analytics — shaped by SONIL Buildcon’s civil EPC execution culture.",
+    "India-first multi-tenant SaaS for EHS operations, ESG/BRSR-oriented reporting, and regulatory tracking — field capture through CAPA, statutory tasks, and leadership analytics in one tenant. Self-hosting is an enterprise option.",
 } as const;
 
 /** Public facts from sonilbuildcon.com. Do not invent awards or customer logos. */
@@ -46,10 +48,10 @@ export const company = {
 
 /** Real product facts — not invented program metrics. */
 export const productFacts = [
-  { value: "11", label: "EHS modules", detail: "From incidents to analytics, entitled per tenant." },
+  { value: "3", label: "Domains, one tenant", detail: "EHS operations, ESG/BRSR reporting, and regulatory tracking — entitled per plan." },
   { value: "3", label: "Work surfaces", detail: "Field app, operations workspace, and platform admin." },
-  { value: "1", label: "System of record", detail: "Capture, CAPA, and leadership views on the same data." },
-  { value: "SaaS", label: "Multi-tenant", detail: "Organization isolation, sites, RBAC, and plan entitlements." },
+  { value: "1", label: "System of record", detail: "Capture, CAPA, compliance tasks, and leadership views on the same data." },
+  { value: "IN", label: "India-first", detail: "BRSR-oriented ESG, statutory tracking, and self-hosting as an enterprise option." },
 ] as const;
 
 export const executionPillars = [
@@ -63,7 +65,7 @@ export const executionPillars = [
   },
   {
     title: "Technical depth",
-    body: "Risk, isolation, inspections, and CAPA designed for transmission, solar civil, substations, plants, and contractor-heavy sites.",
+    body: "Risk, isolation, inspections, CAPA, statutory tracking, and ESG/BRSR views designed for Indian plants, packages, and contractor-heavy sites.",
   },
   {
     title: "Full transparency",
@@ -73,9 +75,9 @@ export const executionPillars = [
 
 export const buyerAudiences = [
   "HSE & EHS leads",
+  "ESG & sustainability",
+  "Compliance owners",
   "EPC package managers",
-  "Power & utility operators",
-  "Renewable developers",
   "Plant & industrial EHS",
   "Infrastructure owners",
 ] as const;
@@ -189,9 +191,56 @@ export const industries = [
     ],
     modules: ["incidents", "ppe", "training", "contractor-management", "analytics"],
   },
+  {
+    slug: "construction-epc",
+    name: "Construction & EPC",
+    summary:
+      "Package interfaces, civil high-risk work, and contractor density — the EHS problem SONIL Buildcon sees on transmission, solar civil, and industrial sites.",
+    challenges: [
+      "Owner–EPC–subcontractor handoffs where permits and LMRA do not travel with the crew",
+      "Incident capture that stops at the main contractor’s WhatsApp group",
+      "CAPA owned by nobody once the package is handed over",
+      "Induction and competency that reset every new subcontractor wave",
+    ],
+    modules: ["incidents", "permit-to-work", "risk-management", "contractor-management", "capa"],
+  },
+  {
+    slug: "oil-gas-chemicals",
+    name: "Oil, Gas & Chemicals",
+    summary:
+      "SIMOPS, isolation, and turnaround contractor load — permit and investigation quality under process-safety pressure, not a generic ‘energy’ template.",
+    challenges: [
+      "Permit-to-work colliding with simultaneous operations",
+      "Turnaround windows that flood the site with short-tenure contractors",
+      "Investigations that stop at immediate cause instead of verification of effectiveness",
+      "Chemical and energy isolation evidence that must survive an audit trail",
+    ],
+    modules: ["permit-to-work", "risk-management", "incidents", "capa", "contractor-management"],
+  },
+  {
+    slug: "logistics-warehousing",
+    name: "Logistics & Warehousing",
+    summary:
+      "Vehicle–pedestrian conflict, MHE, and 3PL gates — high-frequency hazards that still need the same CAPA discipline as a plant.",
+    challenges: [
+      "Yard and dock incidents that never leave a shift log",
+      "Visitor and 3PL control that is a register at the boom barrier",
+      "Training currency across hubs that do not share one HSE office",
+      "Inspection findings on racking and traffic routes that do not become actions",
+    ],
+    modules: ["incidents", "inspections", "training", "contractor-management", "capa"],
+  },
 ] as const;
 
 export type IndustrySlug = (typeof industries)[number]["slug"];
+
+export const canonicalIndustrySlugs = [
+  "manufacturing",
+  "construction-epc",
+  "renewable-energy",
+  "oil-gas-chemicals",
+  "logistics-warehousing",
+] as const;
 
 export const modules = [
   {
@@ -288,14 +337,15 @@ export const modules = [
   {
     slug: "contractor-management",
     name: "Contractor Management",
-    summary: "Bring contractors into the same control system as your workforce.",
-    field: "Contractor crews report and work under the same permits, LMRA, and incident paths.",
-    dashboard: "Onboarding, activity, and HSE performance signals stay scoped to each tenant.",
+    summary:
+      "Register contractor companies on the same tenant as incidents and permits. Deeper induction, document packs and gate control are still early — we do not market a full contractor OS yet.",
+    field: "Contractor names can sit on permits and incident context; a dedicated contractor field portal is not claimed here.",
+    dashboard: "A company register with status, safety score and insurance date — list-level today.",
     capabilities: [
-      "Contractor profiles and site access context",
-      "Activity linkage to permits and incidents",
-      "Onboarding visibility",
-      "Performance signals for HSE review",
+      "Organisation-scoped contractor company records",
+      "Status, safety score and insurance date on the register",
+      "Contractor names on permits and related events",
+      "Not a full induction, blacklist or gate-pass product yet",
     ],
   },
   {
@@ -364,6 +414,17 @@ export const platformPillars = [
   },
 ] as const;
 
+/** Conceptual architecture used on homepage and product hub. */
+export const architectureSteps = [
+  { title: "Identify", body: "Incidents, near misses, and hazards captured at the workfront." },
+  { title: "Assess", body: "Risk registers, JSA/JHA, and LMRA before the task proceeds." },
+  { title: "Control", body: "Permits, inspections, and audits that authorize and check the work." },
+  { title: "Act", body: "CAPA, owned actions, and training that close the loop." },
+  { title: "Comply", body: "Statutory and regulatory obligations beside the EHS record." },
+  { title: "Report", body: "ESG and BRSR-oriented views on the same tenant data." },
+  { title: "Analyze", body: "Leadership dashboards and an AI-ready structured record." },
+] as const;
+
 export const lifecycleSteps = [
   { title: "Report", detail: "Capture events, hazards, and LMRA with structured site context." },
   { title: "Investigate", detail: "Establish facts, causes, and accountable owners." },
@@ -420,7 +481,7 @@ export const pricingTiers = [
     points: [
       "Expanded module entitlements",
       "Contractor, permit-to-work, and inspection depth",
-      "Advanced reporting paths",
+      "Compliance tracking and ESG/BRSR when entitled",
       "Onboarding guidance",
     ],
     cta: "Contact Sales",
@@ -433,16 +494,22 @@ export const pricingTiers = [
     points: [
       "Custom entitlement packaging",
       "Advanced tenancy and admin controls",
-      "Security review support",
+      "Self-hosted instance as a commercial option",
       "Dedicated commercial engagement",
     ],
     cta: "Custom",
-    href: "/request-demo",
+    href: "/book-a-demo",
   },
 ] as const;
 
 export function getIndustry(slug: string) {
   return industries.find((i) => i.slug === slug);
+}
+
+export function listCanonicalIndustries() {
+  return canonicalIndustrySlugs
+    .map((slug) => getIndustry(slug))
+    .filter((row): row is NonNullable<typeof row> => Boolean(row));
 }
 
 export function getModule(slug: string) {

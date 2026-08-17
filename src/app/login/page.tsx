@@ -18,7 +18,7 @@ export default async function LoginPage({
       {params.reset ? (
         <p className="mb-4 text-sm text-success">Password updated. Sign in with your new password.</p>
       ) : null}
-      <AuthForm mode="login" action={signInAction} next={params.next} />
+      <AuthForm mode="login" action={signInAction} next={params.next} portal="company" />
     </AuthShell>
   );
 }

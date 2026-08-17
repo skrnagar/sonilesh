@@ -4,11 +4,14 @@ Production-oriented multi-tenant Environment, Health & Safety SaaS built with Ne
 
 ## Experiences
 
-- `/` — Marketing landing page
+- `/` — Marketing landing page (`/platform`, `/solutions`, `/modules`, …)
 - `/login`, `/signup`, `/forgot-password`, `/reset-password`, `/verify-email` — Auth
 - `/onboarding` — Create org → site → invites → plan → dashboard
 - `/admin` — SaaS Super Admin console
-- `/app` — Customer EHS workspace
+- `/app` — Customer EHS workspace (org / site / project context in the header)
+- `/field` — Mobile-first field app
+
+See `ARCHITECTURE.md`, `SECURITY.md`, `DATABASE.md`, `DEVELOPMENT.md`, and `docs/DESIGN_SYSTEM.md`.
 
 ## Quick start
 
@@ -87,6 +90,9 @@ update public.profiles set is_platform_admin = true where email = 'you@example.c
 - `npm run typecheck` — TypeScript
 - `npm run lint` — ESLint
 - `npm test` — Vitest
+- `npm run seed:demo` — DEMO Auth users + tenant click-through data (not customers)
+
+See **DEVELOPMENT.md → Demo accounts** for emails, the demo-only password, and which modules are seeded.
 
 ## Architecture docs
 

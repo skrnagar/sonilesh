@@ -1,5 +1,9 @@
+import { cache } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { EntitlementResult, LimitCheckResult } from "@/types/database";
+import { billingGraceDays, isSelfHosted, selfHostFeatureCodes } from "@/lib/env";
+import { mergeEntitlements } from "@/lib/entitlements/resolve";
+import { countLiveMetric, resolveFeatureKeyForMetric } from "@/lib/usage/live";
 
 type FeatureRow = {
   id: string;
@@ -7,7 +11,7 @@ type FeatureRow = {
   value_type: "boolean" | "numeric" | "unlimited";
 };
 
-const ACTIVE_SUB_STATUSES = ["trialing", "active", "past_due", "paused"] as const;
+const ACTIVE_SUB_STATUSES = ["trialing", "active", "paused"] as const;
 
 async function getFeature(
   supabase: SupabaseClient,
@@ -23,12 +27,13 @@ async function getFeature(
   return data;
 }
 
-async function resolveEntitlement(
+export async function resolveEntitlement(
   supabase: SupabaseClient,
   organizationId: string,
   featureCode: string,
 ): Promise<EntitlementResult> {
-  const feature = await getFeature(supabase, featureCode);
+  const resolvedCode = resolveFeatureKeyForMetric(featureCode);
+  const feature = await getFeature(supabase, resolvedCode);
   if (!feature) {
     return { enabled: false, unlimited: false, limitValue: null, source: "default" };
   }
@@ -37,7 +42,7 @@ async function resolveEntitlement(
   const [{ data: override }, { data: subscription }] = await Promise.all([
     supabase
       .from("organization_feature_overrides")
-      .select("enabled, limit_value, unlimited, ends_at, is_temporary")
+      .select("enabled, limit_value, unlimited, starts_at, ends_at")
       .eq("organization_id", organizationId)
       .eq("feature_id", feature.id)
       .lte("starts_at", nowIso)
@@ -46,45 +51,77 @@ async function resolveEntitlement(
       .maybeSingle(),
     supabase
       .from("subscriptions")
-      .select("id, plan_id, status")
+      .select("id, plan_id, status, current_period_end")
       .eq("organization_id", organizationId)
-      .in("status", [...ACTIVE_SUB_STATUSES])
+      .in("status", [...ACTIVE_SUB_STATUSES, "past_due"])
       .is("deleted_at", null)
       .maybeSingle(),
   ]);
 
-  if (override && (!override.ends_at || override.ends_at >= nowIso)) {
-    return {
-      enabled: override.enabled ?? true,
-      unlimited: override.unlimited,
-      limitValue: override.limit_value === null ? null : Number(override.limit_value),
-      source: "override",
-    };
+  let planSlice = {
+    featureCode: resolvedCode,
+    enabled: false,
+    limitValue: null as number | null,
+    unlimited: false,
+  };
+
+  if (subscription) {
+    let planOk = true;
+    if (subscription.status === "past_due") {
+      const graceMs = billingGraceDays() * 24 * 60 * 60 * 1000;
+      const periodEnd = subscription.current_period_end
+        ? new Date(subscription.current_period_end).getTime()
+        : 0;
+      if (!periodEnd || Date.now() > periodEnd + graceMs) {
+        planOk = false;
+      }
+    }
+    if (planOk) {
+      const { data: planFeature } = await supabase
+        .from("plan_features")
+        .select("enabled, limit_value, unlimited")
+        .eq("plan_id", subscription.plan_id)
+        .eq("feature_id", feature.id)
+        .maybeSingle();
+      if (planFeature) {
+        planSlice = {
+          featureCode: resolvedCode,
+          enabled: Boolean(planFeature.enabled),
+          unlimited: Boolean(planFeature.unlimited),
+          limitValue:
+            planFeature.limit_value === null || planFeature.limit_value === undefined
+              ? null
+              : Number(planFeature.limit_value),
+        };
+      }
+    }
   }
 
-  if (!subscription) {
-    return { enabled: false, unlimited: false, limitValue: null, source: "default" };
-  }
-
-  const { data: planFeature } = await supabase
-    .from("plan_features")
-    .select("enabled, limit_value, unlimited")
-    .eq("plan_id", subscription.plan_id)
-    .eq("feature_id", feature.id)
-    .maybeSingle();
-
-  if (!planFeature) {
-    return { enabled: false, unlimited: false, limitValue: null, source: "default" };
-  }
-
+  const overrideActive =
+    override && (!override.ends_at || override.ends_at >= nowIso) ? override : null;
+  const merged = mergeEntitlements(
+    [planSlice],
+    overrideActive
+      ? [
+          {
+            featureCode: resolvedCode,
+            enabled: overrideActive.enabled,
+            limitValue:
+              overrideActive.limit_value === null ? null : Number(overrideActive.limit_value),
+            unlimited: Boolean(overrideActive.unlimited),
+            startsAt: overrideActive.starts_at,
+            endsAt: overrideActive.ends_at,
+          },
+        ]
+      : [],
+    nowIso,
+  );
+  const row = merged[0];
   return {
-    enabled: planFeature.enabled,
-    unlimited: planFeature.unlimited,
-    limitValue:
-      planFeature.limit_value === null || planFeature.limit_value === undefined
-        ? null
-        : Number(planFeature.limit_value),
-    source: "plan",
+    enabled: row?.enabled ?? false,
+    unlimited: row?.unlimited ?? false,
+    limitValue: row?.limitValue ?? null,
+    source: row?.source ?? "default",
   };
 }
 
@@ -93,8 +130,21 @@ export async function hasFeature(
   organizationId: string,
   featureCode: string,
 ) {
-  const entitlement = await resolveEntitlement(supabase, organizationId, featureCode);
-  return entitlement.enabled;
+  if (isSelfHosted()) {
+    const licensed = selfHostFeatureCodes();
+    if (licensed && !licensed.includes(featureCode)) return false;
+  }
+  const enabled = await listEnabledFeatures(supabase, organizationId);
+  return enabled.includes(featureCode);
+}
+
+export class UpgradeRequiredError extends Error {
+  featureCode: string;
+  constructor(featureCode: string) {
+    super(`Upgrade required to use this module (${featureCode}).`);
+    this.name = "UpgradeRequiredError";
+    this.featureCode = featureCode;
+  }
 }
 
 export async function getLimit(
@@ -122,16 +172,16 @@ export async function checkLimit(
     return { allowed: true, remaining: null, limit: null, unlimited: true };
   }
 
-  const feature = await getFeature(supabase, featureCode);
+  const resolvedCode = resolveFeatureKeyForMetric(featureCode);
+  const feature = await getFeature(supabase, resolvedCode);
   let currentUsage = 0;
 
-  if (feature) {
+  const live = await countLiveMetric(supabase, organizationId, resolvedCode);
+  if (live != null) {
+    currentUsage = live;
+  } else if (feature) {
     const periodStart = new Date();
     periodStart.setUTCDate(1);
-    const periodEnd = new Date(periodStart);
-    periodEnd.setUTCMonth(periodEnd.getUTCMonth() + 1);
-    periodEnd.setUTCDate(0);
-
     const { data: metric } = await supabase
       .from("usage_metrics")
       .select("usage_value")
@@ -139,34 +189,7 @@ export async function checkLimit(
       .eq("feature_id", feature.id)
       .eq("period_start", periodStart.toISOString().slice(0, 10))
       .maybeSingle();
-
     currentUsage = Number(metric?.usage_value ?? 0);
-  }
-
-  if (featureCode === "max_users") {
-    const { count } = await supabase
-      .from("organization_members")
-      .select("id", { count: "exact", head: true })
-      .eq("organization_id", organizationId)
-      .eq("status", "active")
-      .is("deleted_at", null);
-    currentUsage = count ?? 0;
-  }
-  if (featureCode === "max_sites") {
-    const { count } = await supabase
-      .from("sites")
-      .select("id", { count: "exact", head: true })
-      .eq("organization_id", organizationId)
-      .is("deleted_at", null);
-    currentUsage = count ?? 0;
-  }
-  if (featureCode === "max_projects") {
-    const { count } = await supabase
-      .from("projects")
-      .select("id", { count: "exact", head: true })
-      .eq("organization_id", organizationId)
-      .is("deleted_at", null);
-    currentUsage = count ?? 0;
   }
 
   const remaining = entitlement.limitValue - currentUsage;
@@ -185,7 +208,7 @@ export async function requireFeature(
 ) {
   const ok = await hasFeature(supabase, organizationId, featureCode);
   if (!ok) {
-    throw new Error(`Feature not entitled: ${featureCode}`);
+    throw new UpgradeRequiredError(featureCode);
   }
 }
 
@@ -193,7 +216,7 @@ export async function requireFeature(
  * Batched entitlement resolution for sidebar/nav.
  * Avoids N×(feature+override+subscription+plan) round-trips.
  */
-export async function listEnabledFeatures(
+export const listEnabledFeatures = cache(async function listEnabledFeatures(
   supabase: SupabaseClient,
   organizationId: string,
 ) {
@@ -210,9 +233,9 @@ export async function listEnabledFeatures(
       .eq("is_active", true),
     supabase
       .from("subscriptions")
-      .select("id, plan_id, status")
+      .select("id, plan_id, status, current_period_end")
       .eq("organization_id", organizationId)
-      .in("status", [...ACTIVE_SUB_STATUSES])
+      .in("status", [...ACTIVE_SUB_STATUSES, "past_due"])
       .is("deleted_at", null)
       .maybeSingle(),
     supabase
@@ -244,11 +267,21 @@ export async function listEnabledFeatures(
   }
 
   const planFeatureById = new Map<string, { enabled: boolean }>();
-  if (subscription?.plan_id) {
+  let planId = subscription?.plan_id as string | undefined;
+  if (subscription?.status === "past_due") {
+    const graceMs = billingGraceDays() * 24 * 60 * 60 * 1000;
+    const periodEnd = (subscription as { current_period_end?: string }).current_period_end
+      ? new Date((subscription as { current_period_end?: string }).current_period_end as string).getTime()
+      : 0;
+    if (!periodEnd || Date.now() > periodEnd + graceMs) {
+      planId = undefined;
+    }
+  }
+  if (planId) {
     const { data: planFeatures, error: planError } = await supabase
       .from("plan_features")
       .select("feature_id, enabled")
-      .eq("plan_id", subscription.plan_id);
+      .eq("plan_id", planId);
     if (planError) throw new Error(planError.message);
     for (const pf of planFeatures ?? []) {
       planFeatureById.set(pf.feature_id, { enabled: pf.enabled });
@@ -266,5 +299,10 @@ export async function listEnabledFeatures(
     if (planFeature?.enabled) enabled.push(feature.code);
   }
 
+  if (isSelfHosted()) {
+    const licensed = selfHostFeatureCodes();
+    if (licensed) return enabled.filter((code) => licensed.includes(code));
+  }
+
   return enabled;
-}
+});

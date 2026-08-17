@@ -1,18 +1,15 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
 import { fieldRoleFromCodes, type FieldRole } from "@/lib/auth/field-roles";
+import { getRoleCodesForUser } from "@/lib/auth/member-roles";
+import { requireOrgContext } from "@/lib/auth/org-context";
 
+/** Shares the request-scoped role fetch used by app/field layouts. */
 export async function resolveFieldRole(
-  supabase: SupabaseClient,
-  membershipId: string,
+  _client?: unknown,
+  _membershipId?: string,
 ): Promise<FieldRole> {
-  const { data: memberRoles } = await supabase
-    .from("member_roles")
-    .select("roles:role_id(code)")
-    .eq("member_id", membershipId)
-    .is("deleted_at", null);
-
-  const codes = (memberRoles ?? [])
-    .map((mr) => (mr.roles as { code?: string } | null)?.code)
-    .filter(Boolean) as string[];
-  return fieldRoleFromCodes(codes);
+  void _client;
+  void _membershipId;
+  const { supabase, user, organization } = await requireOrgContext();
+  const { roleCodes } = await getRoleCodesForUser(supabase, user.id, organization.id);
+  return fieldRoleFromCodes(roleCodes);
 }

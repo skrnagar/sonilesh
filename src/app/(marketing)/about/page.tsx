@@ -1,17 +1,13 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHero } from "@/components/marketing/page-hero";
 import { Container } from "@/components/marketing/container";
 import { SectionHeader } from "@/components/marketing/section-header";
 import { FeatureCard } from "@/components/marketing/feature-card";
 import { CTASection } from "@/components/marketing/cta-section";
+import { metadataForPath } from "@/lib/marketing/seo";
 import { brand, company } from "@/lib/marketing/content";
 
-export const metadata: Metadata = {
-  title: "About",
-  description:
-    "About SONIL EHS360 — enterprise EHS SaaS from SONIL BUILDCON PRIVATE LIMITED, Indore. Field capture to boardroom visibility.",
-};
+export const metadata = metadataForPath("/about");
 
 export default function AboutPage() {
   return (
@@ -19,7 +15,7 @@ export default function AboutPage() {
       <PageHero
         eyebrow="About"
         title={brand.name}
-        description={`${brand.tagline} ${brand.supporting} Built for Environment, Health & Safety programs that need real control — not slideware.`}
+        description={`${brand.tagline} ${brand.supporting}`}
         compact
       />
       <section className="py-16 md:py-20">
@@ -39,8 +35,8 @@ export default function AboutPage() {
             </p>
             <p>
               Their published HSE language is practical: toolbox talks, PPE, and a zero-harm culture on
-              every site. SONIL EHS360 is the multi-tenant software product from the same group — so LMRA,
-              permits, incidents, and CAPA match how infrastructure work actually runs.
+              every site. SONIL EHS360 is the multi-tenant EHS, ESG and compliance product from the same
+              group — so LMRA, permits, incidents, CAPA and reporting match how infrastructure work actually runs.
             </p>
             <p className="text-sm text-muted-foreground">
               Operating presence listed publicly: {company.operatingStates.join(", ")}.
@@ -78,7 +74,7 @@ export default function AboutPage() {
           <div className="mt-12 grid gap-10 md:grid-cols-3">
             <FeatureCard
               title="System of record"
-              body="Incidents, LMRA, risk, permits, inspections, and CAPA belong in one governed platform."
+              body="Incidents, LMRA, risk, permits, inspections, CAPA, statutory tracking, and ESG/BRSR views belong in one governed platform."
             />
             <FeatureCard
               title="SaaS seriousness"

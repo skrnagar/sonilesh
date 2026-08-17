@@ -4,6 +4,7 @@ import {
   resolveBand,
   scoreRisk,
   HIERARCHY_OF_CONTROLS,
+  RISK_TRANSITIONS,
 } from "@/lib/services/risk";
 
 const bands = [
@@ -33,12 +34,39 @@ describe("risk matrix engine", () => {
     expect(resolveBand(11, custom)).toBe("red");
   });
 
+  it("returns null when score falls outside all bands", () => {
+    expect(resolveBand(0, bands)).toBeNull();
+    expect(resolveBand(100, bands)).toBeNull();
+  });
+
   it("enforces hierarchy of controls values", () => {
-    expect(HIERARCHY_OF_CONTROLS).toContain("elimination");
-    expect(HIERARCHY_OF_CONTROLS).toContain("ppe");
+    expect(HIERARCHY_OF_CONTROLS).toEqual([
+      "elimination",
+      "substitution",
+      "engineering",
+      "administrative",
+      "ppe",
+    ]);
   });
 
   it("allows draft to in_progress", () => {
     expect(canTransitionRisk("draft", "in_progress")).toBe(true);
+  });
+
+  it("requires approval before active", () => {
+    expect(canTransitionRisk("review", "active")).toBe(false);
+    expect(canTransitionRisk("approval", "active")).toBe(true);
+  });
+
+  it("supports periodic review loop", () => {
+    expect(canTransitionRisk("active", "periodic_review")).toBe(true);
+    expect(canTransitionRisk("periodic_review", "active")).toBe(true);
+    expect(canTransitionRisk("periodic_review", "retired")).toBe(true);
+  });
+
+  it("blocks transitions from terminal statuses", () => {
+    expect(canTransitionRisk("retired", "active")).toBe(false);
+    expect(canTransitionRisk("cancelled", "draft")).toBe(false);
+    expect(RISK_TRANSITIONS.retired).toEqual([]);
   });
 });

@@ -16,59 +16,25 @@ export const primaryNav: {
   columns?: MegaColumn[];
 }[] = [
   {
-    label: "Platform",
-    href: "/platform",
+    label: "Product",
+    href: "/product",
     columns: [
       {
-        title: "Overview",
+        title: "Platform",
         links: [
-          {
-            label: "Platform",
-            href: "/platform",
-            description: "Field to boardroom control system",
-            icon: "LayoutGrid",
-          },
-          {
-            label: "Features",
-            href: "/features",
-            description: "Capabilities across the EHS lifecycle",
-            icon: "ListChecks",
-          },
-          {
-            label: "Field",
-            href: "/field-experience",
-            description: "LMRA and mobile capture for crews",
-            icon: "Smartphone",
-          },
+          { label: "Overview", href: "/product", description: "EHS + ESG + compliance in one tenant", icon: "LayoutGrid" },
+          { label: "Incident management", href: "/product/incident-management", description: "Field capture to investigation", icon: "AlertTriangle" },
+          { label: "Risk & JSA", href: "/product/risk-assessment-jsa", description: "Registers, JSA, LMRA", icon: "Radar" },
+          { label: "Permit to work", href: "/product/permit-to-work", description: "Authorization and isolation", icon: "FileBadge" },
         ],
       },
       {
-        title: "Depth",
+        title: "Assure & report",
         links: [
-          {
-            label: "Analytics",
-            href: "/modules/analytics",
-            description: "Operational and leadership visibility",
-            icon: "BarChart3",
-          },
-          {
-            label: "Security",
-            href: "/security",
-            description: "Isolation, auth, and auditability",
-            icon: "Shield",
-          },
-          {
-            label: "AI-ready",
-            href: "/platform#ai-ready",
-            description: "Assistive potential — no overclaim",
-            icon: "Sparkles",
-          },
-          {
-            label: "Enterprise",
-            href: "/enterprise",
-            description: "Org isolation, sites, entitlements",
-            icon: "Building2",
-          },
+          { label: "Inspections & audits", href: "/product/inspections-audits", description: "Findings into actions", icon: "ClipboardCheck" },
+          { label: "CAPA", href: "/product/capa-tracking", description: "Owners and verification", icon: "ListChecks" },
+          { label: "Compliance tracking", href: "/product/compliance-tracking", description: "Statutory obligations", icon: "Scale" },
+          { label: "ESG & BRSR", href: "/product/esg-brsr-reporting", description: "Reporting on EHS data", icon: "Leaf" },
         ],
       },
     ],
@@ -80,159 +46,11 @@ export const primaryNav: {
       {
         title: "Industries",
         links: [
-          {
-            label: "Construction",
-            href: "/solutions/construction",
-            description: "Projects, contractors, high-risk work",
-            icon: "HardHat",
-          },
-          {
-            label: "EPC",
-            href: "/solutions/epc",
-            description: "Packages, handoffs, joint ventures",
-            icon: "Building2",
-          },
-          {
-            label: "Power & Energy",
-            href: "/solutions/power-energy",
-            description: "Generation, outages, permits",
-            icon: "Zap",
-          },
-          {
-            label: "Renewable Energy",
-            href: "/solutions/renewable-energy",
-            description: "Wind, solar, and construction risk",
-            icon: "Leaf",
-          },
-          {
-            label: "Manufacturing",
-            href: "/solutions/manufacturing",
-            description: "Lines, contractors, and CAPA",
-            icon: "Factory",
-          },
-        ],
-      },
-      {
-        title: "More",
-        links: [
-          {
-            label: "Oil & Gas",
-            href: "/solutions/oil-gas",
-            description: "Upstream to downstream control",
-            icon: "Flame",
-          },
-          {
-            label: "Infrastructure",
-            href: "/solutions/infrastructure",
-            description: "Linear projects and public works",
-            icon: "Landmark",
-          },
-          {
-            label: "Mining",
-            href: "/solutions/mining",
-            description: "Pit, plant, and contractor safety",
-            icon: "Mountain",
-          },
-          {
-            label: "Logistics",
-            href: "/solutions/logistics",
-            description: "Yards, fleets, and warehouses",
-            icon: "Truck",
-          },
-          {
-            label: "All solutions",
-            href: "/solutions",
-            description: "Browse every vertical",
-            icon: "ArrowRight",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Modules",
-    href: "/modules",
-    columns: [
-      {
-        title: "Control",
-        links: [
-          {
-            label: "Incidents",
-            href: "/modules/incidents",
-            description: "Capture, investigate, close",
-            icon: "AlertTriangle",
-          },
-          {
-            label: "Risk Management",
-            href: "/modules/risk-management",
-            description: "Registers, heat maps, residual risk",
-            icon: "Radar",
-          },
-          {
-            label: "Permit to Work",
-            href: "/modules/permit-to-work",
-            description: "Authorization and isolation",
-            icon: "FileBadge",
-          },
-          {
-            label: "Inspections",
-            href: "/modules/inspections",
-            description: "Checklists and findings",
-            icon: "ClipboardCheck",
-          },
-          {
-            label: "Audits",
-            href: "/modules/audits",
-            description: "Program assurance",
-            icon: "FileSearch",
-          },
-          {
-            label: "CAPA",
-            href: "/modules/capa",
-            description: "Actions with verification",
-            icon: "ListChecks",
-          },
-        ],
-      },
-      {
-        title: "Enablement",
-        links: [
-          {
-            label: "Training",
-            href: "/modules/training",
-            description: "Assignments and competency",
-            icon: "GraduationCap",
-          },
-          {
-            label: "Contractors",
-            href: "/modules/contractor-management",
-            description: "Onboarding and scores",
-            icon: "Users",
-          },
-          {
-            label: "PPE",
-            href: "/modules/ppe",
-            description: "Issue and compliance",
-            icon: "HardHat",
-          },
-          {
-            label: "Document Control",
-            href: "/modules/document-control",
-            description: "Controlled procedures",
-            icon: "FolderOpen",
-          },
-          {
-            label: "Analytics",
-            href: "/modules/analytics",
-            description: "Leading and lagging signals",
-            icon: "BarChart3",
-          },
-          {
-            label: "All modules",
-            href: "/modules",
-            description: "Compose the program you need",
-            icon: "Puzzle",
-          },
+          { label: "Manufacturing", href: "/solutions/manufacturing", description: "Plants, shifts, Factories Act discipline", icon: "Factory" },
+          { label: "Construction & EPC", href: "/solutions/construction-epc", description: "Packages, contractors, civil risk", icon: "HardHat" },
+          { label: "Renewable energy", href: "/solutions/renewable-energy", description: "Solar, wind, O&M", icon: "Leaf" },
+          { label: "Oil, gas & chemicals", href: "/solutions/oil-gas-chemicals", description: "Permits, SIMOPS, turnarounds", icon: "Flame" },
+          { label: "Logistics & warehousing", href: "/solutions/logistics-warehousing", description: "Yards, MHE, 3PL gates", icon: "Truck" },
         ],
       },
     ],
@@ -242,123 +60,60 @@ export const primaryNav: {
     href: "/resources",
     columns: [
       {
-        title: "Library",
+        title: "Learn",
         links: [
-          {
-            label: "Resources",
-            href: "/resources",
-            description: "Guides as the library grows — no fabricated papers",
-            icon: "BookOpen",
-          },
-          {
-            label: "Implementation",
-            href: "/resources#implementation",
-            description: "Sites, roles, and module rollout",
-            icon: "Layers3",
-          },
-          {
-            label: "Field adoption",
-            href: "/resources#field-adoption",
-            description: "LMRA and reporting in the moment",
-            icon: "Smartphone",
-          },
-        ],
-      },
-      {
-        title: "Company",
-        links: [
-          {
-            label: "About SONIL",
-            href: "/about",
-            description: "EHS360 and SONIL Buildcon",
-            icon: "Building2",
-          },
-          {
-            label: "Contact",
-            href: "/contact",
-            description: "Sales and product conversations",
-            icon: "Mail",
-          },
-          {
-            label: "Security",
-            href: "/security",
-            description: "Controls without fake certifications",
-            icon: "Shield",
-          },
+          { label: "Guides", href: "/resources", description: "Pillars as they are written", icon: "BookOpen" },
+          { label: "BRSR checker", href: "/resources/brsr-applicability", description: "Same rules as the app", icon: "Scale" },
+          { label: "Glossary", href: "/resources#glossary", description: "BRSR, TRIR, CAPA, EPR…", icon: "List" },
+          { label: "Security", href: "/security", description: "Controls we actually run", icon: "Shield" },
+          { label: "Self-hosting", href: "/self-hosting", description: "Cloud or private instance", icon: "Building2" },
         ],
       },
     ],
   },
-  {
-    label: "Pricing",
-    href: "/pricing",
-    columns: [
-      {
-        title: "Packaging",
-        links: [
-          {
-            label: "Plans overview",
-            href: "/pricing",
-            description: "Team, Business, Enterprise — Contact Sales",
-            icon: "Layers3",
-          },
-          {
-            label: "Compare packages",
-            href: "/pricing#compare",
-            description: "Capability direction, not fake price tags",
-            icon: "ListChecks",
-          },
-          {
-            label: "Contact sales",
-            href: "/contact",
-            description: "Commercial terms for your sites",
-            icon: "Mail",
-          },
-        ],
-      },
-    ],
-  },
+  { label: "Pricing", href: "/pricing" },
 ];
 
 export const footerColumns: { title: string; links: NavLink[] }[] = [
   {
     title: "Product",
     links: [
-      { label: "Platform", href: "/platform" },
-      { label: "Features", href: "/features" },
-      { label: "Field", href: "/field-experience" },
-      { label: "Modules", href: "/modules" },
+      { label: "Overview", href: "/product" },
+      { label: "Incidents", href: "/product/incident-management" },
+      { label: "Compliance", href: "/product/compliance-tracking" },
+      { label: "ESG & BRSR", href: "/product/esg-brsr-reporting" },
       { label: "Pricing", href: "/pricing" },
     ],
   },
   {
     title: "Solutions",
     links: [
-      { label: "Construction", href: "/solutions/construction" },
-      { label: "Oil & Gas", href: "/solutions/oil-gas" },
       { label: "Manufacturing", href: "/solutions/manufacturing" },
+      { label: "Construction & EPC", href: "/solutions/construction-epc" },
       { label: "Renewables", href: "/solutions/renewable-energy" },
+      { label: "Oil & gas", href: "/solutions/oil-gas-chemicals" },
       { label: "All industries", href: "/solutions" },
-    ],
-  },
-  {
-    title: "Modules",
-    links: [
-      { label: "Incidents", href: "/modules/incidents" },
-      { label: "CAPA", href: "/modules/capa" },
-      { label: "Permit to Work", href: "/modules/permit-to-work" },
-      { label: "Analytics", href: "/modules/analytics" },
-      { label: "All modules", href: "/modules" },
     ],
   },
   {
     title: "Company",
     links: [
       { label: "About", href: "/about" },
-      { label: "SONIL Buildcon", href: "https://www.sonilbuildcon.com/" },
-      { label: "Resources", href: "/resources" },
+      { label: "Customers", href: "/customers" },
+      { label: "Security", href: "/security" },
+      { label: "Self-hosting", href: "/self-hosting" },
       { label: "Contact", href: "/contact" },
-      { label: "Request demo", href: "/request-demo" },
+    ],
+  },
+  {
+    title: "Get started",
+    links: [
+      { label: "Book a Demo", href: "/book-a-demo" },
+      { label: "Start Free", href: "/signup" },
+      { label: "Sign in", href: "/login" },
+      { label: "BRSR checker", href: "/resources/brsr-applicability" },
+      { label: "Resources", href: "/resources" },
+      { label: "SONIL Buildcon", href: "https://www.sonilbuildcon.com/" },
     ],
   },
 ];

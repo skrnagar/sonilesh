@@ -1,20 +1,19 @@
 import { KpiCard } from "@/components/dashboard/kpi-card";
 import { PeriodToggle } from "@/components/dashboard/period-toggle";
 import { ScopeFilters } from "@/components/dashboard/scope-filters";
-import {
-  ContractorScoreChart,
-  IncidentTrendChart,
-  NamedBarChart,
-  RiskHeatMap,
-  SeverityChart,
-} from "@/components/dashboard/charts";
 import { StatusPill } from "@/components/modules/records-table";
 import { EmptyState } from "@/components/shared/state-panels";
 import { requireOrgContext } from "@/lib/auth/org-context";
 import { getDashboardSnapshot } from "@/lib/services/dashboard";
 import { formatDate } from "@/lib/utils";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Suspense } from "react";
+
+const DashboardCharts = dynamic(() => import("@/components/dashboard/charts-section"), {
+  ssr: false,
+  loading: () => <div className="h-64 rounded-2xl border border-border bg-card" />,
+});
 
 export default async function DashboardPage({
   searchParams,
@@ -33,8 +32,14 @@ export default async function DashboardPage({
   }>;
 }) {
   const params = await searchParams;
-  const { supabase, organization } = await requireOrgContext();
-  const snapshot = await getDashboardSnapshot(supabase, organization.id, organization.name, params);
+  const { supabase, organization, sites, projects } = await requireOrgContext();
+  const snapshot = await getDashboardSnapshot(
+    supabase,
+    organization.id,
+    organization.name,
+    params,
+    { sites, projects },
+  );
 
   return (
     <div className="min-w-0 space-y-6">
@@ -82,36 +87,16 @@ export default async function DashboardPage({
         ))}
       </div>
 
-      <div className="grid min-w-0 gap-4 xl:grid-cols-2">
-        <IncidentTrendChart data={snapshot.incidentTrend} />
-        <SeverityChart data={snapshot.severitySeries} />
-        <NamedBarChart
-          title="Near miss vs incidents"
-          empty="No events in this period."
-          data={snapshot.nearMissSeries}
-          color="var(--chart-2)"
-        />
-        <NamedBarChart
-          title="CAPA aging"
-          empty="No open CAPA to age."
-          data={snapshot.capaAging}
-          color="var(--chart-5)"
-        />
-        <RiskHeatMap cells={snapshot.riskHeat} />
-        <NamedBarChart
-          title="Inspection status"
-          empty="No inspection assignments yet."
-          data={snapshot.inspectionSeries}
-          color="var(--chart-3)"
-        />
-        <NamedBarChart
-          title="Training status"
-          empty="No training assignments yet."
-          data={snapshot.trainingSeries}
-          color="var(--chart-4)"
-        />
-        <ContractorScoreChart data={snapshot.contractorSeries} />
-      </div>
+      <DashboardCharts
+        incidentTrend={snapshot.incidentTrend}
+        severitySeries={snapshot.severitySeries}
+        nearMissSeries={snapshot.nearMissSeries}
+        capaAging={snapshot.capaAging}
+        riskHeat={snapshot.riskHeat}
+        inspectionSeries={snapshot.inspectionSeries}
+        trainingSeries={snapshot.trainingSeries}
+        contractorSeries={snapshot.contractorSeries}
+      />
 
       <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)]">
         <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-sm)]">

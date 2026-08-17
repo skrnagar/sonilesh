@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Bell, Menu, PanelLeft, Search } from "lucide-react";
+import { NotificationDropdown } from "@/components/layout/notification-inbox";
+import type { NotificationRow } from "@/lib/services/notifications";
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 
@@ -12,6 +14,8 @@ export function WorkspaceShell({
   userLabel,
   signOut,
   notificationCount = 0,
+  notifications = [],
+  contextSlot,
   children,
 }: {
   sidebar: React.ReactNode;
@@ -19,8 +23,11 @@ export function WorkspaceShell({
   userLabel: string;
   signOut: React.ReactNode;
   notificationCount?: number;
+  notifications?: NotificationRow[];
+  contextSlot?: React.ReactNode;
   children: React.ReactNode;
 }) {
+  const router = useRouter();
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -137,6 +144,7 @@ export function WorkspaceShell({
             </p>
             <p className="hidden truncate text-xs text-muted-foreground sm:block">{userLabel}</p>
           </div>
+          {contextSlot}
           <form
             action="/app/incidents"
             method="get"
@@ -163,9 +171,14 @@ export function WorkspaceShell({
               <button
                 type="button"
                 className="relative inline-flex h-11 w-11 min-h-11 min-w-11 items-center justify-center rounded-xl border border-border bg-card hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                aria-label="Notifications"
+                aria-label={
+                  notificationCount > 0
+                    ? `Notifications, ${notificationCount} unread`
+                    : "Notifications"
+                }
                 aria-expanded={notesOpen}
                 onClick={() => {
+                  if (!notesOpen) router.refresh();
                   setNotesOpen((v) => !v);
                   setUserOpen(false);
                 }}
@@ -176,14 +189,7 @@ export function WorkspaceShell({
                 ) : null}
               </button>
               {notesOpen ? (
-                <div className="absolute right-0 top-[calc(100%+8px)] z-30 w-[min(20rem,calc(100vw-1.5rem))] rounded-xl border border-border bg-card p-4 shadow-[var(--shadow-lg)]">
-                  <p className="font-display text-sm font-semibold">Notifications</p>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {notificationCount > 0
-                      ? `${notificationCount} overdue CAPA item${notificationCount === 1 ? "" : "s"} need attention.`
-                      : "No new EHS alerts for this workspace."}
-                  </p>
-                </div>
+                <NotificationDropdown items={notifications} unreadCount={notificationCount} />
               ) : null}
             </div>
             <ThemeToggle className="min-h-11 min-w-11" />

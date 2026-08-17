@@ -55,7 +55,7 @@ export function Footer() {
         </div>
         <div className="mt-16 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between">
           <p>© 2026 {brand.legalName}</p>
-          <p>Multi-tenant Environment, Health & Safety SaaS</p>
+          <p>Multi-tenant EHS + ESG + compliance SaaS · India-first</p>
         </div>
       </Container>
     </footer>

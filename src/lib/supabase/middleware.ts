@@ -12,7 +12,10 @@ function hasSupabaseAuthCookie(request: NextRequest) {
 }
 
 export async function updateSession(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
   let supabaseResponse = NextResponse.next({ request });
+  supabaseResponse.headers.set("x-ehs-pathname", pathname);
+  supabaseResponse.headers.set("X-Content-Type-Options", "nosniff");
 
   if (!hasSupabaseConfig()) {
     return supabaseResponse;
@@ -28,21 +31,27 @@ export async function updateSession(request: NextRequest) {
     return supabaseResponse;
   }
 
-  const pathname = request.nextUrl.pathname;
   const isAuthRoute =
     pathname.startsWith("/login") ||
+    pathname === "/admin/login" ||
+    pathname === "/field/login" ||
     pathname.startsWith("/signup") ||
     pathname.startsWith("/forgot-password") ||
     pathname.startsWith("/reset-password") ||
     pathname.startsWith("/verify-email");
   const isProtected =
-    pathname.startsWith("/app") ||
-    pathname.startsWith("/admin") ||
-    pathname.startsWith("/onboarding") ||
-    pathname.startsWith("/field");
+    (pathname.startsWith("/app") ||
+      pathname.startsWith("/admin") ||
+      pathname.startsWith("/onboarding") ||
+      pathname.startsWith("/field")) &&
+    !isAuthRoute;
 
   // Anonymous visitors on public/marketing routes: skip Supabase network call.
   if (!hasSupabaseAuthCookie(request) && !isProtected && !isAuthRoute) {
+    supabaseResponse.headers.set(
+      "Cache-Control",
+      "public, s-maxage=120, stale-while-revalidate=600",
+    );
     return supabaseResponse;
   }
 
@@ -65,8 +74,16 @@ export async function updateSession(request: NextRequest) {
             request.cookies.set(name, value);
           });
           supabaseResponse = NextResponse.next({ request });
+          supabaseResponse.headers.set("x-ehs-pathname", pathname);
+          supabaseResponse.headers.set("X-Content-Type-Options", "nosniff");
+          supabaseResponse.headers.set("Cache-Control", "private, no-store");
           cookiesToSet.forEach(({ name, value, options }) => {
-            supabaseResponse.cookies.set(name, value, options);
+            supabaseResponse.cookies.set(name, value, {
+              ...options,
+              sameSite: "lax",
+              secure: process.env.NODE_ENV === "production",
+              path: "/",
+            });
           });
         },
       },
@@ -81,19 +98,25 @@ export async function updateSession(request: NextRequest) {
 
     if (!user && isProtected) {
       const url = request.nextUrl.clone();
-      url.pathname = "/login";
+      url.pathname = pathname.startsWith("/admin")
+        ? "/admin/login"
+        : pathname.startsWith("/field")
+          ? "/field/login"
+          : "/login";
       url.searchParams.set("next", pathname);
       return NextResponse.redirect(url);
     }
 
     if (user && isAuthRoute) {
       const url = request.nextUrl.clone();
-      url.pathname = "/app/dashboard";
+      if (pathname === "/admin/login") url.pathname = "/admin/tenants";
+      else if (pathname === "/field/login") url.pathname = "/field/home";
+      else url.pathname = "/app/dashboard";
       return NextResponse.redirect(url);
     }
 
-    // Admin gate only on /admin — avoid profiles query on every other request.
-    if (user && pathname.startsWith("/admin")) {
+    // Admin gate only on /admin console — login is a public rewrite target.
+    if (user && pathname.startsWith("/admin") && pathname !== "/admin/login") {
       const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("is_platform_admin")
@@ -119,6 +142,8 @@ export async function updateSession(request: NextRequest) {
       }
     }
 
+    supabaseResponse.headers.set("Cache-Control", "private, no-store");
+    supabaseResponse.headers.set("Vary", "Cookie");
     return supabaseResponse;
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

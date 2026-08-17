@@ -29,9 +29,18 @@ export default async function FieldTrainingPage() {
               </p>
             </div>
             {open ? (
-              <FieldSubmitForm action={completeFieldTrainingAction} submitLabel="Mark complete">
-                <input type="hidden" name="assignmentId" value={t.id} />
-              </FieldSubmitForm>
+              <div className="space-y-2">
+                {t.status === "assigned" ? (
+                  <FieldSubmitForm action={completeFieldTrainingAction} submitLabel="Mark started">
+                    <input type="hidden" name="assignmentId" value={t.id} />
+                    <input type="hidden" name="intent" value="start" />
+                  </FieldSubmitForm>
+                ) : null}
+                <FieldSubmitForm action={completeFieldTrainingAction} submitLabel="Mark complete">
+                  <input type="hidden" name="assignmentId" value={t.id} />
+                  <input type="hidden" name="intent" value="complete" />
+                </FieldSubmitForm>
+              </div>
             ) : null}
           </FieldCard>
         );

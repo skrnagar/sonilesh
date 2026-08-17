@@ -6,7 +6,9 @@ import { requireOrgContext } from "@/lib/auth/org-context";
 import { createEhsEvent } from "@/lib/services/events";
 import { transitionCapa, type CapaStatus } from "@/lib/services/capa";
 import { recordResponse } from "@/lib/services/checklists";
-import { transitionPermit } from "@/lib/services/permits";
+import { transitionPermit, requestPermitRenewal } from "@/lib/services/permits";
+import { notifySiteSupervisors } from "@/lib/services/notifications";
+import { requireFeature } from "@/lib/services/entitlements";
 import { createToolboxTalk } from "@/lib/services/supporting";
 import { formatSupabaseUserError } from "@/lib/supabase/errors";
 
@@ -37,59 +39,46 @@ async function persistMedia(
 
 function revalidateField() {
   revalidatePath("/field");
-  revalidatePath("/field/actions");
-  revalidatePath("/field/inspection");
-  revalidatePath("/field/permits");
-  revalidatePath("/field/training");
-  revalidatePath("/field/toolbox");
-  revalidatePath("/field/lmra");
-  revalidatePath("/field/incident");
-  revalidatePath("/field/near-miss");
+  revalidatePath("/app/dashboard");
+  revalidatePath("/app/incidents");
 }
 
 export async function submitFieldReportAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user, organization } = await requireOrgContext();
+    const { supabase, user, organization, siteId, projectId } = await requireOrgContext();
     const mode = String(formData.get("mode") || "incident");
     const intent = String(formData.get("intent") || "submit");
     const description = String(formData.get("description") || "").trim();
     if (!description) return { ok: false, error: "Description required" };
 
+    const typeParam = String(formData.get("type") || formData.get("category") || "");
     const eventTypeCode =
       mode === "near-miss" || mode === "near_miss"
         ? "near_miss"
-        : mode === "hazard" || mode === "lmra"
-          ? String(formData.get("category") || "hazard")
+        : mode === "hazard" || mode === "lmra" || mode === "observation"
+          ? ["unsafe_act", "unsafe_condition", "hazard", "safety_observation"].includes(typeParam)
+            ? typeParam
+            : "hazard"
           : "incident";
 
     if (
-      !["incident", "near_miss", "unsafe_act", "unsafe_condition", "hazard"].includes(
-        eventTypeCode,
-      )
+      ![
+        "incident",
+        "near_miss",
+        "unsafe_act",
+        "unsafe_condition",
+        "hazard",
+        "safety_observation",
+      ].includes(eventTypeCode)
     ) {
       return { ok: false, error: `Unsupported report type: ${eventTypeCode}` };
     }
 
     const gps = String(formData.get("gps") || formData.get("location_text") || "");
+    const latRaw = String(formData.get("latitude") || "");
+    const lngRaw = String(formData.get("longitude") || "");
     const immediate = String(formData.get("immediate_action") || "");
     const people = String(formData.get("people") || "");
-
-    const [{ data: site }, { data: project }] = await Promise.all([
-      supabase
-        .from("sites")
-        .select("id")
-        .eq("organization_id", organization.id)
-        .is("deleted_at", null)
-        .limit(1)
-        .maybeSingle(),
-      supabase
-        .from("projects")
-        .select("id")
-        .eq("organization_id", organization.id)
-        .is("deleted_at", null)
-        .limit(1)
-        .maybeSingle(),
-    ]);
 
     const created = await createEhsEvent(supabase, {
       organizationId: organization.id,
@@ -107,8 +96,18 @@ export async function submitFieldReportAction(formData: FormData): Promise<Actio
       immediateAction: immediate || undefined,
       occurredAt: String(formData.get("occurred_at") || new Date().toISOString()),
       submit: intent === "submit" || intent === "true",
-      siteId: site?.id || undefined,
-      projectId: project?.id || undefined,
+      siteId: siteId || undefined,
+      projectId: projectId || undefined,
+      source: "field",
+      latitude: latRaw ? Number(latRaw) : null,
+      longitude: lngRaw ? Number(lngRaw) : null,
+      observationPolarity:
+        eventTypeCode === "safety_observation"
+          ? String(formData.get("observation_polarity") || "positive") === "negative"
+            ? "negative"
+            : "positive"
+          : null,
+      peopleInvolved: people || undefined,
     });
 
     const event = "event" in created ? created.event : created;
@@ -259,24 +258,22 @@ export async function submitFieldInspectionAction(formData: FormData): Promise<A
         isNa,
         comment: comment || undefined,
         photoUrl: media?.storagePath,
+        storagePath: media?.storagePath,
         signatureName: signature || undefined,
         score: isNa ? 0 : isFailing ? 0 : 1,
         isFailing,
         autoCapa: Boolean(template?.auto_capa_on_fail) && isFailing,
         findingTitle: isFailing ? "Field inspection fail" : undefined,
+        checklistType: "inspection",
       });
     }
 
-    await supabase
-      .from("checklist_assignments")
-      .update({
-        status: "completed",
-        completed_at: new Date().toISOString(),
-        updated_by: user.id,
-        started_at: new Date().toISOString(),
-      })
-      .eq("id", assignmentId)
-      .eq("organization_id", organization.id);
+    const { completeAssignment } = await import("@/lib/services/checklists");
+    await completeAssignment(supabase, {
+      organizationId: organization.id,
+      userId: user.id,
+      assignmentId,
+    });
 
     revalidateField();
     return { ok: true, id: assignmentId };
@@ -331,20 +328,57 @@ export async function acknowledgeFieldPermitAction(formData: FormData): Promise<
 export async function completeFieldTrainingAction(formData: FormData): Promise<ActionResult> {
   try {
     const { supabase, user, organization } = await requireOrgContext();
+    await requireFeature(supabase, organization.id, "training");
     const assignmentId = String(formData.get("assignmentId") || "");
     if (!assignmentId) return { ok: false, error: "Missing assignment" };
+    const intent = String(formData.get("intent") || "complete");
+    const completedAt = new Date().toISOString();
     const { error } = await supabase
       .from("training_assignments")
-      .update({
-        status: "completed",
-        completed_at: new Date().toISOString(),
-      })
+      .update(
+        intent === "start"
+          ? { status: "in_progress" }
+          : {
+              status: "completed",
+              completed_at: completedAt,
+            },
+      )
       .eq("id", assignmentId)
       .eq("organization_id", organization.id)
       .eq("user_id", user.id);
     if (error) throw new Error(error.message);
     revalidateField();
     return { ok: true };
+  } catch (e) {
+    return { ok: false, error: formatSupabaseUserError(e) };
+  }
+}
+
+export async function requestFieldPermitRenewalAction(formData: FormData): Promise<ActionResult> {
+  try {
+    const { supabase, user, organization } = await requireOrgContext();
+    const permitId = String(formData.get("permitId") || "");
+    if (!permitId) return { ok: false, error: "Missing permit" };
+    const renewal = await requestPermitRenewal(supabase, {
+      organizationId: organization.id,
+      userId: user.id,
+      permitId,
+    });
+    try {
+      await notifySiteSupervisors(supabase, {
+        organizationId: organization.id,
+        siteId: renewal.site_id,
+        actorUserId: user.id,
+        eventKey: "permit.renewal_requested",
+        title: "Permit renewal requested",
+        body: renewal.permit_number,
+        link: `/app/permits/${renewal.id}`,
+      });
+    } catch {
+      /* non-blocking */
+    }
+    revalidateField();
+    return { ok: true, id: renewal.id };
   } catch (e) {
     return { ok: false, error: formatSupabaseUserError(e) };
   }

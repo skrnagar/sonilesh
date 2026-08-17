@@ -54,7 +54,7 @@ export async function getEventBundle(
   if (error) throw new Error(error.message);
   if (!event) return null;
 
-  const [activity, comments, capas, investigation] = await Promise.all([
+  const [activity, comments, capas, investigation, attachmentsRaw] = await Promise.all([
     supabase
       .from("ehs_event_activity")
       .select("*")
@@ -77,7 +77,38 @@ export async function getEventBundle(
       .select("*")
       .eq("event_id", eventId)
       .maybeSingle(),
+    supabase
+      .from("ehs_event_attachments")
+      .select("id, file_name, mime_type, file_size, storage_path, kind, created_at")
+      .eq("organization_id", organizationId)
+      .eq("event_id", eventId)
+      .order("created_at", { ascending: false }),
   ]);
+
+  const { createSignedAttachmentUrl } = await import("@/lib/services/attachments");
+  const attachments = await Promise.all(
+    (attachmentsRaw.data ?? []).map(async (row) => {
+      let url: string | null = null;
+      try {
+        url = await createSignedAttachmentUrl(supabase, row.storage_path);
+      } catch {
+        url = null;
+      }
+      const mime = row.mime_type || "";
+      return {
+        id: row.id,
+        file_name: row.file_name,
+        content_type: row.mime_type as string | null,
+        file_size: row.file_size as number | null,
+        storage_path: row.storage_path as string,
+        kind: (row.kind === "photo" || mime.startsWith("image/")
+          ? "photo"
+          : "document") as "photo" | "document",
+        created_at: row.created_at as string | undefined,
+        url,
+      };
+    }),
+  );
 
   return {
     event,
@@ -85,5 +116,6 @@ export async function getEventBundle(
     comments: comments.data ?? [],
     capas: capas.data ?? [],
     investigation: investigation.data ?? null,
+    attachments,
   };
 }

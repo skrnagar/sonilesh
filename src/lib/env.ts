@@ -7,6 +7,7 @@ const envSchema = z.object({
   SUPABASE_JWKS_URL: z.string().url().optional(),
   NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
   NEXT_PUBLIC_APP_NAME: z.string().default("SONIL EHS360"),
+  DEPLOYMENT_MODE: z.enum(["cloud", "self_hosted"]).optional(),
 });
 
 /** Prefer NEXT_PUBLIC_*; fall back to official SUPABASE_URL. */
@@ -51,13 +52,24 @@ export const env = envSchema.parse({
   SUPABASE_JWKS_URL: resolveJwksUrl(),
   NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
   NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME ?? "SONIL EHS360",
+  DEPLOYMENT_MODE: process.env.DEPLOYMENT_MODE === "self_hosted" ? "self_hosted" : "cloud",
 });
 
 export function hasSupabaseConfig() {
   return Boolean(env.NEXT_PUBLIC_SUPABASE_URL && env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 }
 
-export function usesNewSupabaseApiKeys() {
-  const key = env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
-  return key.startsWith("sb_publishable_") || key.startsWith("sb_secret_");
+export function isSelfHosted() {
+  return env.DEPLOYMENT_MODE === "self_hosted" || process.env.DEPLOYMENT_MODE === "self_hosted";
+}
+
+export function billingGraceDays() {
+  const raw = Number(process.env.BILLING_GRACE_DAYS ?? "3");
+  return Number.isFinite(raw) && raw >= 0 ? raw : 3;
+}
+
+export function selfHostFeatureCodes(): string[] | null {
+  const raw = process.env.SELF_HOST_FEATURE_CODES;
+  if (!raw?.trim()) return null;
+  return raw.split(",").map((code) => code.trim()).filter(Boolean);
 }

@@ -197,9 +197,9 @@ export function Navbar() {
             <Link href="/login">Sign in</Link>
           </Button>
           <Button asChild variant="safety" className="h-11 min-h-11 px-3 text-sm sm:px-4">
-            <Link href="/request-demo">
+            <Link href="/book-a-demo">
               <span className="sm:hidden">Demo</span>
-              <span className="hidden sm:inline">Request demo</span>
+              <span className="hidden sm:inline">Book a Demo</span>
             </Link>
           </Button>
           <button
@@ -284,8 +284,8 @@ export function Navbar() {
                 </Link>
               </Button>
               <Button asChild variant="safety" className="h-12 min-h-12">
-                <Link href="/request-demo" onClick={() => setMobileOpen(false)}>
-                  Request demo
+                <Link href="/book-a-demo" onClick={() => setMobileOpen(false)}>
+                  Book a Demo
                 </Link>
               </Button>
             </div>

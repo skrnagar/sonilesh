@@ -37,6 +37,7 @@ export interface Profile {
   avatar_url: string | null;
   phone: string | null;
   is_platform_admin: boolean;
+  platform_role?: string | null;
   locale: string;
   timezone: string;
 }

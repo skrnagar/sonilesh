@@ -14,11 +14,11 @@ type CTASectionProps = {
 
 export function CTASection({
   title = "See SONIL EHS360 on your operations.",
-  description = "Request a demo to walk LMRA and field capture, investigations, CAPA, and leadership dashboards — mapped to your industry.",
-  primaryHref = "/request-demo",
-  primaryLabel = "Request demo",
-  secondaryHref = "/contact",
-  secondaryLabel = "Contact sales",
+  description = "Walk field safety, risk, regulatory tracking, ESG/BRSR reporting and leadership analytics — mapped to your sites. Start Free creates an account; commercial terms are not a public free-forever trial.",
+  primaryHref = "/book-a-demo",
+  primaryLabel = "Book a Demo",
+  secondaryHref = "/signup",
+  secondaryLabel = "Start Free",
 }: CTASectionProps) {
   return (
     <section className="relative overflow-hidden border-t border-white/10 bg-[var(--mkt-hero)] text-white">

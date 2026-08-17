@@ -1,6 +1,9 @@
 /**
  * Bootstrap demo@ehs360.local after schema is applied.
  * Uses SUPABASE_SECRET_KEY / SUPABASE_SERVICE_ROLE_KEY from env.
+ *
+ * For multi-tenant Indian DEMO orgs (SONIL POWER, Kavach, Narmada) prefer:
+ *   node scripts/seed-demo.mjs
  */
 import fs from "node:fs";
 import path from "node:path";

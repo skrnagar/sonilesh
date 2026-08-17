@@ -11,7 +11,7 @@ export function DashboardPreview({ className }: { className?: string }) {
     >
       <aside className="hidden space-y-1 rounded-md bg-[#0b3a53] p-3 text-white sm:block">
         <p className="mb-2 text-xs font-semibold tracking-wide text-white/70">Workspace</p>
-        {["Dashboard", "Incidents", "Risk", "Permits", "CAPA", "Analytics"].map(
+        {["Dashboard", "Incidents", "Permits", "Compliance", "ESG", "Analytics"].map(
           (item, i) => (
             <div
               key={item}

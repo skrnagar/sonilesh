@@ -31,6 +31,24 @@ const rows: Row[] = [
     enterprise: "Full admin",
   },
   {
+    capability: "ESG / BRSR views",
+    team: "—",
+    business: "When entitled",
+    enterprise: "When entitled",
+  },
+  {
+    capability: "Compliance tracking",
+    team: "—",
+    business: "When entitled",
+    enterprise: "When entitled",
+  },
+  {
+    capability: "Self-hosted instance",
+    team: "—",
+    business: "—",
+    enterprise: "Commercial option",
+  },
+  {
     capability: "Commercial engagement",
     team: "Sales-assisted",
     business: "Sales-assisted",

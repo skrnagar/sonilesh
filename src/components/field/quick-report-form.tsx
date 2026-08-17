@@ -43,7 +43,7 @@ export function QuickCaptureForm({ mode, action }: Props) {
         setError(null);
       },
       () => setError("Location permission denied. You can type a location instead."),
-      { enableHighAccuracy: true, timeout: 10000 },
+      { enableHighAccuracy: false, timeout: 4000, maximumAge: 60000 },
     );
   }
 

@@ -1,11 +1,5 @@
-﻿import { ModuleShell } from "@/components/modules/module-shell";
+﻿import { redirect } from "next/navigation";
 
-export default function Page() {
-  return (
-    <ModuleShell
-      title="Settings"
-      description="Organization configuration"
-      permission="settings.manage"
-    />
-  );
+export default function SettingsIndexPage() {
+  redirect("/app/settings/organization");
 }

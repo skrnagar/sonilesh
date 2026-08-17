@@ -111,6 +111,7 @@ export async function getDashboardSnapshot(
   organizationId: string,
   organizationName: string,
   params: DashboardQuery,
+  preloaded?: { sites?: Named[]; projects?: Named[] },
 ): Promise<DashboardSnapshot> {
   const range = parseDashboardRange(params.range);
   const bounds = periodBounds(range);
@@ -129,10 +130,14 @@ export async function getDashboardSnapshot(
     severitiesRes,
     membersRes,
   ] = await Promise.all([
-    supabase.from("sites").select("id, name").eq("organization_id", organizationId).is("deleted_at", null),
-    supabase.from("projects").select("id, name").eq("organization_id", organizationId).is("deleted_at", null),
-    supabase.from("departments").select("id, name").eq("organization_id", organizationId).is("deleted_at", null),
-    supabase.from("business_units").select("id, name").eq("organization_id", organizationId).is("deleted_at", null),
+    preloaded?.sites
+      ? Promise.resolve({ data: preloaded.sites })
+      : supabase.from("sites").select("id, name").eq("organization_id", organizationId).is("deleted_at", null).limit(100),
+    preloaded?.projects
+      ? Promise.resolve({ data: preloaded.projects })
+      : supabase.from("projects").select("id, name").eq("organization_id", organizationId).is("deleted_at", null).limit(100),
+    supabase.from("departments").select("id, name").eq("organization_id", organizationId).is("deleted_at", null).limit(80),
+    supabase.from("business_units").select("id, name").eq("organization_id", organizationId).is("deleted_at", null).limit(40),
     supabase.from("event_types").select("id, code, name").is("organization_id", null),
     supabase.from("severity_levels").select("id, code, name, rank, color").is("organization_id", null),
     supabase
@@ -140,7 +145,8 @@ export async function getDashboardSnapshot(
       .select("user_id, profiles:user_id(id, full_name, email)")
       .eq("organization_id", organizationId)
       .eq("status", "active")
-      .is("deleted_at", null),
+      .is("deleted_at", null)
+      .limit(80),
   ]);
 
   const typeId = (code: string) => eventTypesRes.data?.find((t) => t.code === code)?.id ?? null;
@@ -159,7 +165,7 @@ export async function getDashboardSnapshot(
     supabase
       .from("ehs_events")
       .select(
-        "id, event_number, title, status, occurred_at, event_type_id, severity_id, assigned_to",
+        "id, event_number, title, status, occurred_at, event_type_id, severity_id",
       )
       .eq("organization_id", organizationId)
       .is("deleted_at", null)
@@ -180,72 +186,52 @@ export async function getDashboardSnapshot(
     trainingRes,
     contractorsRes,
     hazardsRes,
-    recentRes,
-    overdueCapaRes,
   ] = await Promise.all([
-    eventsQuery.order("occurred_at", { ascending: false }).limit(4000),
+    eventsQuery.order("occurred_at", { ascending: false }).limit(1500),
     supabase
       .from("capa_items")
       .select("id, title, status, due_date, priority, created_at")
       .eq("organization_id", organizationId)
       .is("deleted_at", null)
-      .limit(2000),
+      .limit(800),
     supabase
       .from("permits")
       .select("id, status")
       .eq("organization_id", organizationId)
       .is("deleted_at", null)
-      .limit(2000),
+      .limit(500),
     supabase
       .from("checklist_assignments")
       .select("id, status, checklist_type, completed_at, created_at")
       .eq("organization_id", organizationId)
       .eq("checklist_type", "inspection")
       .is("deleted_at", null)
-      .limit(2000),
+      .limit(800),
     supabase
       .from("checklist_findings")
-      .select("id, status, created_at")
+      .select("id, status")
       .eq("organization_id", organizationId)
+      .in("status", ["open", "capa_linked"])
       .is("deleted_at", null)
-      .limit(2000),
+      .limit(400),
     supabase
       .from("training_assignments")
       .select("id, status, due_date, expires_at")
       .eq("organization_id", organizationId)
       .is("deleted_at", null)
-      .limit(2000),
+      .limit(800),
     supabase
       .from("contractor_companies")
       .select("id, name, status, safety_score")
       .eq("organization_id", organizationId)
       .is("deleted_at", null)
-      .limit(200),
+      .limit(80),
     supabase
       .from("risk_hazards")
       .select("id, residual_likelihood, residual_consequence, residual_band")
       .eq("organization_id", organizationId)
       .is("deleted_at", null)
-      .limit(2000),
-    applyScope(
-      supabase
-        .from("ehs_events")
-        .select("id, event_number, title, status, occurred_at, event_type_id, severity_id")
-        .eq("organization_id", organizationId)
-        .is("deleted_at", null),
-      params,
-    )
-      .order("occurred_at", { ascending: false })
-      .limit(10),
-    supabase
-      .from("capa_items")
-      .select("id, title, status, due_date, priority")
-      .eq("organization_id", organizationId)
-      .lt("due_date", today)
-      .not("status", "in", '("closed","cancelled","verified")')
-      .is("deleted_at", null)
-      .order("due_date", { ascending: true })
-      .limit(8),
+      .limit(800),
   ]);
 
   const events = (eventsRes.data ?? []) as EventRow[];
@@ -305,7 +291,9 @@ export async function getDashboardSnapshot(
       (t.status === "expired" || (t.due_date && t.due_date < today && t.status !== "completed" && t.status !== "cancelled")),
   );
   const permits = permitsRes.data ?? [];
-  const activePermits = permits.filter((p) => p.status === "active" || p.status === "authorization");
+  const activePermits = permits.filter(
+    (p) => p.status === "active" || p.status === "authorization" || p.status === "approval_required",
+  );
   const hazards = hazardsRes.data ?? [];
   const highRisk = hazards.filter(
     (h) =>
@@ -581,7 +569,7 @@ export async function getDashboardSnapshot(
       .filter((c) => typeof c.safety_score === "number")
       .slice(0, 8)
       .map((c) => ({ label: c.name, score: Number(c.safety_score) })),
-    recentEvents: ((recentRes.data ?? []) as EventRow[]).map((row) => ({
+    recentEvents: inCurrent.slice(0, 10).map((row) => ({
       id: row.id,
       event_number: row.event_number,
       title: row.title,
@@ -590,7 +578,13 @@ export async function getDashboardSnapshot(
       type: typeName(row.event_type_id),
       severity: severityName(row.severity_id),
     })),
-    overdueCapa: overdueCapaRes.data ?? [],
+    overdueCapa: overdueCapa.slice(0, 8).map((item) => ({
+      id: item.id,
+      title: item.title,
+      status: item.status,
+      due_date: item.due_date,
+      priority: item.priority,
+    })),
     filters: {
       sites: sitesRes.data ?? [],
       projects: projectsRes.data ?? [],

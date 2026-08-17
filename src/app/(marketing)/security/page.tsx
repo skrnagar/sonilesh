@@ -1,16 +1,12 @@
-import type { Metadata } from "next";
 import { PageHero } from "@/components/marketing/page-hero";
 import { Container } from "@/components/marketing/container";
 import { SectionHeader } from "@/components/marketing/section-header";
 import { FeatureCard } from "@/components/marketing/feature-card";
 import { Accordion } from "@/components/marketing/accordion";
 import { CTASection } from "@/components/marketing/cta-section";
+import { metadataForPath } from "@/lib/marketing/seo";
 
-export const metadata: Metadata = {
-  title: "Security",
-  description:
-    "SONIL EHS360 security posture: authentication, RBAC, tenant isolation, and audit trails — without fake certification badges.",
-};
+export const metadata = metadataForPath("/security");
 
 export default function SecurityPage() {
   return (
@@ -21,8 +17,8 @@ export default function SecurityPage() {
         description="SONIL EHS360 emphasizes authentication, authorization, tenant scoping, and auditable operations. This page does not display fake SOC 2, ISO, or GDPR certification badges."
         primaryHref="/contact"
         primaryLabel="Contact sales"
-        secondaryHref="/enterprise"
-        secondaryLabel="Enterprise"
+        secondaryHref="/self-hosting"
+        secondaryLabel="Self-hosting"
       />
 
       <section className="py-16 md:py-20">
@@ -93,7 +89,7 @@ export default function SecurityPage() {
       <CTASection
         primaryHref="/contact"
         primaryLabel="Contact sales"
-        secondaryHref="/request-demo"
+        secondaryHref="/book-a-demo"
         secondaryLabel="Request demo"
       />
     </>

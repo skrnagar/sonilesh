@@ -10,9 +10,11 @@ type AuthFormProps = {
   mode: "login" | "signup" | "forgot" | "reset";
   action: (formData: FormData) => Promise<{ error?: string; success?: string } | void>;
   next?: string;
+  portal?: "admin" | "company" | "field";
+  submitLabel?: string;
 };
 
-export function AuthForm({ mode, action, next }: AuthFormProps) {
+export function AuthForm({ mode, action, next, portal, submitLabel }: AuthFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -31,6 +33,7 @@ export function AuthForm({ mode, action, next }: AuthFormProps) {
       }}
     >
       {next ? <input type="hidden" name="next" value={next} /> : null}
+      {portal ? <input type="hidden" name="portal" value={portal} /> : null}
 
       {mode === "signup" ? (
         <div className="space-y-2">
@@ -67,7 +70,7 @@ export function AuthForm({ mode, action, next }: AuthFormProps) {
         {pending
           ? "Please wait…"
           : mode === "login"
-            ? "Sign in"
+            ? submitLabel ?? "Sign in"
             : mode === "signup"
               ? "Create account"
               : mode === "forgot"

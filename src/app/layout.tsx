@@ -5,24 +5,27 @@ import "./globals.css";
 
 const sans = IBM_Plex_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "600"],
   variable: "--font-sans-face",
   display: "swap",
+  preload: true,
 });
 
 const display = Plus_Jakarta_Sans({
   subsets: ["latin"],
+  weight: ["500", "600", "700"],
   variable: "--font-display-face",
   display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
   title: {
-    default: "SONIL EHS360 — EHS control built for how infrastructure gets executed.",
+    default: "SONIL EHS360 — One Platform for EHS, ESG & Compliance.",
     template: "%s | SONIL EHS360",
   },
   description:
-    "Multi-tenant Environment, Health & Safety platform for incidents, CAPA, permits, inspections, and analytics. From the field to the boardroom.",
+    "India-first multi-tenant platform for EHS operations, ESG/BRSR-oriented reporting, and regulatory tracking — field capture through CAPA and leadership analytics.",
   manifest: "/manifest.webmanifest",
   applicationName: "SONIL EHS360",
   icons: {
@@ -40,15 +43,15 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "SONIL EHS360",
-    title: "SONIL EHS360 — EHS control built for how infrastructure gets executed.",
+    title: "SONIL EHS360 — One Platform for EHS, ESG & Compliance.",
     description:
-      "Unify incidents, LMRA, risk, permits, inspections, CAPA, training, and analytics in one multi-tenant EHS SaaS platform.",
+      "Connect field safety, risk, regulatory compliance, sustainability reporting and management analytics in one configurable platform.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "SONIL EHS360 — One Platform. Complete EHS Control.",
+    title: "SONIL EHS360 — One Platform for EHS, ESG & Compliance.",
     description:
-      "From the field to the boardroom — complete EHS control on one platform.",
+      "India-first EHS, ESG and regulatory compliance on one multi-tenant platform.",
   },
 };
 
@@ -59,7 +62,6 @@ export const viewport: Viewport = {
   ],
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
 };
 
 export default function RootLayout({

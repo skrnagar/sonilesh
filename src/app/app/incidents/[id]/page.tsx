@@ -3,8 +3,14 @@ import { notFound } from "next/navigation";
 import {
   createCapaAction,
   transitionEventAction,
+  uploadAttachmentAction,
 } from "@/app/actions/events";
+import { createRiskFromReportAction } from "@/app/actions/risk";
 import { ActionForm } from "@/components/shared/action-form";
+import {
+  AttachmentGallery,
+  MultiFileUploadForm,
+} from "@/components/shared/attachment-gallery";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,7 +41,7 @@ export default async function IncidentDetailPage({
   );
   if (!bundle) notFound();
 
-  const { event, activity, capas, investigation } = bundle;
+  const { event, activity, capas, investigation, attachments } = bundle;
   const duplicates = (event.metadata as { possible_duplicates?: string[] } | null)
     ?.possible_duplicates;
 
@@ -137,6 +143,10 @@ export default async function IncidentDetailPage({
                 <input type="checkbox" name="acceptNoActionRequired" value="true" />
                 Accept No Action Required for unresolved required CAPA (EHS Manager)
               </label>
+              <label className="flex items-center gap-2 text-xs text-muted-foreground">
+                <input type="checkbox" name="forceClose" value="true" />
+                Force-close with justification (EHS Manager only — flagged in reports)
+              </label>
               <Button type="submit" className="w-full">
                 Apply transition
               </Button>
@@ -156,10 +166,40 @@ export default async function IncidentDetailPage({
               </Button>
             </ActionForm>
           </div>
+
+          <div className="border border-border bg-card p-4">
+            <h2 className="text-sm font-semibold">Risk engine</h2>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Open a linked risk assessment from this report (Phase 5 bridge — not PTW).
+            </p>
+            <ActionForm action={createRiskFromReportAction} className="mt-3 space-y-3">
+              <input type="hidden" name="organizationId" value={access.organization.id} />
+              <input type="hidden" name="eventId" value={event.id} />
+              <input type="hidden" name="typeCode" value="risk_assessment" />
+              <Button type="submit" variant="outline" className="w-full">
+                Create risk assessment
+              </Button>
+            </ActionForm>
+          </div>
         </section>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
+        <section className="border border-border bg-card p-4">
+          <h2 className="text-sm font-semibold">Photos & files</h2>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Multiple photos or PDFs via private Supabase Storage.
+          </p>
+          <div className="mt-3 space-y-4">
+            <MultiFileUploadForm
+              action={uploadAttachmentAction}
+              organizationId={access.organization.id}
+              entityFieldName="eventId"
+              entityId={event.id}
+            />
+            <AttachmentGallery items={attachments} />
+          </div>
+        </section>
         <section className="border border-border bg-card p-4">
           <h2 className="text-sm font-semibold">CAPA items</h2>
           <ul className="mt-3 space-y-2 text-sm">
@@ -184,6 +224,9 @@ export default async function IncidentDetailPage({
                 <p>{item.message}</p>
                 <p className="text-xs text-muted-foreground">
                   {formatDate(item.created_at)} · {item.activity_type}
+                  {typeof item.metadata === "object" && item.metadata && "from" in item.metadata
+                    ? ` · ${(item.metadata as { from?: string; to?: string }).from} → ${(item.metadata as { from?: string; to?: string }).to}`
+                    : ""}
                 </p>
               </li>
             ))}

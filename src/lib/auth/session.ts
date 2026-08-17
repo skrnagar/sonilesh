@@ -10,9 +10,14 @@ import {
   setupRedirectPath,
 } from "@/lib/supabase/errors";
 import type { Organization } from "@/types/database";
+import {
+  hasPlatformPermission,
+  resolvePlatformRole,
+  type PlatformPermission,
+} from "@/lib/auth/platform";
 
 const PROFILE_COLUMNS =
-  "id, email, full_name, avatar_url, phone, is_platform_admin, locale, timezone";
+  "id, email, full_name, avatar_url, phone, is_platform_admin, platform_role, locale, timezone";
 
 /** Request-scoped: dedupes auth+profile across layout and page. */
 export const requireUser = cache(async () => {
@@ -44,6 +49,21 @@ export const requireUser = cache(async () => {
       .eq("id", user.id)
       .maybeSingle();
 
+    if (
+      profileError &&
+      profileError.message?.includes("platform_role")
+    ) {
+      const fallback = await supabase
+        .from("profiles")
+        .select("id, email, full_name, avatar_url, phone, is_platform_admin, locale, timezone")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (fallback.error && (isSchemaMissingError(fallback.error) || isNetworkFetchError(fallback.error))) {
+        redirect(setupRedirectPath(fallback.error));
+      }
+      return { supabase, user, profile: fallback.data };
+    }
+
     if (profileError && (isSchemaMissingError(profileError) || isNetworkFetchError(profileError))) {
       redirect(setupRedirectPath(profileError));
     }
@@ -62,6 +82,18 @@ export async function requirePlatformAdmin() {
   const ctx = await requireUser();
   if (!ctx.profile?.is_platform_admin) {
     redirect("/app/dashboard");
+  }
+  const platformRole = resolvePlatformRole({
+    isPlatformAdmin: ctx.profile.is_platform_admin,
+    platformRole: (ctx.profile as { platform_role?: string | null }).platform_role,
+  });
+  return { ...ctx, platformRole };
+}
+
+export async function requirePlatformPermission(permission: PlatformPermission) {
+  const ctx = await requirePlatformAdmin();
+  if (!hasPlatformPermission(ctx.platformRole, permission)) {
+    redirect("/admin");
   }
   return ctx;
 }

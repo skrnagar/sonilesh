@@ -1,46 +1,32 @@
 import type { MetadataRoute } from "next";
-import { industries, modules } from "@/lib/marketing/content";
-
-const site = "https://ehs360.app";
+import { glossaryEntries } from "@/lib/marketing/glossary";
+import { listResourcePosts } from "@/lib/marketing/mdx";
+import { indexedSeoPages, siteUrl } from "@/lib/marketing/seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const staticRoutes = [
-    "",
-    "/platform",
-    "/solutions",
-    "/features",
-    "/modules",
-    "/field-experience",
-    "/enterprise",
-    "/security",
-    "/pricing",
-    "/resources",
-    "/about",
-    "/contact",
-    "/request-demo",
-    "/login",
-  ];
-
+  const origin = siteUrl();
   const now = new Date();
 
-  return [
-    ...staticRoutes.map((path) => ({
-      url: `${site}${path}`,
-      lastModified: now,
-      changeFrequency: "weekly" as const,
-      priority: path === "" ? 1 : 0.7,
-    })),
-    ...industries.map((i) => ({
-      url: `${site}/solutions/${i.slug}`,
-      lastModified: now,
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
-    })),
-    ...modules.map((m) => ({
-      url: `${site}/modules/${m.slug}`,
-      lastModified: now,
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
-    })),
-  ];
+  const pages = indexedSeoPages().map((page) => ({
+    url: `${origin}${page.path === "/" ? "" : page.path}`,
+    lastModified: now,
+    changeFrequency: "weekly" as const,
+    priority: page.path === "/" ? 1 : 0.7,
+  }));
+
+  const glossary = glossaryEntries.map((term) => ({
+    url: `${origin}/resources/glossary/${term.slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.5,
+  }));
+
+  const posts = listResourcePosts().map((post) => ({
+    url: `${origin}/resources/${post.slug}`,
+    lastModified: post.updatedAt ? new Date(post.updatedAt) : now,
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+
+  return [...pages, ...glossary, ...posts];
 }
