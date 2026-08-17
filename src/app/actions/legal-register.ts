@@ -5,13 +5,13 @@ import type { ActionResult } from "@/app/actions/events";
 import { requireModuleAccess } from "@/lib/auth/org-context";
 import { formatSupabaseUserError, isNextRedirect } from "@/lib/supabase/errors";
 import {
-  recordUpdateImpact,
   upsertRequirement,
   upsertLegalRegisterEntry,
 } from "@/lib/services/legal-register";
 import {
   addPermitCondition,
   createRegulatoryUpdate,
+  recordUpdateImpact,
   upsertRegulatoryPermit,
 } from "@/lib/services/regulatory";
 

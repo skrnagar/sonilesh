@@ -385,6 +385,7 @@ export function withFrozenAssessmentSnapshot<T extends { rules_snapshot?: unknow
   assessment: T,
   _liveRules?: unknown,
 ) {
+  void _liveRules;
   return assessment;
 }
 
