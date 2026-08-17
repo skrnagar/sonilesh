@@ -128,6 +128,13 @@ export async function inviteContractorContactAction(formData: FormData): Promise
       ok: true,
       href: `/app/contractors/${companyId}?tab=overview&inviteToken=${encodeURIComponent(result.token)}`,
     };
+  } catch (err) {
+    if (isNextRedirect(err)) throw err;
+    return failed(err);
+  }
+}
+
+export async function startPrequalificationAction(formData: FormData): Promise<ActionResult> {
   try {
     const { user } = await requireUser();
     const { organization, supabase } = await requireOrgContext();
