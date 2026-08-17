@@ -7,9 +7,9 @@ import {
   markNotificationRead,
 } from "@/lib/services/notifications";
 
-export async function markNotificationReadAction(formData: FormData) {
+export async function markNotificationReadAction(formData: FormData): Promise<void> {
   const notificationId = String(formData.get("notificationId") || "");
-  if (!notificationId) return { ok: false as const, error: "Missing notification" };
+  if (!notificationId) return;
 
   const { supabase, user, organization } = await requireOrgContext();
   await markNotificationRead(supabase, {
@@ -21,10 +21,10 @@ export async function markNotificationReadAction(formData: FormData) {
   revalidatePath("/app/notifications");
   revalidatePath("/field", "layout");
   revalidatePath("/field/notifications");
-  return { ok: true as const };
 }
 
-export async function markAllNotificationsReadAction() {
+export async function markAllNotificationsReadAction(formData?: FormData): Promise<void> {
+  void formData;
   const { supabase, user, organization } = await requireOrgContext();
   await markAllNotificationsRead(supabase, {
     organizationId: organization.id,
@@ -34,5 +34,4 @@ export async function markAllNotificationsReadAction() {
   revalidatePath("/app/notifications");
   revalidatePath("/field", "layout");
   revalidatePath("/field/notifications");
-  return { ok: true as const };
 }

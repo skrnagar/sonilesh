@@ -47,6 +47,8 @@ export default async function PermitsPage() {
             <Link href="/app/permits/active">Active board</Link>
           </Button>
           <Button asChild variant="outline" size="sm">
+            {/* Route Handler CSV download, not an App Router page */}
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
             <a href="/app/permits/export">Export CSV</a>
           </Button>
           <Button asChild variant="outline" size="sm">

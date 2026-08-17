@@ -1,3 +1,4 @@
+import { DashboardCharts } from "@/components/dashboard/dashboard-charts";
 import { KpiCard } from "@/components/dashboard/kpi-card";
 import { PeriodToggle } from "@/components/dashboard/period-toggle";
 import { ScopeFilters } from "@/components/dashboard/scope-filters";
@@ -6,14 +7,8 @@ import { EmptyState } from "@/components/shared/state-panels";
 import { requireOrgContext } from "@/lib/auth/org-context";
 import { getDashboardSnapshot } from "@/lib/services/dashboard";
 import { formatDate } from "@/lib/utils";
-import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Suspense } from "react";
-
-const DashboardCharts = dynamic(() => import("@/components/dashboard/charts-section"), {
-  ssr: false,
-  loading: () => <div className="h-64 rounded-2xl border border-border bg-card" />,
-});
 
 export default async function DashboardPage({
   searchParams,

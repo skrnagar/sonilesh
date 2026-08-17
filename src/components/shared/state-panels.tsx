@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export function LoadingState({ label = "Loading…" }: { label?: string }) {
@@ -63,7 +64,7 @@ export function UpgradeState({
       description="Upgrade to unlock this module. Existing records stay in the database; new writes are blocked server-side until the plan includes this feature."
       action={
         <Button asChild>
-          <a href="/app/settings/subscription">Explore upgrade</a>
+          <Link href="/app/settings/subscription">Explore upgrade</Link>
         </Button>
       }
     />

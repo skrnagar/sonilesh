@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import type { StructureNode } from "@/lib/services/hierarchy";
 import { cn } from "@/lib/utils";
@@ -58,9 +59,9 @@ function TreeNode({
           {node.kind.replace("_", " ")}
         </span>
         {href ? (
-          <a href={`${href}?highlight=${node.id}`} className="font-sans font-medium hover:underline">
+          <Link href={`${href}?highlight=${node.id}`} className="font-sans font-medium hover:underline">
             {node.label}
-          </a>
+          </Link>
         ) : (
           <span className="font-sans font-medium">{node.label}</span>
         )}
