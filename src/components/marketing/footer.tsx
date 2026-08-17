@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BrandLockup } from "@/components/brand/brand-lockup";
 import { Container } from "@/components/marketing/container";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { footerColumns } from "@/lib/marketing/nav";
 import { brand, company } from "@/lib/marketing/content";
 
@@ -53,9 +54,20 @@ export function Footer() {
             </div>
           ))}
         </div>
-        <div className="mt-16 flex flex-col gap-2 border-t border-white/10 pt-6 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-16 flex flex-col gap-4 border-t border-white/10 pt-6 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between">
           <p>© 2026 {brand.legalName}</p>
-          <p>Multi-tenant EHS + ESG + compliance SaaS · India-first</p>
+          <div className="flex flex-wrap items-center gap-3 sm:justify-end">
+            <p>Multi-tenant EHS + ESG + compliance SaaS · India-first</p>
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/45">
+                Theme
+              </span>
+              <ThemeToggle
+                compact
+                className="border-white/20 bg-white/10 text-white shadow-none hover:bg-white/15 hover:text-white focus-visible:ring-white/50"
+              />
+            </div>
+          </div>
         </div>
       </Container>
     </footer>

@@ -8,16 +8,28 @@ export type NavLink = {
 export type MegaColumn = {
   title: string;
   links: NavLink[];
+  accent?: boolean;
 };
 
-export const primaryNav: {
+export type PrimaryNavItem = {
   label: string;
   href: string;
   columns?: MegaColumn[];
-}[] = [
+  footer?: NavLink;
+};
+
+export function isNavPathActive(pathname: string, href: string) {
+  const [path, hash] = href.split("#");
+  if (!path || path === "/") return pathname === "/";
+  if (hash) return pathname === path;
+  return pathname === path || pathname.startsWith(`${path}/`);
+}
+
+export const primaryNav: PrimaryNavItem[] = [
   {
     label: "Product",
     href: "/product",
+    footer: { label: "Explore the product", href: "/product" },
     columns: [
       {
         title: "Platform",
@@ -26,6 +38,7 @@ export const primaryNav: {
           { label: "Incident management", href: "/product/incident-management", description: "Field capture to investigation", icon: "AlertTriangle" },
           { label: "Risk & JSA", href: "/product/risk-assessment-jsa", description: "Registers, JSA, LMRA", icon: "Radar" },
           { label: "Permit to work", href: "/product/permit-to-work", description: "Authorization and isolation", icon: "FileBadge" },
+          { label: "Training", href: "/product/training-competency", description: "Competency and records", icon: "GraduationCap" },
         ],
       },
       {
@@ -33,8 +46,18 @@ export const primaryNav: {
         links: [
           { label: "Inspections & audits", href: "/product/inspections-audits", description: "Findings into actions", icon: "ClipboardCheck" },
           { label: "CAPA", href: "/product/capa-tracking", description: "Owners and verification", icon: "ListChecks" },
+          { label: "Contractor management", href: "/product/contractor-management", description: "Contractors in the same tenant", icon: "Users" },
           { label: "Compliance tracking", href: "/product/compliance-tracking", description: "Statutory obligations", icon: "Scale" },
           { label: "ESG & BRSR", href: "/product/esg-brsr-reporting", description: "Reporting on EHS data", icon: "Leaf" },
+        ],
+      },
+      {
+        title: "Get started",
+        accent: true,
+        links: [
+          { label: "Start Free", href: "/signup", description: "Create an organisation", icon: "Sparkles" },
+          { label: "Book a Demo", href: "/book-a-demo", description: "Walk the workflows", icon: "Mail" },
+          { label: "Pricing", href: "/pricing", description: "Plans and packaging", icon: "BarChart3" },
         ],
       },
     ],
@@ -42,6 +65,7 @@ export const primaryNav: {
   {
     label: "Solutions",
     href: "/solutions",
+    footer: { label: "All industries", href: "/solutions" },
     columns: [
       {
         title: "Industries",
@@ -53,11 +77,21 @@ export const primaryNav: {
           { label: "Logistics & warehousing", href: "/solutions/logistics-warehousing", description: "Yards, MHE, 3PL gates", icon: "Truck" },
         ],
       },
+      {
+        title: "Get started",
+        accent: true,
+        links: [
+          { label: "Start Free", href: "/signup", description: "Create an organisation", icon: "Sparkles" },
+          { label: "Book a Demo", href: "/book-a-demo", description: "Walk the workflows", icon: "Mail" },
+          { label: "Contact", href: "/contact", description: "Talk to the team", icon: "Mail" },
+        ],
+      },
     ],
   },
   {
     label: "Resources",
     href: "/resources",
+    footer: { label: "All resources", href: "/resources" },
     columns: [
       {
         title: "Learn",
@@ -67,6 +101,14 @@ export const primaryNav: {
           { label: "Glossary", href: "/resources#glossary", description: "BRSR, TRIR, CAPA, EPR…", icon: "List" },
           { label: "Security", href: "/security", description: "Controls we actually run", icon: "Shield" },
           { label: "Self-hosting", href: "/self-hosting", description: "Cloud or private instance", icon: "Building2" },
+        ],
+      },
+      {
+        title: "Company",
+        links: [
+          { label: "About", href: "/about", description: "Who builds EHS360", icon: "Landmark" },
+          { label: "Customers", href: "/customers", description: "How organisations use it", icon: "Users" },
+          { label: "Contact", href: "/contact", description: "Talk to the team", icon: "Mail" },
         ],
       },
     ],
