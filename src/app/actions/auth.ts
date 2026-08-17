@@ -85,7 +85,8 @@ export async function signInAction(formData: FormData) {
     requestedNext.startsWith("/") &&
     !requestedNext.startsWith("//") &&
     portal !== "admin" &&
-    (portal !== "company" || !landing.startsWith("/field"))
+    (portal !== "company" || !landing.startsWith("/field")) &&
+    (portal !== "contractor" || requestedNext.startsWith("/contractor"))
       ? requestedNext
       : landing;
 

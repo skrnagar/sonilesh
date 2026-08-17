@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { ForbiddenState, UpgradeState } from "@/components/shared/state-panels";
 import { saveEsgMetricAction } from "@/app/actions/esg";
 import { requireModuleAccess } from "@/lib/auth/org-context";
-import { BRSR_CORE_KEYS, computeEmployeeHealthSafetyFromIncidents } from "@/lib/services/esg";
+import { computeEmployeeHealthSafetyFromIncidents, listMetricDefinitions } from "@/lib/services/esg";
 
 export default async function EsgMetricsPage() {
   const access = await requireModuleAccess({
@@ -18,7 +18,7 @@ export default async function EsgMetricsPage() {
   const periodStart = `${new Date().getFullYear() - 1}-04-01`;
   const periodEnd = `${new Date().getFullYear()}-03-31`;
 
-  const [{ data: metrics }, liveSafety] = await Promise.all([
+  const [{ data: metrics }, liveSafety, definitions] = await Promise.all([
     access.supabase
       .from("esg_metrics")
       .select("metric_key, value, unit, notes, source")
@@ -30,6 +30,7 @@ export default async function EsgMetricsPage() {
       periodStart,
       periodEnd,
     ),
+    listMetricDefinitions(access.supabase, access.organization.id),
   ]);
 
   const byKey = new Map((metrics ?? []).map((row) => [row.metric_key, row]));
@@ -37,31 +38,29 @@ export default async function EsgMetricsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold">BRSR Core metrics</h1>
+        <h1 className="text-xl font-semibold">ESG metrics</h1>
         <p className="text-sm text-muted-foreground">
-          Attribute 5 (Employee Health & Safety) is computed from EHS incidents for FY {fy} — currently{" "}
-          <strong>{liveSafety.incident_count} incident(s)</strong>. It is not a second data-entry field.
+          Definitions come from the configured catalog. Employee health & safety for FY {fy} is{" "}
+          <strong>{liveSafety.incident_count} incident(s)</strong> from EHS — not a typed-in score.
         </p>
       </div>
       <div className="space-y-4">
-        {BRSR_CORE_KEYS.map((metric) => {
-          const stored = byKey.get(metric.key);
-          const isSafety = metric.key === "employee_health_safety";
+        {definitions.map((metric) => {
+          const stored = byKey.get(metric.code);
+          const isSafety = metric.code === "employee_health_safety";
           return (
             <ActionForm
-              key={metric.key}
+              key={metric.code}
               action={saveEsgMetricAction}
               className="grid gap-3 rounded-2xl border border-border bg-card p-4 md:grid-cols-4"
             >
-              <input type="hidden" name="metricKey" value={metric.key} />
+              <input type="hidden" name="metricKey" value={metric.code} />
               <input type="hidden" name="period" value={fy} />
               <input type="hidden" name="periodStart" value={periodStart} />
               <input type="hidden" name="periodEnd" value={periodEnd} />
-              <input type="hidden" name="unit" value={metric.unit} />
+              <input type="hidden" name="unit" value={metric.unit ?? ""} />
               <div className="md:col-span-4">
-                <p className="font-medium">
-                  Attribute {metric.attribute}: {metric.label}
-                </p>
+                <p className="font-medium">{metric.name}</p>
                 {isSafety ? (
                   <p className="text-xs text-muted-foreground">{liveSafety.notes}</p>
                 ) : null}
@@ -81,6 +80,9 @@ export default async function EsgMetricsPage() {
             </ActionForm>
           );
         })}
+        {!definitions.length ? (
+          <p className="text-sm text-muted-foreground">No metric definitions in the catalog yet.</p>
+        ) : null}
       </div>
     </div>
   );

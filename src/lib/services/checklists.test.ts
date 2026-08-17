@@ -50,5 +50,6 @@ describe("checklist transitions", () => {
 
   it("supports findings review to CAPA", () => {
     expect(canTransitionChecklist("inspection", "findings_review", "capa")).toBe(true);
+    expect(canTransitionChecklist("compliance", "findings_review", "capa")).toBe(true);
   });
 });

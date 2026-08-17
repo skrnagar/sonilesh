@@ -8,14 +8,11 @@ import {
   ThumbsUp,
 } from "lucide-react";
 import { canFieldAction } from "@/lib/auth/field-roles";
-import { requireOrgContext } from "@/lib/auth/org-context";
 import { resolveFieldRole } from "@/lib/field/resolve-role";
-import { FieldActionLink, FieldPageHeader } from "@/components/field/field-ui";
-import { ForbiddenState } from "@/components/shared/state-panels";
+import { FieldActionLink, FieldForbidden, FieldPageHeader } from "@/components/field/field-ui";
 
 export default async function FieldReportHubPage() {
-  const { supabase, membershipId } = await requireOrgContext();
-  const role = await resolveFieldRole(supabase, membershipId);
+  const role = await resolveFieldRole();
 
   const items = [
     {
@@ -25,6 +22,7 @@ export default async function FieldReportHubPage() {
       hint: "Injury, damage, environmental",
       icon: AlertTriangle,
       tone: "red" as const,
+      prefetch: true,
     },
     {
       action: "report_near_miss" as const,
@@ -68,7 +66,7 @@ export default async function FieldReportHubPage() {
     },
   ].filter((i) => canFieldAction(role, i.action));
 
-  if (!items.length) return <ForbiddenState />;
+  if (!items.length) return <FieldForbidden />;
 
   return (
     <div className="space-y-4">
@@ -85,6 +83,7 @@ export default async function FieldReportHubPage() {
             hint={i.hint}
             icon={i.icon}
             tone={i.tone}
+            prefetch={i.prefetch}
           />
         ))}
       </div>

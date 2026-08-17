@@ -61,7 +61,7 @@ const SECTORS = [
 ];
 
 const selectClass =
-  "flex h-10 w-full rounded-md border border-border bg-card px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "flex h-10 w-full rounded-md border border-border bg-card px-3 text-sm shadow-[var(--shadow-sm)] transition-[border-color,box-shadow] duration-200 focus-visible:border-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none";
 
 export function BrsrApplicabilityForm() {
   const [isListed, setIsListed] = useState(false);
@@ -74,6 +74,7 @@ export function BrsrApplicabilityForm() {
   const [exportsToEu, setExportsToEu] = useState(false);
   const [ccts, setCcts] = useState(false);
   const [ran, setRan] = useState(false);
+  const [rankError, setRankError] = useState("");
 
   const profile: OrgComplianceProfileInput = useMemo(
     () => ({
@@ -114,6 +115,11 @@ export function BrsrApplicabilityForm() {
         className="space-y-5 rounded-xl border border-border bg-card p-6 shadow-[var(--shadow-sm)] sm:p-8"
         onSubmit={(event) => {
           event.preventDefault();
+          if (isListed && !marketCapRank.trim()) {
+            setRankError("Enter a market-cap rank.");
+            return;
+          }
+          setRankError("");
           setRan(true);
         }}
       >
@@ -134,9 +140,16 @@ export function BrsrApplicabilityForm() {
             min={1}
             placeholder="e.g. 420"
             value={marketCapRank}
-            onChange={(event) => setMarketCapRank(event.target.value)}
+            onChange={(event) => {
+              setMarketCapRank(event.target.value);
+              if (rankError) setRankError("");
+            }}
             disabled={!isListed}
+            aria-invalid={Boolean(rankError)}
           />
+          <p className="mkt-field-msg" data-show={rankError ? "true" : "false"} role={rankError ? "alert" : undefined}>
+            {rankError || "\u00a0"}
+          </p>
           <p className="text-xs text-muted-foreground">
             The sample BRSR rule matches listed organisations in the top 1000 by market-cap rank.
           </p>
@@ -244,11 +257,11 @@ export function BrsrApplicabilityForm() {
 
       <div className="rounded-xl border border-border bg-card p-6 shadow-[var(--shadow-sm)] sm:p-8">
         {!ran ? (
-          <p className="text-sm leading-relaxed text-muted-foreground">
+          <p className="mkt-body text-sm text-muted-foreground">
             Results use the same sample obligation library as the in-app compliance engine. They are orientation — not a legal opinion, not SEBI filing, and not a second rules engine.
           </p>
         ) : (
-          <div className="space-y-5">
+          <div key={`${isListed}-${marketCapRank}-${ran}`} className="mkt-fade-in space-y-5">
             <div>
               <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--mkt-safety)]">
                 BRSR (sample rule)

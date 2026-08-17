@@ -59,19 +59,8 @@ export async function createContractor(
   supabase: SupabaseClient,
   input: { organizationId: string; userId: string; name: string },
 ) {
-  await requireFeature(supabase, input.organizationId, "contractor_management");
-  await requirePermission(supabase, input.organizationId, input.userId, "contractors.manage");
-  const { data, error } = await supabase
-    .from("contractor_companies")
-    .insert({
-      organization_id: input.organizationId,
-      name: input.name,
-      status: "pending",
-    })
-    .select("*")
-    .single();
-  if (error) throw new Error(error.message);
-  return data;
+  const { createContractorCompany } = await import("@/lib/services/contractors");
+  return createContractorCompany(supabase, input);
 }
 
 export async function createActionItem(
@@ -172,27 +161,6 @@ export async function createMoc(
     siteId?: string;
   },
 ) {
-  await requireFeature(supabase, input.organizationId, "moc");
-  await requirePermission(supabase, input.organizationId, input.userId, "moc.manage");
-  const { data: number, error: numErr } = await supabase.rpc("next_event_number", {
-    p_organization_id: input.organizationId,
-    p_sequence_key: "moc",
-    p_prefix: "MOC-",
-  });
-  if (numErr) throw new Error(numErr.message);
-  const { data, error } = await supabase
-    .from("moc_requests")
-    .insert({
-      organization_id: input.organizationId,
-      moc_number: number as string,
-      title: input.title,
-      description: input.description ?? null,
-      site_id: input.siteId ?? null,
-      requester_id: input.userId,
-      status: "requested",
-    })
-    .select("*")
-    .single();
-  if (error) throw new Error(error.message);
-  return data;
+  const { createMocRequest } = await import("@/lib/services/moc");
+  return createMocRequest(supabase, input);
 }

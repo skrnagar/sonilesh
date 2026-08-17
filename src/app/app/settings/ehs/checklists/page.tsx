@@ -21,11 +21,12 @@ export default async function ChecklistTemplatesSettingsPage() {
   if (!access.entitled) return <UpgradeState featureName="Checklists" />;
   if (!access.permitted) return <ForbiddenState />;
 
-  const [inspectionTemplates, auditTemplates] = await Promise.all([
+  const [inspectionTemplates, auditTemplates, contractorTemplates] = await Promise.all([
     listTemplates(access.supabase, access.organization.id, "inspection"),
     listTemplates(access.supabase, access.organization.id, "audit"),
+    listTemplates(access.supabase, access.organization.id, "contractor"),
   ]);
-  const templates = [...inspectionTemplates, ...auditTemplates];
+  const templates = [...inspectionTemplates, ...auditTemplates, ...contractorTemplates];
 
   return (
     <div className="space-y-6">
@@ -60,6 +61,7 @@ export default async function ChecklistTemplatesSettingsPage() {
             <Select id="checklistType" name="checklistType" defaultValue="inspection">
               <option value="inspection">Inspection</option>
               <option value="audit">Audit</option>
+              <option value="contractor">Contractor</option>
               <option value="equipment">Equipment</option>
               <option value="vehicle">Vehicle</option>
               <option value="general">General</option>

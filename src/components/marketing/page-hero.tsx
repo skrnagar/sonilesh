@@ -51,11 +51,11 @@ export function PageHero({
                 {eyebrow}
               </p>
             ) : null}
-            <h1 className="max-w-2xl font-display text-[2.15rem] font-semibold leading-[1.04] tracking-[-0.05em] text-primary sm:text-4xl md:text-[2.9rem] md:leading-[1.05]">
+            <h1 className="mkt-h1-page max-w-2xl text-primary">
               {title}
             </h1>
             {description ? (
-              <p className="mt-5 max-w-xl text-[1.05rem] leading-relaxed text-muted-foreground md:text-lg">
+              <p className="mkt-body mt-5 text-[1.05rem] text-muted-foreground">
                 {description}
               </p>
             ) : null}

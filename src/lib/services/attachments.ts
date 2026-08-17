@@ -16,6 +16,109 @@ const ALLOWED_MIME = new Set([
   "text/plain",
 ]);
 
+/** Private bucket path only — never a public HTTP object URL. */
+export function assertPrivateAttachmentPath(storagePath: string) {
+  const path = storagePath.trim();
+  if (!path) throw new Error("Storage path required");
+  if (path.includes("/object/public/")) {
+    throw new Error("Public storage paths are not allowed");
+  }
+  if (/^https?:\/\//i.test(path)) {
+    throw new Error("Use a private storage path, not a public URL");
+  }
+  return path;
+}
+
+export function isSignedUrl(url: string | null | undefined) {
+  if (!url) return false;
+  return /\/storage\/v1\/object\/sign\//i.test(url) || /[?&]token=/.test(url);
+}
+
+export function sanitizeAttachmentName(name: string) {
+  return name.replace(/[^\w.\-]+/g, "_").slice(0, 80) || "upload.bin";
+}
+
+export async function uploadEntityAttachment(
+  supabase: SupabaseClient,
+  input: {
+    organizationId: string;
+    userId: string;
+    entityType: string;
+    entityId: string;
+    file: File;
+  },
+) {
+  const mime = validateAttachmentFile(input.file);
+  const safeName = sanitizeAttachmentName(input.file.name);
+  const storagePath = `${input.organizationId}/${input.entityType}/${input.entityId}/${Date.now()}-${safeName}`;
+  assertPrivateAttachmentPath(storagePath);
+
+  const { error: uploadError } = await supabase.storage
+    .from("ehs-attachments")
+    .upload(storagePath, input.file, {
+      contentType: mime,
+      upsert: false,
+    });
+  if (uploadError) throw new Error(uploadError.message);
+
+  const { data, error } = await supabase
+    .from("attachments")
+    .insert({
+      organization_id: input.organizationId,
+      entity_type: input.entityType,
+      entity_id: input.entityId,
+      storage_path: storagePath,
+      file_name: safeName,
+      mime_type: mime,
+      file_size: input.file.size,
+      created_by: input.userId,
+    })
+    .select("*")
+    .single();
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function listEntityAttachmentsWithUrls(
+  supabase: SupabaseClient,
+  organizationId: string,
+  entityType: string,
+  entityId: string,
+): Promise<AttachmentView[]> {
+  const { data, error } = await supabase
+    .from("attachments")
+    .select("id, file_name, mime_type, file_size, storage_path, created_at")
+    .eq("organization_id", organizationId)
+    .eq("entity_type", entityType)
+    .eq("entity_id", entityId)
+    .is("deleted_at", null)
+    .order("created_at", { ascending: false });
+  if (error) throw new Error(error.message);
+
+  return Promise.all(
+    (data ?? []).map(async (row) => {
+      const path = assertPrivateAttachmentPath(row.storage_path);
+      let url: string | null = null;
+      try {
+        url = await createSignedAttachmentUrl(supabase, path);
+      } catch {
+        url = null;
+      }
+      const mime = row.mime_type || "";
+      return {
+        id: row.id,
+        file_name: row.file_name,
+        content_type: row.mime_type,
+        file_size: row.file_size,
+        storage_path: path,
+        kind: mime.startsWith("image/") ? ("photo" as const) : ("document" as const),
+        created_at: row.created_at,
+        url,
+      };
+    }),
+  );
+}
+
 export function validateAttachmentFile(file: {
   size: number;
   type: string;
@@ -106,9 +209,10 @@ export async function createSignedAttachmentUrl(
   storagePath: string,
   expiresIn = 3600,
 ) {
+  const path = assertPrivateAttachmentPath(storagePath);
   const { data, error } = await supabase.storage
     .from("ehs-attachments")
-    .createSignedUrl(storagePath, expiresIn);
+    .createSignedUrl(path, expiresIn);
   if (error) throw new Error(error.message);
   return data.signedUrl;
 }

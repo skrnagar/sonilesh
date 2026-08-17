@@ -17,7 +17,8 @@ export type ChecklistType =
   | "compliance"
   | "environmental"
   | "general"
-  | "permit";
+  | "permit"
+  | "ppe";
 
 export type QuestionType =
   | "pass_fail"
@@ -65,11 +66,19 @@ export const AUDIT_TRANSITIONS: Record<string, string[]> = {
 };
 
 function featureFor(type: ChecklistType) {
-  return type === "audit" ? "audits" : "inspections";
+  if (type === "audit") return "audits";
+  if (type === "contractor") return "contractor_management";
+  if (type === "ppe") return "ppe_management";
+  if (type === "compliance" || type === "environmental") return "regulatory_compliance";
+  return "inspections";
 }
 
 function conductPerm(type: ChecklistType) {
-  return type === "audit" ? "audits.conduct" : "inspections.conduct";
+  if (type === "audit") return "audits.conduct";
+  if (type === "contractor") return "contractor.update";
+  if (type === "ppe") return "ppe.inspect";
+  if (type === "compliance" || type === "environmental") return "compliance.assess";
+  return "inspections.conduct";
 }
 
 export function canTransitionChecklist(
@@ -390,7 +399,16 @@ export async function createAssignment(
     if (!site) throw new Error("Site must belong to this organization");
   }
 
-  const prefix = input.checklistType === "audit" ? "AUD-" : "INS-";
+  const prefix =
+    input.checklistType === "audit"
+      ? "AUD-"
+      : input.checklistType === "contractor"
+        ? "CPQ-"
+        : input.checklistType === "compliance"
+          ? "CMP-"
+          : input.checklistType === "ppe"
+            ? "PPE-"
+            : "INS-";
   const { data: number, error: numErr } = await supabase.rpc("next_event_number", {
     p_organization_id: input.organizationId,
     p_sequence_key: input.checklistType,
@@ -900,10 +918,9 @@ export async function linkFindingToCapa(
     .eq("id", finding.assignment_id)
     .maybeSingle();
 
+  const type = (input.checklistType ?? assignment?.checklist_type) as ChecklistType | undefined;
   const sourceModule =
-    (input.checklistType ?? assignment?.checklist_type) === "audit"
-      ? "audit"
-      : "inspection";
+    type === "audit" ? "audit" : type === "compliance" || type === "environmental" ? "compliance" : "inspection";
 
   const capa = await createCapa(supabase, {
     organizationId: input.organizationId,

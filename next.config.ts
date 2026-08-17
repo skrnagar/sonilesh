@@ -104,6 +104,7 @@ const nextConfig: NextConfig = {
     return [
       { source: "/admin/login", destination: "/platform-login" },
       { source: "/field/login", destination: "/field-login" },
+      { source: "/contractor/login", destination: "/contractor-login" },
     ];
   },
 };

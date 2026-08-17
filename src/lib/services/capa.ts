@@ -19,7 +19,9 @@ export type CapaSourceModule =
   | "training"
   | "contractor"
   | "other"
-  | "action_item";
+  | "action_item"
+  | "compliance"
+  | "moc";
 
 export type CapaStatus =
   | "open"

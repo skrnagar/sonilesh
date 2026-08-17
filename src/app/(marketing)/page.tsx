@@ -21,7 +21,8 @@ import { DashboardPreview } from "@/components/marketing/dashboard-preview";
 import { MobilePreview } from "@/components/marketing/mobile-preview";
 import { WorkflowDiagram } from "@/components/marketing/workflow-diagram";
 import { PricingCard } from "@/components/marketing/pricing-card";
-import { FadeIn, Reveal } from "@/components/marketing/motion";
+import { ScrollCue } from "@/components/marketing/motion";
+import { Reveal, Stagger } from "@/components/marketing/reveal";
 import { productHrefForModule } from "@/lib/marketing/product-routes";
 import { metadataForPath } from "@/lib/marketing/seo";
 import {
@@ -42,23 +43,22 @@ export const metadata = metadataForPath("/");
 export default function HomePage() {
   return (
     <>
-      <section className="relative overflow-hidden border-b border-white/10 bg-[var(--mkt-hero)] text-white">
+      <section className="relative overflow-x-clip overflow-hidden border-b border-white/10 bg-[var(--mkt-hero)] text-white">
         <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="mkt-hero-wash absolute inset-0" />
-          <div className="mkt-grid-fade absolute inset-0 opacity-80" />
+          <div className="mkt-grid-fade absolute inset-0 opacity-55" />
         </div>
-        <Container className="relative grid items-start gap-8 py-14 md:gap-10 md:py-20 lg:min-h-[min(78vh,760px)] lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-center lg:gap-12 lg:py-24">
-          <FadeIn className="max-w-xl min-w-0">
+        <Container className="relative grid items-start gap-6 py-8 md:gap-8 md:py-12 lg:min-h-[min(70vh,680px)] lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-center lg:gap-10 lg:py-16">
+          <div className="max-w-xl min-w-0">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-teal-200 sm:tracking-[0.22em]">
               {brand.eyebrow}
             </p>
-            <h1 className="font-display mt-4 text-[2.05rem] font-semibold leading-[1.02] tracking-[-0.045em] sm:mt-5 sm:text-5xl sm:leading-[0.96] md:text-[3.75rem] md:leading-[0.94]">
+            <h1 className="mkt-h1 mt-3 sm:mt-4">
               {brand.tagline}
             </h1>
-            <p className="mt-4 max-w-md text-base leading-relaxed text-white/80 sm:mt-5 sm:text-lg md:text-xl">
+            <p className="mkt-body mt-3 text-base text-white/80 sm:mt-4 sm:text-lg">
               {brand.supporting}
             </p>
-            <div className="mt-7 flex flex-col items-stretch gap-3 sm:mt-9 sm:flex-row sm:flex-wrap sm:items-center">
+            <div className="mt-5 flex flex-col items-stretch gap-3 sm:mt-6 sm:flex-row sm:flex-wrap sm:items-center">
               <Button asChild size="lg" variant="safety" className="h-12 min-h-12 px-6">
                 <Link href="/book-a-demo">
                   Book a Demo
@@ -74,13 +74,14 @@ export default function HomePage() {
                 <Link href="/signup">Start Free</Link>
               </Button>
             </div>
-            <ul className="mt-7 grid gap-2 text-sm text-white/75 sm:mt-8 sm:grid-cols-3 sm:gap-4">
+            <ul className="mt-5 flex flex-wrap gap-x-4 gap-y-1 text-sm text-white/75 sm:mt-6">
               <li>LMRA at the workfront</li>
               <li>BRSR on the same record</li>
               <li>No invented certifications</li>
             </ul>
-          </FadeIn>
-          <FadeIn delay={0.1} className="relative min-w-0">
+            <ScrollCue className="mt-6 sm:mt-8" />
+          </div>
+          <div className="relative min-w-0">
             <div className="relative pb-4 lg:pb-8 lg:pl-10 xl:pl-16">
               <ProductScreenshot title="SONIL EHS360 · Control board" stage>
                 <DashboardPreview />
@@ -89,11 +90,11 @@ export default function HomePage() {
                 <MobilePreview className="scale-[0.92] shadow-[var(--shadow-lg)] lg:origin-bottom-left lg:scale-[0.78] xl:scale-[0.86]" />
               </div>
             </div>
-          </FadeIn>
+          </div>
         </Container>
       </section>
 
-      <section className="border-b border-border mkt-band">
+      <section id="mkt-after-hero" className="scroll-mt-16 border-b border-border mkt-band md:scroll-mt-20">
         <Container className="py-8 md:py-10">
           <p className="text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             Built beside civil EPC execution — India-first, not a generic office-safety template
@@ -188,7 +189,7 @@ export default function HomePage() {
           <div className="mt-10 grid gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
             {productFacts.map((fact) => (
               <div key={fact.label} className="bg-background p-6 md:bg-[var(--mkt-band)]">
-                <p className="font-display text-3xl font-semibold tracking-tight text-primary">{fact.value}</p>
+                <p className="mkt-kpi text-primary">{fact.value}</p>
                 <p className="mt-2 text-sm font-semibold text-foreground">{fact.label}</p>
                 <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{fact.detail}</p>
               </div>
@@ -206,7 +207,7 @@ export default function HomePage() {
               description="EHS modules plus compliance tracking and ESG/BRSR — entitled per tenant, governed by role. Contractor management is a company register today, not a full contractor OS."
             />
           </Reveal>
-          <div className="mt-10 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+          <Stagger className="mt-10 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
             {modules.slice(0, 6).map((mod) => (
               <ModuleCard
                 key={mod.slug}
@@ -217,7 +218,7 @@ export default function HomePage() {
                 href={productHrefForModule(mod.slug)}
               />
             ))}
-          </div>
+          </Stagger>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild variant="outline">
               <Link href="/product">Browse product</Link>
@@ -295,11 +296,9 @@ export default function HomePage() {
               description="A closed loop with ownership, evidence, and an auditable trail — from LMRA at the task to verified CAPA in the workspace."
             />
           </Reveal>
-          <Reveal>
-            <div className="mt-12">
-              <WorkflowDiagram />
-            </div>
-          </Reveal>
+          <div className="mt-12">
+            <WorkflowDiagram />
+          </div>
         </Container>
       </section>
 
@@ -394,7 +393,7 @@ export default function HomePage() {
               description="Same multi-tenant core — configured for construction, EPC packages, power corridors, renewables, plants, and industrial sites."
             />
           </Reveal>
-          <div className="mt-10">
+          <Stagger className="mt-10">
             {listCanonicalIndustries().map((industry) => (
               <IndustryCard
                 key={industry.slug}
@@ -403,7 +402,7 @@ export default function HomePage() {
                 href={`/solutions/${industry.slug}`}
               />
             ))}
-          </div>
+          </Stagger>
           <div className="mt-8">
             <Button asChild variant="outline">
               <Link href="/solutions">View all industries</Link>

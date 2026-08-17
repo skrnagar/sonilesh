@@ -12,16 +12,18 @@ import {
 
 export default async function FieldToolboxPage() {
   const { supabase, organization, membershipId } = await requireOrgContext();
-  const role = await resolveFieldRole(supabase, membershipId);
+  const [role, talks] = await Promise.all([
+    resolveFieldRole(supabase, membershipId),
+    supabase
+      .from("toolbox_talks")
+      .select("id, talk_number, topic, held_at")
+      .eq("organization_id", organization.id)
+      .is("deleted_at", null)
+      .order("held_at", { ascending: false })
+      .limit(10),
+  ]);
   const canCreate = canFieldAction(role, "toolbox");
-
-  const { data, error } = await supabase
-    .from("toolbox_talks")
-    .select("id, talk_number, topic, held_at")
-    .eq("organization_id", organization.id)
-    .is("deleted_at", null)
-    .order("held_at", { ascending: false })
-    .limit(10);
+  const { data, error } = talks;
 
   return (
     <div className="space-y-4">

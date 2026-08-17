@@ -38,6 +38,32 @@ export async function createPermitAction(formData: FormData): Promise<ActionResu
   try {
     const { supabase, user } = await requireUser();
     const asDraft = formData.get("asDraft") === "1" || formData.get("asDraft") === "on";
+    const contractorCompanyId = String(formData.get("contractorCompanyId") || "");
+    const siteId = String(formData.get("siteId") || "") || undefined;
+    const organizationId = String(formData.get("organizationId") || "");
+    let contractorName = String(formData.get("contractorName") || "") || undefined;
+    if (contractorCompanyId) {
+      const { data: company } = await supabase
+        .from("contractor_companies")
+        .select("id, name, organization_id")
+        .eq("id", contractorCompanyId)
+        .eq("organization_id", organizationId)
+        .maybeSingle();
+      if (!company) return { ok: false, error: "Contractor must belong to this organization" };
+      contractorName = company.name;
+      const { getPtwEligibility } = await import("@/lib/services/contractors");
+      const eligibility = await getPtwEligibility(supabase, {
+        organizationId,
+        companyId: contractorCompanyId,
+        siteId,
+      });
+      if (eligibility.blocksPermit) {
+        return {
+          ok: false,
+          error: `Contractor is not ready for this site: ${eligibility.readiness?.gaps.map((g) => g.message).join("; ")}`,
+        };
+      }
+    }
     const row = await createPermit(supabase, {
       organizationId: String(formData.get("organizationId") || ""),
       userId: user.id,
@@ -57,7 +83,7 @@ export async function createPermitAction(formData: FormData): Promise<ActionResu
       areaOwnerId: String(formData.get("areaOwnerId") || "") || undefined,
       workOrderRef: String(formData.get("workOrderRef") || "") || undefined,
       clientReference: String(formData.get("clientReference") || "") || undefined,
-      contractorName: String(formData.get("contractorName") || "") || undefined,
+      contractorName,
       workerCount: formData.get("workerCount")
         ? Number(formData.get("workerCount"))
         : undefined,

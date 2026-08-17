@@ -3,14 +3,18 @@ import { Button } from "@/components/ui/button";
 import { ForbiddenState, UpgradeState } from "@/components/shared/state-panels";
 import { saveBrsrAction } from "@/app/actions/esg";
 import { requireModuleAccess } from "@/lib/auth/org-context";
-import { BRSR_CORE_KEYS, NGRBC_PRINCIPLES, computeEmployeeHealthSafetyFromIncidents } from "@/lib/services/esg";
+import {
+  brsrDataCoverage,
+  computeEmployeeHealthSafetyFromIncidents,
+  listReportingFramework,
+} from "@/lib/services/esg";
 
 export default async function BrsrReportPage() {
   const access = await requireModuleAccess({
-    featureCode: "esg_reporting",
-    permission: "esg.view",
+    featureCode: "brsr",
+    permission: "brsr.view",
   });
-  if (!access.entitled) return <UpgradeState featureName="ESG / BRSR reporting" />;
+  if (!access.entitled) return <UpgradeState featureName="BRSR reporting" />;
   if (!access.permitted) return <ForbiddenState />;
 
   const fyStart = new Date().getFullYear() - 1;
@@ -18,7 +22,7 @@ export default async function BrsrReportPage() {
   const periodStart = `${fyStart}-04-01`;
   const periodEnd = `${fyStart + 1}-03-31`;
 
-  const [{ data: profile }, { data: metrics }, { data: ghg }, { data: existing }, safety] =
+  const [{ data: profile }, { data: metrics }, { data: ghg }, { data: existing }, safety, coverage, catalog] =
     await Promise.all([
       access.supabase
         .from("org_compliance_profile")
@@ -48,6 +52,8 @@ export default async function BrsrReportPage() {
         periodStart,
         periodEnd,
       ),
+      brsrDataCoverage(access.supabase, access.organization.id, financialYear),
+      listReportingFramework(access.supabase, "brsr"),
     ]);
 
   const ghgTotals = { "1": 0, "2": 0, "3": 0 };
@@ -56,6 +62,9 @@ export default async function BrsrReportPage() {
     ghgTotals[scope] += Number(row.value_tco2e ?? 0);
   }
 
+  const coreIndicators =
+    catalog.sections.find((s) => s.code === "C")?.indicators.filter((i) => i.is_core) ?? [];
+  const processIndicators = catalog.sections.find((s) => s.code === "B")?.indicators ?? [];
   const metricMap = Object.fromEntries((metrics ?? []).map((m) => [m.metric_key, m]));
   const sectionA = {
     name: access.organization.name,
@@ -81,8 +90,8 @@ export default async function BrsrReportPage() {
       <div>
         <h1 className="text-xl font-semibold">BRSR report builder</h1>
         <p className="text-sm text-muted-foreground">
-          Section A is filled from the organization and compliance profile. Section C pulls GHG and
-          live EHS incident counts. Export is structured A/B/C for assurance, not a flat dump.
+          Sections follow the configured BRSR catalog ({catalog.framework?.version ?? "not seeded"}).
+          Missing metrics stay blank. {coverage.label} ({coverage.filled}/{coverage.total}).
         </p>
       </div>
       <section className="rounded-2xl border border-border bg-card p-4 text-sm">
@@ -96,9 +105,11 @@ export default async function BrsrReportPage() {
             GHG S1/S2/S3: {ghgTotals["1"]} / {ghgTotals["2"]} / {ghgTotals["3"]} tCO2e
           </li>
           <li>Attribute 5 incidents (from EHS): {safety.incident_count}</li>
-          {BRSR_CORE_KEYS.filter((k) => k.key !== "employee_health_safety").map((k) => (
-            <li key={k.key}>
-              {k.label}: {metricMap[k.key]?.value ?? "—"} {metricMap[k.key]?.unit ?? k.unit}
+          {coreIndicators
+            .filter((k) => k.code !== "employee_health_safety" && k.code !== "ghg_emissions")
+            .map((k) => (
+            <li key={k.code}>
+              {k.title}: {metricMap[k.code]?.value ?? "—"} {metricMap[k.code]?.unit ?? k.unit ?? ""}
             </li>
           ))}
         </ul>
@@ -108,7 +119,7 @@ export default async function BrsrReportPage() {
         <input type="hidden" name="sectionA" value={JSON.stringify(sectionA)} />
         <input type="hidden" name="sectionC" value={JSON.stringify(sectionC)} />
         <h2 className="font-semibold">Section B — NGRBC process disclosures</h2>
-        {NGRBC_PRINCIPLES.map((p) => (
+        {processIndicators.map((p) => (
           <div key={p.code} className="grid gap-2 md:grid-cols-[80px_140px_1fr] md:items-center">
             <span className="text-sm font-medium">{p.code}</span>
             <select

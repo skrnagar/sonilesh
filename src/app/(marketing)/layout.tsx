@@ -32,7 +32,7 @@ export default function MarketingLayout({
         Skip to content
       </a>
       <Navbar />
-      <main id="main-content" className="flex-1 overflow-x-clip overflow-y-visible">
+      <main id="main-content" className="flex-1">
         {children}
       </main>
       <Footer />

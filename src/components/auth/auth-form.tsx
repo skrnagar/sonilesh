@@ -10,7 +10,7 @@ type AuthFormProps = {
   mode: "login" | "signup" | "forgot" | "reset";
   action: (formData: FormData) => Promise<{ error?: string; success?: string } | void>;
   next?: string;
-  portal?: "admin" | "company" | "field";
+  portal?: "admin" | "company" | "field" | "contractor";
   submitLabel?: string;
 };
 

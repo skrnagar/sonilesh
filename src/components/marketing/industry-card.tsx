@@ -14,7 +14,7 @@ export function IndustryCard({ name, summary, href, className }: IndustryCardPro
     <Link
       href={href}
       className={cn(
-        "group -mx-2 block rounded-xl border-b border-border px-2 py-5 transition-colors hover:bg-muted/50 sm:-mx-3 sm:px-3 motion-reduce:transition-none",
+        "group -mx-2 block rounded-xl border-b border-border px-2 py-5 transition-[background-color,transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:bg-muted/50 hover:shadow-[var(--shadow-sm)] sm:-mx-3 sm:px-3 motion-reduce:transition-none motion-reduce:hover:translate-y-0",
         className,
       )}
     >

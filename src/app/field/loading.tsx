@@ -1,5 +1,5 @@
-import { LoadingState } from "@/components/shared/state-panels";
+import { FieldPageSkeleton } from "@/components/field/field-ui";
 
 export default function FieldLoading() {
-  return <LoadingState label="Loading field…" />;
+  return <FieldPageSkeleton />;
 }

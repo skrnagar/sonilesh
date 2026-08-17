@@ -5,20 +5,25 @@ import { usePathname } from "next/navigation";
 import {
   ClipboardCheck,
   ClipboardList,
-  GraduationCap,
   Home,
   PlusCircle,
   Shield,
-  User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const tabs = [
-  { href: "/field", label: "Home", icon: Home, match: (p: string) => p === "/field" || p === "/field/home" },
+  {
+    href: "/field",
+    label: "Home",
+    icon: Home,
+    prefetch: true,
+    match: (p: string) => p === "/field" || p === "/field/home",
+  },
   {
     href: "/field/report",
     label: "Report",
     icon: PlusCircle,
+    prefetch: true,
     match: (p: string) =>
       p.startsWith("/field/report") ||
       p.startsWith("/field/new") ||
@@ -27,29 +32,38 @@ const tabs = [
       p.startsWith("/field/lmra") ||
       p.startsWith("/field/hazard"),
   },
-  { href: "/field/actions", label: "Actions", icon: ClipboardList, match: (p: string) => p.startsWith("/field/actions") },
-  { href: "/field/permits", label: "Permits", icon: Shield, match: (p: string) => p.startsWith("/field/permits") },
+  {
+    href: "/field/actions",
+    label: "Actions",
+    icon: ClipboardList,
+    prefetch: false,
+    match: (p: string) => p.startsWith("/field/actions"),
+  },
+  {
+    href: "/field/permits",
+    label: "Permits",
+    icon: Shield,
+    prefetch: false,
+    match: (p: string) => p.startsWith("/field/permits"),
+  },
   {
     href: "/field/inspection",
     label: "Inspect",
     icon: ClipboardCheck,
+    prefetch: false,
     match: (p: string) => p.startsWith("/field/inspection"),
   },
-  {
-    href: "/field/training",
-    label: "Train",
-    icon: GraduationCap,
-    match: (p: string) => p.startsWith("/field/training"),
-  },
-  { href: "/field/profile", label: "Me", icon: User, match: (p: string) => p.startsWith("/field/profile") },
 ];
 
 export function FieldTabBar() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md">
-      <div className="mx-auto grid max-w-lg grid-cols-7 gap-0.5 px-1 py-1">
+    <nav
+      aria-label="Field"
+      className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card/95 pb-[max(0.35rem,env(safe-area-inset-bottom))] backdrop-blur-md"
+    >
+      <div className="mx-auto grid max-w-lg grid-cols-5 px-1 pt-1">
         {tabs.map((item) => {
           const active = item.match(pathname);
           const Icon = item.icon;
@@ -57,15 +71,17 @@ export function FieldTabBar() {
             <Link
               key={item.href}
               href={item.href}
+              prefetch={item.prefetch}
+              aria-current={active ? "page" : undefined}
               className={cn(
-                "flex min-h-14 flex-col items-center justify-center rounded-lg px-0.5 text-[10px] font-semibold transition-colors",
+                "flex min-h-11 flex-col items-center justify-center gap-0.5 rounded-lg px-0.5 text-[10px] font-semibold leading-none",
                 active
                   ? "bg-primary text-white dark:text-[#071f2d]"
-                  : "text-foreground hover:bg-muted hover:text-foreground",
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
             >
-              <Icon className="mb-0.5 h-4 w-4" />
-              {item.label}
+              <Icon className="h-4 w-4" aria-hidden />
+              <span className="max-w-full truncate">{item.label}</span>
             </Link>
           );
         })}

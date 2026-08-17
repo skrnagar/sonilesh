@@ -35,6 +35,14 @@ export default async function ComplianceCalendarPage({
     .order("due_date", { ascending: true })
     .limit(200);
 
+  const { data: licenses } = await access.supabase
+    .from("regulatory_permits")
+    .select("id, name, expires_on, status")
+    .eq("organization_id", access.organization.id)
+    .not("expires_on", "is", null)
+    .order("expires_on")
+    .limit(50);
+
   const rows = (tasks ?? []).filter((task) => {
     const nested = task.org_applicable_compliances as {
       applicability_status?: string;
@@ -102,6 +110,27 @@ export default async function ComplianceCalendarPage({
           );
         })}
       </ul>
+      {(licenses ?? []).length ? (
+        <div className="space-y-2">
+          <h2 className="text-sm font-semibold">License expiries (not PTW)</h2>
+          <ul className="space-y-2">
+            {(licenses ?? []).map((row) => (
+              <li key={row.id}>
+                <Link
+                  href="/app/compliance/licenses"
+                  className={`block rounded-xl border px-4 py-3 ${toneClass[dueTone(row.expires_on as string)]}`}
+                >
+                  <div className="flex justify-between gap-3">
+                    <span className="font-medium">{row.name}</span>
+                    <span className="text-sm">{row.expires_on}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">License / consent · {row.status}</p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
     </div>
   );
 }

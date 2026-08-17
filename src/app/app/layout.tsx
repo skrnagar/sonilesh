@@ -3,7 +3,7 @@ import { AppSidebar } from "@/components/layout/app-sidebar";
 import { WorkspaceShell } from "@/components/layout/workspace-shell";
 import { requireOrgContext } from "@/lib/auth/org-context";
 import { getRoleCodesForUser } from "@/lib/auth/member-roles";
-import { isFieldOnlyRoles } from "@/lib/auth/personas";
+import { isContractorPortalOnly, isFieldOnlyRoles } from "@/lib/auth/personas";
 import { listEnabledFeatures } from "@/lib/services/entitlements";
 import {
   countUnreadNotifications,
@@ -23,6 +23,9 @@ export default async function AppLayout({
     await requireOrgContext();
 
   const { roleCodes } = await getRoleCodesForUser(supabase, user.id, organization.id);
+  if (isContractorPortalOnly(roleCodes) && !profile?.is_platform_admin) {
+    redirect("/contractor");
+  }
   if (isFieldOnlyRoles(roleCodes) && !profile?.is_platform_admin) {
     redirect("/field/home");
   }

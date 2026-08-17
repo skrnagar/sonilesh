@@ -35,6 +35,7 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith("/login") ||
     pathname === "/admin/login" ||
     pathname === "/field/login" ||
+    pathname === "/contractor/login" ||
     pathname.startsWith("/signup") ||
     pathname.startsWith("/forgot-password") ||
     pathname.startsWith("/reset-password") ||
@@ -43,7 +44,8 @@ export async function updateSession(request: NextRequest) {
     (pathname.startsWith("/app") ||
       pathname.startsWith("/admin") ||
       pathname.startsWith("/onboarding") ||
-      pathname.startsWith("/field")) &&
+      pathname.startsWith("/field") ||
+      pathname.startsWith("/contractor")) &&
     !isAuthRoute;
 
   // Anonymous visitors on public/marketing routes: skip Supabase network call.
@@ -102,7 +104,9 @@ export async function updateSession(request: NextRequest) {
         ? "/admin/login"
         : pathname.startsWith("/field")
           ? "/field/login"
-          : "/login";
+          : pathname.startsWith("/contractor")
+            ? "/contractor/login"
+            : "/login";
       url.searchParams.set("next", pathname);
       return NextResponse.redirect(url);
     }
@@ -111,6 +115,7 @@ export async function updateSession(request: NextRequest) {
       const url = request.nextUrl.clone();
       if (pathname === "/admin/login") url.pathname = "/admin/tenants";
       else if (pathname === "/field/login") url.pathname = "/field/home";
+      else if (pathname === "/contractor/login") url.pathname = "/contractor";
       else url.pathname = "/app/dashboard";
       return NextResponse.redirect(url);
     }

@@ -28,10 +28,10 @@ export function CTASection({
       />
       <Container className="relative flex flex-col items-start justify-between gap-8 py-16 md:flex-row md:items-end md:gap-12 md:py-24">
         <div className="max-w-xl">
-          <h2 className="font-display text-3xl font-semibold tracking-[-0.035em] md:text-[2.35rem] md:leading-[1.12]">
+          <h2 className="mkt-h2">
             {title}
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-white/75 md:text-[1.05rem]">
+          <p className="mkt-body mt-4 text-base text-white/75">
             {description}
           </p>
         </div>

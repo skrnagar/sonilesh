@@ -2,7 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireOrgContext } from "@/lib/auth/org-context";
 import { canFieldAction } from "@/lib/auth/field-roles";
-import { getPermitBundle, permitCountdown } from "@/lib/services/permits";
+import { getPermitBundle } from "@/lib/services/permits";
+import { permitCountdown } from "@/lib/field/permit-countdown";
 import { resolveFieldRole } from "@/lib/field/resolve-role";
 import {
   acknowledgeFieldPermitAction,
@@ -17,11 +18,11 @@ import {
 import {
   FieldCard,
   FieldEmpty,
+  FieldForbidden,
   FieldPageHeader,
   fieldControlClass,
 } from "@/components/field/field-ui";
-import { ForbiddenState } from "@/components/shared/state-panels";
-import { requireFeature } from "@/lib/services/entitlements";
+import { hasFeature } from "@/lib/services/entitlements";
 
 export default async function FieldPermitDetailPage({
   params,
@@ -31,22 +32,24 @@ export default async function FieldPermitDetailPage({
   const { permitNumber } = await params;
   const decoded = decodeURIComponent(permitNumber);
   const { supabase, user, organization, membershipId } = await requireOrgContext();
-  try {
-    await requireFeature(supabase, organization.id, "permit_to_work");
-  } catch {
-    return <ForbiddenState />;
-  }
-  const role = await resolveFieldRole(supabase, membershipId);
-  if (!canFieldAction(role, "my_permits")) return <ForbiddenState />;
+
+  const [entitled, role, rowRes] = await Promise.all([
+    hasFeature(supabase, organization.id, "permit_to_work"),
+    resolveFieldRole(supabase, membershipId),
+    supabase
+      .from("permits")
+      .select("id")
+      .eq("organization_id", organization.id)
+      .eq("permit_number", decoded)
+      .is("deleted_at", null)
+      .maybeSingle(),
+  ]);
+
+  if (!entitled) return <FieldForbidden />;
+  if (!canFieldAction(role, "my_permits")) return <FieldForbidden />;
   const canApprove = canFieldAction(role, "approve_permit");
 
-  const { data: row } = await supabase
-    .from("permits")
-    .select("id")
-    .eq("organization_id", organization.id)
-    .eq("permit_number", decoded)
-    .is("deleted_at", null)
-    .maybeSingle();
+  const row = rowRes.data;
   if (!row) notFound();
 
   const bundle = await getPermitBundle(supabase, organization.id, row.id);

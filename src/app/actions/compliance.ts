@@ -52,6 +52,16 @@ export async function saveComplianceProfileAction(formData: FormData): Promise<A
       exports_to_eu: formData.get("exportsToEu") === "on",
       waste_streams_generated: waste,
       ccts_sector: formData.get("cctsSector") === "on",
+      country_code: String(formData.get("countryCode") || "") || null,
+      jurisdiction_codes: String(formData.get("jurisdictionCodes") || "")
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
+      site_types: String(formData.get("siteTypes") || "")
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
+      auto_noncompliant_on_expired_evidence: formData.get("autoNoncompliant") === "on",
     });
 
     revalidatePath("/app/settings/compliance-profile");
@@ -170,6 +180,52 @@ export async function verifyComplianceTaskAction(formData: FormData): Promise<Ac
       taskId,
     });
     revalidatePath(`/app/compliance/tasks/${taskId}`);
+    return { ok: true };
+  } catch (err) {
+    if (isNextRedirect(err)) throw err;
+    return failed(err);
+  }
+}
+
+export async function createAssessmentAction(formData: FormData): Promise<ActionResult> {
+  try {
+    const access = await requireModuleAccess({
+      featureCode: "regulatory_compliance",
+      permission: "compliance.assess",
+    });
+    if (!access.entitled || !access.permitted) return { ok: false, error: "Not allowed" };
+    const { createComplianceAssessment } = await import("@/lib/services/compliance");
+    const row = await createComplianceAssessment(access.supabase, {
+      organizationId: access.organization.id,
+      userId: access.user.id,
+      requirementId: String(formData.get("requirementId") || ""),
+      periodLabel: String(formData.get("periodLabel") || "current"),
+      templateId: String(formData.get("templateId") || "") || null,
+    });
+    revalidatePath("/app/compliance/assessments");
+    if (row.checklist_assignment_id) {
+      return { ok: true, href: `/app/inspections/${row.checklist_assignment_id}` };
+    }
+    return { ok: true };
+  } catch (err) {
+    if (isNextRedirect(err)) throw err;
+    return failed(err);
+  }
+}
+
+export async function snapshotAssessmentAction(formData: FormData): Promise<ActionResult> {
+  try {
+    const access = await requireModuleAccess({
+      featureCode: "regulatory_compliance",
+      permission: "compliance.assess",
+    });
+    if (!access.entitled || !access.permitted) return { ok: false, error: "Not allowed" };
+    const { snapshotAssessmentFromChecklist } = await import("@/lib/services/compliance");
+    await snapshotAssessmentFromChecklist(access.supabase, {
+      organizationId: access.organization.id,
+      assessmentId: String(formData.get("assessmentId") || ""),
+    });
+    revalidatePath("/app/compliance/assessments");
     return { ok: true };
   } catch (err) {
     if (isNextRedirect(err)) throw err;

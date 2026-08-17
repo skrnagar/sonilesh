@@ -85,7 +85,9 @@ export function MegaMenu({ columns, open, id, onNavigate, panel = false }: MegaM
     <div
       id={id}
       role="menu"
-      hidden={!open}
+      hidden={!panel && !open}
+      aria-hidden={!open}
+      inert={!open ? true : undefined}
       className={cn(
         "relative z-[80] max-h-[min(70vh,40rem)] overflow-y-auto overflow-x-hidden bg-card text-card-foreground",
         panel

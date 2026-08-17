@@ -36,6 +36,16 @@ describe("persona routing", () => {
     ).toBe("/app/compliance/dashboard");
   });
 
+  it("sends contractor contacts to the contractor portal", () => {
+    expect(
+      landingPathForSession({
+        portal: "company",
+        isPlatformAdmin: false,
+        roleCodes: ["contractor_contact"],
+      }),
+    ).toBe("/contractor");
+  });
+
   it("rejects non-platform admins at the admin portal", () => {
     expect(
       landingPathForSession({

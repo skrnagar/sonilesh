@@ -1,63 +1,54 @@
-﻿import { ModuleShell } from "@/components/modules/module-shell";
+﻿import Link from "next/link";
+import { ContractorsNav } from "@/components/contractors/contractors-nav";
 import { RecordsTable, StatusPill } from "@/components/modules/records-table";
-import { requireModuleAccess } from "@/lib/auth/org-context";
-import { ActionForm } from "@/components/shared/action-form";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { createContractorAction } from "@/app/actions/supporting";
+import { ForbiddenState, UpgradeState } from "@/components/shared/state-panels";
+import { requireModuleAccess } from "@/lib/auth/org-context";
+import { listContractorCompanies } from "@/lib/services/contractors";
 
 export default async function ContractorsPage() {
   const access = await requireModuleAccess({
     featureCode: "contractor_management",
-    permission: "contractors.view",
+    permission: "contractor.view",
   });
-  if (!access.entitled || !access.permitted) {
-    return (
-      <ModuleShell
-        title="Contractors"
-        description="Contractor management"
-        featureCode="contractor_management"
-        permission="contractors.view"
-      />
-    );
-  }
+  if (!access.entitled) return <UpgradeState featureName="Contractor management" />;
+  if (!access.permitted) return <ForbiddenState />;
 
-  const { data: rows } = await access.supabase
-    .from("contractor_companies")
-    .select("name, status, safety_score, insurance_expires_on")
-    .eq("organization_id", access.organization.id)
-    .is("deleted_at", null)
-    .order("created_at", { ascending: false });
+  const rows = await listContractorCompanies(access.supabase, access.organization.id);
 
   return (
-    <ModuleShell
-      title="Contractor Management"
-      description="Companies, documents, induction, safety score, blacklist"
-      featureCode="contractor_management"
-      permission="contractors.view"
-    >
-      <ActionForm
-        action={createContractorAction}
-        className="max-w-md space-y-3 rounded-xl border border-border bg-card p-4"
-      >
-        <p className="text-sm font-semibold">Register company</p>
-        <div className="space-y-2">
-          <Label htmlFor="name">Company name</Label>
-          <Input id="name" name="name" required />
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-xl font-semibold">Contractor management</h1>
+          <p className="text-sm text-muted-foreground">
+            Register, prequalify, assign to sites, and track workforce readiness. Site approval is
+            never global.
+          </p>
         </div>
-        <Button type="submit">Add contractor</Button>
-      </ActionForm>
+        <div className="flex flex-wrap gap-2">
+          <Button asChild variant="outline" size="sm">
+            <Link href="/app/contractors/export?kind=register">Export CSV</Link>
+          </Button>
+          <Button asChild size="sm">
+            <Link href="/app/contractors/new">New contractor</Link>
+          </Button>
+        </div>
+      </div>
+      <ContractorsNav current="/app/contractors" />
       <RecordsTable
-        columns={["Company", "Status", "Safety score", "Insurance"]}
+        columns={["Company", "Status", "Safety score", "Insurance", "City"]}
         empty="No contractors yet."
-        rows={(rows ?? []).map((row) => [
-          row.name,
+        rows={rows.map((row) => [
+          <Link key={row.id} href={`/app/contractors/${row.id}`} className="font-medium hover:underline">
+            {row.name}
+          </Link>,
           <StatusPill key="s" value={row.status} />,
           row.safety_score ?? "—",
           row.insurance_expires_on ?? "—",
+          row.city ?? "—",
         ])}
       />
-    </ModuleShell>
+    </div>
   );
 }

@@ -16,7 +16,7 @@ export function ModuleCard({ name, summary, href, field, dashboard, className }:
     <Link
       href={href}
       className={cn(
-        "group flex flex-col rounded-xl border border-border bg-card p-5 transition-[border-color,background-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-accent/40 hover:bg-muted/40 hover:shadow-[var(--shadow-sm)] motion-reduce:transition-none motion-reduce:hover:translate-y-0",
+        "group flex flex-col rounded-xl border border-border bg-card p-5 transition-[border-color,background-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-accent/40 hover:bg-muted/40 hover:shadow-[var(--shadow-md)] motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:hover:shadow-none",
         className,
       )}
     >

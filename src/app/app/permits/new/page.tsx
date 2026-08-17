@@ -18,7 +18,7 @@ export default async function NewPermitPage() {
   if (!access.permitted) return <ForbiddenState />;
 
   const orgId = access.organization.id;
-  const [{ data: types }, { data: sites }, { data: projects }, { data: risks }] =
+  const [{ data: types }, { data: sites }, { data: projects }, { data: risks }, { data: contractors }] =
     await Promise.all([
       access.supabase
         .from("permit_types")
@@ -44,6 +44,12 @@ export default async function NewPermitPage() {
         .is("deleted_at", null)
         .order("created_at", { ascending: false })
         .limit(50),
+      access.supabase
+        .from("contractor_companies")
+        .select("id, name, status")
+        .eq("organization_id", orgId)
+        .is("deleted_at", null)
+        .order("name"),
     ]);
 
   return (
@@ -112,8 +118,19 @@ export default async function NewPermitPage() {
               <Input id="workerCount" name="workerCount" type="number" min={1} />
             </div>
             <div className="space-y-1">
-              <Label htmlFor="contractorName">Contractor</Label>
-              <Input id="contractorName" name="contractorName" />
+              <Label htmlFor="contractorCompanyId">Contractor company</Label>
+              <Select id="contractorCompanyId" name="contractorCompanyId" defaultValue="">
+                <option value="">None</option>
+                {(contractors ?? []).map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name} ({c.status})
+                  </option>
+                ))}
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                Eligibility is advisory unless the organization enables PTW enforcement in contractor
+                settings.
+              </p>
             </div>
             <div className="space-y-1">
               <Label htmlFor="equipment">Equipment</Label>

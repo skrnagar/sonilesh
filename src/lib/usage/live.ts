@@ -10,6 +10,9 @@ export const METRIC_FEATURE_KEYS: Record<string, string> = {
   max_projects: "max_projects",
   storage_gb: "max_storage_gb",
   documents: "document_control",
+  sds: "chemical_sds",
+  ppe: "ppe_management",
+  moc: "moc",
   api_calls: "api_access",
   reports: "advanced_reports",
   active_contractors: "contractor_management",
@@ -59,6 +62,23 @@ export async function countLiveMetric(
   if (key === "max_projects") {
     const { count } = await supabase
       .from("projects")
+      .select("id", { count: "exact", head: true })
+      .eq("organization_id", organizationId)
+      .is("deleted_at", null);
+    return count ?? 0;
+  }
+  if (key === "contractor_management" || key === "max_contractors" || key === "active_contractors") {
+    const { count } = await supabase
+      .from("contractor_companies")
+      .select("id", { count: "exact", head: true })
+      .eq("organization_id", organizationId)
+      .in("status", ["pending", "approved", "active"])
+      .is("deleted_at", null);
+    return count ?? 0;
+  }
+  if (key === "document_control" || key === "documents" || key === "max_documents") {
+    const { count } = await supabase
+      .from("controlled_documents")
       .select("id", { count: "exact", head: true })
       .eq("organization_id", organizationId)
       .is("deleted_at", null);

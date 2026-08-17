@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requireOrgContext } from "@/lib/auth/org-context";
 import { canFieldAction } from "@/lib/auth/field-roles";
-import { permitCountdown } from "@/lib/services/permits";
+import { permitCountdown } from "@/lib/field/permit-countdown";
 import { resolveFieldRole } from "@/lib/field/resolve-role";
 import {
   acknowledgeFieldPermitAction,
@@ -12,44 +12,44 @@ import { FieldSubmitForm } from "@/components/field/field-submit-form";
 import {
   FieldCard,
   FieldEmpty,
+  FieldForbidden,
   FieldPageHeader,
   fieldControlClass,
 } from "@/components/field/field-ui";
-import { ForbiddenState } from "@/components/shared/state-panels";
-import { requireFeature } from "@/lib/services/entitlements";
+import { hasFeature } from "@/lib/services/entitlements";
 
 export default async function FieldPermitsPage() {
   const { supabase, user, organization, membershipId } = await requireOrgContext();
-  try {
-    await requireFeature(supabase, organization.id, "permit_to_work");
-  } catch {
-    return <ForbiddenState />;
-  }
-  const role = await resolveFieldRole(supabase, membershipId);
-  if (!canFieldAction(role, "my_permits")) return <ForbiddenState />;
+
+  const [entitled, role, permitsRes, acksRes] = await Promise.all([
+    hasFeature(supabase, organization.id, "permit_to_work"),
+    resolveFieldRole(supabase, membershipId),
+    supabase
+      .from("permits")
+      .select(
+        "id, permit_number, title, status, valid_to, requester_id, issuer_id, residual_risk_band, permit_types:permit_type_id(name)",
+      )
+      .eq("organization_id", organization.id)
+      .or(
+        `requester_id.eq.${user.id},issuer_id.eq.${user.id},work_leader_id.eq.${user.id},status.eq.approval_required,status.eq.authorization,status.eq.active,status.eq.suspended`,
+      )
+      .is("deleted_at", null)
+      .order("valid_to", { ascending: true })
+      .limit(30),
+    supabase
+      .from("permit_approvals")
+      .select("permit_id")
+      .eq("organization_id", organization.id)
+      .eq("approver_id", user.id)
+      .eq("approver_role", "field_ack"),
+  ]);
+
+  if (!entitled) return <FieldForbidden />;
+  if (!canFieldAction(role, "my_permits")) return <FieldForbidden />;
   const canApprove = canFieldAction(role, "approve_permit");
 
-  const { data: permits, error } = await supabase
-    .from("permits")
-    .select(
-      "id, permit_number, title, status, valid_to, requester_id, issuer_id, residual_risk_band, permit_types:permit_type_id(name)",
-    )
-    .eq("organization_id", organization.id)
-    .or(
-      `requester_id.eq.${user.id},issuer_id.eq.${user.id},work_leader_id.eq.${user.id},status.eq.approval_required,status.eq.authorization,status.eq.active,status.eq.suspended`,
-    )
-    .is("deleted_at", null)
-    .order("valid_to", { ascending: true })
-    .limit(30);
-
-  const { data: acks } = await supabase
-    .from("permit_approvals")
-    .select("permit_id")
-    .eq("organization_id", organization.id)
-    .eq("approver_id", user.id)
-    .eq("approver_role", "field_ack");
-
-  const acked = new Set((acks ?? []).map((a) => a.permit_id));
+  const { data: permits, error } = permitsRes;
+  const acked = new Set((acksRes.data ?? []).map((a) => a.permit_id));
 
   const needingAction = (permits ?? []).filter(
     (p) =>

@@ -4,8 +4,8 @@ import { formatBrsrDocument } from "@/lib/services/esg";
 
 export async function GET(request: Request) {
   const access = await requireModuleAccess({
-    featureCode: "esg_reporting",
-    permission: "esg.view",
+    featureCode: "brsr",
+    permission: "brsr.view",
   });
   if (!access.entitled || !access.permitted) {
     return NextResponse.json({ error: "Not allowed" }, { status: 403 });

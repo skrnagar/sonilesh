@@ -14,5 +14,7 @@ describe("BRSR export", () => {
     expect(doc).toMatch(/SECTION B/);
     expect(doc).toMatch(/SECTION C/);
     expect(doc).toMatch(/ehs_events/);
+    expect(doc.toLowerCase()).not.toMatch(/complete for sebi/);
+    expect(doc.toLowerCase()).toMatch(/not a claim of completeness/);
   });
 });

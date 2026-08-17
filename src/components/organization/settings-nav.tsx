@@ -16,6 +16,7 @@ const LINKS = [
   { href: "/app/settings/ehs/risk-matrix", label: "Risk matrix" },
   { href: "/app/settings/ehs/permit-types", label: "Permit types" },
   { href: "/app/settings/ehs/checklists", label: "Checklists" },
+  { href: "/app/settings/contractors/categories", label: "Contractors" },
   { href: "/app/settings/subscription", label: "Subscription" },
   { href: "/app/settings/billing", label: "Billing" },
 ];

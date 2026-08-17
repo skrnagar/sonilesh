@@ -1,8 +1,16 @@
 export const FIELD_ONLY_ROLES = ["employee", "contractor"] as const;
+export const CONTRACTOR_PORTAL_ROLES = ["contractor_contact"] as const;
 export const REPORTING_ROLES = ["ehs_officer", "auditor", "investigator"] as const;
 export const COMPANY_ADMIN_ROLES = ["ehs_admin", "super_admin", "tenant_admin"] as const;
 
-export type LoginPortal = "admin" | "company" | "field";
+export type LoginPortal = "admin" | "company" | "field" | "contractor";
+
+export function isContractorPortalOnly(roleCodes: string[]) {
+  if (!roleCodes.length) return false;
+  return roleCodes.every((code) =>
+    (CONTRACTOR_PORTAL_ROLES as readonly string[]).includes(code),
+  );
+}
 
 export function isFieldOnlyRoles(roleCodes: string[]) {
   if (!roleCodes.length) return false;
@@ -31,6 +39,12 @@ export function landingPathForSession(input: {
     return "/field/home";
   }
 
+  if (input.portal === "contractor") {
+    if (input.isPlatformAdmin && !input.roleCodes.length) return null;
+    return "/contractor";
+  }
+
+  if (isContractorPortalOnly(input.roleCodes)) return "/contractor";
   if (isFieldOnlyRoles(input.roleCodes)) return "/field/home";
   if (input.roleCodes.includes("company_secretary") || input.roleCodes.includes("compliance_officer")) {
     return "/app/compliance/dashboard";

@@ -37,7 +37,7 @@ export function SectionHeader({
       ) : null}
       <h2
         className={cn(
-          "font-display text-[1.85rem] font-semibold tracking-[-0.035em] md:text-[2.35rem] md:leading-[1.12]",
+          "mkt-h2",
           tone === "inverse" ? "text-white" : "text-foreground",
         )}
       >
@@ -46,7 +46,7 @@ export function SectionHeader({
       {description ? (
         <p
           className={cn(
-            "mt-4 text-base leading-relaxed md:text-[1.05rem]",
+            "mkt-body mt-4 text-base",
             tone === "inverse" ? "text-white/80" : "text-muted-foreground",
           )}
         >

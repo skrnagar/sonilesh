@@ -2,7 +2,8 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * CSS-only motion (no framer-motion) to keep marketing JS lean.
+ * CSS-only page-load fade (no framer-motion) to keep marketing JS lean.
+ * Scroll reveals live in reveal.tsx and are IO-based.
  * Respects prefers-reduced-motion via globals.css.
  */
 export function FadeIn({
@@ -24,12 +25,17 @@ export function FadeIn({
   );
 }
 
-export function Reveal({
-  children,
+export function ScrollCue({
+  href = "#mkt-after-hero",
   className,
 }: {
-  children: ReactNode;
+  href?: string;
   className?: string;
 }) {
-  return <div className={cn("mkt-reveal", className)}>{children}</div>;
+  return (
+    <a href={href} className={cn("mkt-scroll-cue", className)} aria-label="Scroll to next section">
+      <span className="mkt-scroll-cue-line" aria-hidden />
+      <span className="mkt-scroll-cue-chevron" aria-hidden />
+    </a>
+  );
 }

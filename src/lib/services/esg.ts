@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { writeAuditLog } from "@/lib/services/audit";
 import { requireFeature } from "@/lib/services/entitlements";
 import { requirePermission } from "@/lib/services/rbac";
+import { computeIndicatorCoverage } from "@/lib/compliance/applicability";
 
 export const BRSR_CORE_KEYS = [
   { key: "ghg_emissions", label: "GHG emissions (Scope 1+2)", unit: "tCO2e", attribute: 1 },
@@ -94,6 +95,16 @@ export async function refreshHealthSafetyMetric(
     { onConflict: "organization_id,period,metric_key" },
   );
   if (error) throw new Error(error.message);
+  await supabase.from("esg_metric_values").insert({
+    organization_id: organizationId,
+    metric_key: "employee_health_safety",
+    period,
+    value: computed.incident_count,
+    unit: "incidents",
+    notes: computed.notes,
+    source: "ehs_events",
+    recorded_by: userId,
+  });
   return computed;
 }
 
@@ -129,6 +140,16 @@ export async function upsertEsgMetric(
     { onConflict: "organization_id,period,metric_key" },
   );
   if (error) throw new Error(error.message);
+  await supabase.from("esg_metric_values").insert({
+    organization_id: input.organizationId,
+    metric_key: input.metricKey,
+    period: input.period,
+    value: input.value,
+    unit: input.unit ?? null,
+    notes: input.notes ?? null,
+    source: "manual",
+    recorded_by: input.userId,
+  });
 }
 
 export async function addGhgRow(
@@ -298,7 +319,149 @@ export function formatBrsrDocument(input: {
     `===== SECTION C — Principle-wise / BRSR Core performance =====`,
     ...Object.entries(input.sectionC).map(([k, v]) => `${k}: ${typeof v === "object" ? JSON.stringify(v) : String(v ?? "")}`),
     ``,
-    `This export follows SEBI BRSR section structure (A/B/C) for assurance review. It is not a substitute for the official XBRL filing pack.`,
+    `This export follows the configured reporting-framework section structure (A/B/C) for assurance review. It is not a substitute for an official filing pack, not legal advice, and not a claim of completeness.`,
   ];
   return lines.join("\n");
+}
+
+export async function listReportingFramework(
+  supabase: SupabaseClient,
+  code = "brsr",
+) {
+  const { data: framework, error } = await supabase
+    .from("reporting_frameworks")
+    .select("id, code, name, version, publisher, description")
+    .eq("code", code)
+    .eq("is_active", true)
+    .order("version", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!framework) return { framework: null, sections: [] as Array<{
+    id: string;
+    code: string;
+    title: string;
+    indicators: Array<{ id: string; code: string; title: string; unit: string | null; is_core: boolean }>;
+  }> };
+
+  const { data: sections, error: secErr } = await supabase
+    .from("reporting_framework_sections")
+    .select("id, code, title, sort_order, reporting_framework_indicators(id, code, title, unit, is_core, sort_order)")
+    .eq("framework_id", framework.id)
+    .order("sort_order");
+  if (secErr) throw new Error(secErr.message);
+
+  return {
+    framework,
+    sections: (sections ?? []).map((section) => {
+      const indicators = (
+        (section.reporting_framework_indicators as Array<{
+          id: string;
+          code: string;
+          title: string;
+          unit: string | null;
+          is_core: boolean;
+          sort_order: number;
+        }> | null) ?? []
+      ).sort((a, b) => a.sort_order - b.sort_order);
+      return { id: section.id, code: section.code, title: section.title, indicators };
+    }),
+  };
+}
+
+export async function listMetricDefinitions(supabase: SupabaseClient, organizationId: string) {
+  const { data, error } = await supabase
+    .from("esg_metric_definitions")
+    .select("id, code, name, unit, source_type, organization_id, is_active")
+    .or(`organization_id.is.null,organization_id.eq.${organizationId}`)
+    .eq("is_active", true)
+    .order("name");
+  if (error) throw new Error(error.message);
+  return data ?? [];
+}
+
+export async function upsertMetricDefinition(
+  supabase: SupabaseClient,
+  input: {
+    organizationId: string;
+    userId: string;
+    code: string;
+    name: string;
+    unit?: string;
+    sourceType?: "manual" | "computed" | "ehs_events" | "ghg";
+  },
+) {
+  await requireFeature(supabase, input.organizationId, "esg_reporting");
+  await requirePermission(supabase, input.organizationId, input.userId, "esg.manage");
+  const { data, error } = await supabase
+    .from("esg_metric_definitions")
+    .insert({
+      organization_id: input.organizationId,
+      code: input.code.trim(),
+      name: input.name.trim(),
+      unit: input.unit || null,
+      source_type: input.sourceType ?? "manual",
+    })
+    .select("id")
+    .single();
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function ensureReportingPeriod(
+  supabase: SupabaseClient,
+  input: {
+    organizationId: string;
+    userId: string;
+    periodLabel: string;
+    periodStart?: string | null;
+      periodEnd?: string | null;
+  },
+) {
+  await requireFeature(supabase, input.organizationId, "esg_reporting");
+  await requirePermission(supabase, input.organizationId, input.userId, "esg.manage");
+  const { data, error } = await supabase
+    .from("esg_reporting_periods")
+    .upsert(
+      {
+        organization_id: input.organizationId,
+        period_label: input.periodLabel,
+        period_start: input.periodStart || null,
+        period_end: input.periodEnd || null,
+      },
+      { onConflict: "organization_id,period_label" },
+    )
+    .select("id")
+    .single();
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function listRecordedMetricsForPeriod(
+  supabase: SupabaseClient,
+  organizationId: string,
+  period: string,
+) {
+  const { data, error } = await supabase
+    .from("esg_metrics")
+    .select("metric_key, value, unit, notes, source")
+    .eq("organization_id", organizationId)
+    .eq("period", period)
+    .not("value", "is", null);
+  if (error) throw new Error(error.message);
+  return data ?? [];
+}
+
+export async function brsrDataCoverage(
+  supabase: SupabaseClient,
+  organizationId: string,
+  period: string,
+) {
+  const catalog = await listReportingFramework(supabase, "brsr");
+  const core = catalog.sections.flatMap((s) => s.indicators).filter((i) => i.is_core);
+  const recorded = await listRecordedMetricsForPeriod(supabase, organizationId, period);
+  const byKey = new Map(recorded.map((row) => [row.metric_key, row.value]));
+  return computeIndicatorCoverage(
+    core.map((indicator) => ({ code: indicator.code, value: byKey.get(indicator.code) ?? null })),
+  );
 }

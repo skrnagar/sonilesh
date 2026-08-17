@@ -25,7 +25,7 @@ export function MetricCard({
   return (
     <div className={cn("border border-border bg-card px-4 py-3", className)}>
       <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">{label}</p>
-      <p className={cn("mt-2 text-2xl font-semibold tabular-nums", toneClass[tone])}>
+      <p className={cn("mkt-kpi mt-2", toneClass[tone])}>
         {value}
       </p>
       {hint ? <p className="mt-1 text-xs text-muted-foreground">{hint}</p> : null}

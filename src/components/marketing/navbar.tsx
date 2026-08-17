@@ -159,18 +159,20 @@ export function Navbar() {
                     </button>
                     <div
                       className={cn(
-                        "fixed inset-x-0 z-[80] border-b border-border bg-card shadow-[var(--shadow-lg)]",
-                        scrolled ? "top-14 md:top-16 lg:top-[4.25rem]" : "top-14 md:top-16 lg:top-[4.25rem]",
-                        isOpen ? "pointer-events-auto" : "pointer-events-none",
+                        "fixed inset-x-0 z-[80] bg-card",
+                        "top-14 md:top-16 lg:top-[4.25rem]",
+                        "mkt-mega-panel",
+                        isOpen && "border-b border-border shadow-[var(--shadow-lg)]",
                       )}
+                      data-open={isOpen ? "true" : "false"}
                       onMouseEnter={clearCloseTimer}
                     >
-                      {isOpen ? (
+                      <div className="mkt-mega-panel-inner">
                         <Container>
                           <MegaMenu
                             id={`${menuId}-${item.label}`}
                             columns={item.columns!}
-                            open
+                            open={isOpen}
                             panel
                             onNavigate={() => {
                               setOpenMenu(null);
@@ -178,7 +180,7 @@ export function Navbar() {
                             }}
                           />
                         </Container>
-                      ) : null}
+                      </div>
                     </div>
                   </>
                 ) : (
@@ -241,39 +243,46 @@ export function Navbar() {
                     onClick={() => setMobileSection(expanded ? null : item.label)}
                   >
                     {item.label}
-                    <ChevronDown className={cn("h-4 w-4 text-muted-foreground", expanded && "rotate-180")} />
+                    <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform duration-200 motion-reduce:transition-none", expanded && "rotate-180")} />
                   </button>
-                  {expanded ? (
-                    <div className="space-y-3 px-2 pb-3 pt-1">
-                      {item.columns!.map((col) => (
-                        <div key={col.title}>
-                          <p className="px-2 pb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                            {col.title}
-                          </p>
-                          {col.links.map((link) => (
-                            <Link
-                              key={link.href + link.label}
-                              href={link.href}
-                              className="block min-h-11 rounded-lg px-2 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
-                              onClick={() => setMobileOpen(false)}
-                            >
-                              <span className="font-medium text-foreground">{link.label}</span>
-                              {link.description ? (
-                                <span className="mt-0.5 block text-xs leading-snug">{link.description}</span>
-                              ) : null}
-                            </Link>
-                          ))}
-                        </div>
-                      ))}
-                      <Link
-                        href={item.href}
-                        className="block min-h-11 px-2 text-sm font-medium text-accent"
-                        onClick={() => setMobileOpen(false)}
-                      >
-                        View all {item.label.toLowerCase()}
-                      </Link>
+                  <div
+                    className={cn(
+                      "grid transition-[grid-template-rows] duration-200 ease-out motion-reduce:transition-none",
+                      expanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+                    )}
+                  >
+                    <div className="overflow-hidden">
+                      <div className="space-y-3 px-2 pb-3 pt-1">
+                        {item.columns!.map((col) => (
+                          <div key={col.title}>
+                            <p className="px-2 pb-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                              {col.title}
+                            </p>
+                            {col.links.map((link) => (
+                              <Link
+                                key={link.href + link.label}
+                                href={link.href}
+                                className="block min-h-11 rounded-lg px-2 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
+                                onClick={() => setMobileOpen(false)}
+                              >
+                                <span className="font-medium text-foreground">{link.label}</span>
+                                {link.description ? (
+                                  <span className="mt-0.5 block text-xs leading-snug">{link.description}</span>
+                                ) : null}
+                              </Link>
+                            ))}
+                          </div>
+                        ))}
+                        <Link
+                          href={item.href}
+                          className="block min-h-11 px-2 text-sm font-medium text-accent"
+                          onClick={() => setMobileOpen(false)}
+                        >
+                          View all {item.label.toLowerCase()}
+                        </Link>
+                      </div>
                     </div>
-                  ) : null}
+                  </div>
                 </div>
               );
             })}

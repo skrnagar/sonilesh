@@ -60,8 +60,9 @@ export default async function ComplianceProfilePage() {
       <div>
         <h1 className="text-xl font-semibold text-foreground">Compliance profile</h1>
         <p className="text-sm text-muted-foreground">
-          Applicability is evaluated against this profile so each organization sees obligations that
-          match its sector, listings, waste streams, and size bands — not a generic 2,000-law dump.
+          Applicability is evaluated against this profile using configured JSON rules (country, industry,
+          site type, listings, waste streams, size bands). This is not legal advice and does not decide
+          statutory applicability without those rules.
         </p>
       </div>
 
@@ -146,6 +147,36 @@ export default async function ComplianceProfilePage() {
             <Label htmlFor="states">States of operation (comma separated)</Label>
             <Input id="states" name="states" defaultValue={(profile?.states_of_operation ?? []).join(", ")} />
           </div>
+          <div className="space-y-2">
+            <Label htmlFor="countryCode">Country code (ISO)</Label>
+            <Input id="countryCode" name="countryCode" defaultValue={profile?.country_code ?? ""} placeholder="IN" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="jurisdictionCodes">Jurisdiction codes (comma separated)</Label>
+            <Input
+              id="jurisdictionCodes"
+              name="jurisdictionCodes"
+              defaultValue={(profile?.jurisdiction_codes ?? []).join(", ")}
+              placeholder="IN, IN-MH"
+            />
+          </div>
+          <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="siteTypes">Typical site types (comma separated)</Label>
+            <Input
+              id="siteTypes"
+              name="siteTypes"
+              defaultValue={(profile?.site_types ?? []).join(", ")}
+              placeholder="permanent, temporary_project"
+            />
+          </div>
+          <label className="flex items-center gap-2 text-sm md:col-span-2">
+            <input
+              type="checkbox"
+              name="autoNoncompliant"
+              defaultChecked={Boolean(profile?.auto_noncompliant_on_expired_evidence)}
+            />
+            Auto-mark obligations non-compliant when evidence expires (off by default — expiry is flagged, not a legal finding)
+          </label>
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" name="exportsToEu" defaultChecked={Boolean(profile?.exports_to_eu)} />
             Exports to the EU (CBAM)

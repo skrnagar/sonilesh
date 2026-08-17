@@ -23,7 +23,7 @@ async function esgWrite() {
     featureCode: "esg_reporting",
     permission: "esg.manage",
   });
-  if (!access.entitled) throw new Error("ESG reporting requires Professional or above.");
+  if (!access.entitled) throw new Error("ESG reporting is not enabled for this organization.");
   if (!access.permitted) throw new Error("Missing permission: esg.manage");
   return access;
 }
@@ -166,6 +166,44 @@ export async function saveBrsrAction(formData: FormData): Promise<ActionResult> 
       status: "draft",
     });
     revalidatePath("/app/esg/brsr-report");
+    return { ok: true };
+  } catch (err) {
+    if (isNextRedirect(err)) throw err;
+    return failed(err);
+  }
+}
+
+export async function saveMetricDefinitionAction(formData: FormData): Promise<ActionResult> {
+  try {
+    const access = await esgWrite();
+    const { upsertMetricDefinition } = await import("@/lib/services/esg");
+    await upsertMetricDefinition(access.supabase, {
+      organizationId: access.organization.id,
+      userId: access.user.id,
+      code: String(formData.get("code") || ""),
+      name: String(formData.get("name") || ""),
+      unit: String(formData.get("unit") || "") || undefined,
+    });
+    revalidatePath("/app/esg/definitions");
+    return { ok: true };
+  } catch (err) {
+    if (isNextRedirect(err)) throw err;
+    return failed(err);
+  }
+}
+
+export async function saveReportingPeriodAction(formData: FormData): Promise<ActionResult> {
+  try {
+    const access = await esgWrite();
+    const { ensureReportingPeriod } = await import("@/lib/services/esg");
+    await ensureReportingPeriod(access.supabase, {
+      organizationId: access.organization.id,
+      userId: access.user.id,
+      periodLabel: String(formData.get("periodLabel") || ""),
+      periodStart: String(formData.get("periodStart") || "") || null,
+      periodEnd: String(formData.get("periodEnd") || "") || null,
+    });
+    revalidatePath("/app/esg/periods");
     return { ok: true };
   } catch (err) {
     if (isNextRedirect(err)) throw err;

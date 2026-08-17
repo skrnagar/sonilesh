@@ -107,6 +107,20 @@ export async function evaluateApplicability(
     }
   }
 
+  await supabase.from("applicability_snapshots").insert({
+    organization_id: organizationId,
+    profile_snapshot: profile,
+    results: (obligations ?? []).map((obligation) => ({
+      obligation_id: obligation.id,
+      code: obligation.code,
+      applies: evaluateObligationRules(
+        (obligation.applicability_rules ?? {}) as ApplicabilityRules,
+        profile,
+      ).applies,
+    })),
+    created_by: actorUserId ?? null,
+  });
+
   await writeAuditLog(supabase, {
     organizationId,
     actorUserId: actorUserId ?? null,
@@ -167,6 +181,10 @@ export async function upsertComplianceProfile(
     exports_to_eu: input.exports_to_eu,
     waste_streams_generated: input.waste_streams_generated ?? [],
     ccts_sector: input.ccts_sector,
+    country_code: input.country_code ?? null,
+    jurisdiction_codes: input.jurisdiction_codes ?? [],
+    site_types: input.site_types ?? [],
+    auto_noncompliant_on_expired_evidence: input.auto_noncompliant_on_expired_evidence === true,
     updated_at: new Date().toISOString(),
     updated_by: userId,
   };
@@ -450,4 +468,141 @@ export async function listApplicableWithWhy(supabase: SupabaseClient, organizati
     .order("created_at", { ascending: false });
   if (error) throw new Error(error.message);
   return data ?? [];
+}
+
+export async function listAssessments(supabase: SupabaseClient, organizationId: string, siteId?: string | null) {
+  let q = supabase
+    .from("compliance_assessments")
+    .select(
+      `id, period_label, status, score_percent, findings_count, site_id, created_at, rules_snapshot, checklist_assignment_id,
+       compliance_requirements:requirement_id(title),
+       sites:site_id(name)`,
+    )
+    .eq("organization_id", organizationId)
+    .order("created_at", { ascending: false });
+  if (siteId) q = q.eq("site_id", siteId);
+  const { data, error } = await q;
+  if (error) throw new Error(error.message);
+  return data ?? [];
+}
+
+export async function createComplianceAssessment(
+  supabase: SupabaseClient,
+  input: {
+    organizationId: string;
+    userId: string;
+    requirementId: string;
+    periodLabel: string;
+    templateId?: string | null;
+  },
+) {
+  await requireFeature(supabase, input.organizationId, "regulatory_compliance");
+  await requirePermission(supabase, input.organizationId, input.userId, "compliance.assess");
+
+  const { data: requirement } = await supabase
+    .from("compliance_requirements")
+    .select(
+      `id, title, site_id, owner_id, checklist_template_id, legal_register_entry_id,
+       legal_register_entries:legal_register_entry_id(applicability_rules_snapshot, site_id)`,
+    )
+    .eq("id", input.requirementId)
+    .eq("organization_id", input.organizationId)
+    .maybeSingle();
+  if (!requirement) throw new Error("Requirement not found in this organization.");
+
+  const profile = await loadProfile(supabase, input.organizationId);
+  const entry = requirement.legal_register_entries as {
+    applicability_rules_snapshot?: unknown;
+    site_id?: string | null;
+  } | null;
+  const templateId = input.templateId || requirement.checklist_template_id;
+
+  let assignmentId: string | null = null;
+  if (templateId) {
+    const { createAssignment } = await import("@/lib/services/checklists");
+    const assignment = await createAssignment(supabase, {
+      organizationId: input.organizationId,
+      userId: input.userId,
+      templateId,
+      title: requirement.title,
+      checklistType: "compliance",
+      siteId: requirement.site_id ?? undefined,
+      assigneeId: requirement.owner_id ?? input.userId,
+    });
+    assignmentId = assignment.id;
+  }
+
+  const { data, error } = await supabase
+    .from("compliance_assessments")
+    .insert({
+      organization_id: input.organizationId,
+      requirement_id: requirement.id,
+      legal_register_entry_id: requirement.legal_register_entry_id,
+      site_id: requirement.site_id,
+      checklist_assignment_id: assignmentId,
+      period_label: input.periodLabel,
+      status: assignmentId ? "in_progress" : "draft",
+      rules_snapshot: entry?.applicability_rules_snapshot ?? {},
+      profile_snapshot: profile ?? {},
+      created_by: input.userId,
+    })
+    .select("id, checklist_assignment_id")
+    .single();
+  if (error) throw new Error(error.message);
+
+  await writeAuditLog(supabase, {
+    organizationId: input.organizationId,
+    actorUserId: input.userId,
+    action: "compliance.assessment_created",
+    entityType: "compliance_assessment",
+    entityId: data.id,
+  });
+
+  const recipients = [requirement.owner_id, input.userId].filter(Boolean) as string[];
+  await notifyUsers(supabase, {
+    organizationId: input.organizationId,
+    userIds: recipients,
+    title: "Compliance assessment opened",
+    body: `${requirement.title} · ${input.periodLabel}`,
+    link: assignmentId ? `/app/inspections/${assignmentId}` : `/app/compliance/assessments`,
+    eventKey: "compliance.assessment_opened",
+  });
+
+  return data;
+}
+
+/** Completing an assessment copies live checklist totals into the frozen snapshot. Live rule changes do not rewrite this row. */
+export async function snapshotAssessmentFromChecklist(
+  supabase: SupabaseClient,
+  input: { organizationId: string; assessmentId: string },
+) {
+  const { data: assessment } = await supabase
+    .from("compliance_assessments")
+    .select("id, checklist_assignment_id, rules_snapshot, profile_snapshot")
+    .eq("id", input.assessmentId)
+    .eq("organization_id", input.organizationId)
+    .maybeSingle();
+  if (!assessment?.checklist_assignment_id) return assessment;
+
+  const { data: assignment } = await supabase
+    .from("checklist_assignments")
+    .select("score_percent, findings_count")
+    .eq("id", assessment.checklist_assignment_id)
+    .eq("organization_id", input.organizationId)
+    .maybeSingle();
+
+  const { data, error } = await supabase
+    .from("compliance_assessments")
+    .update({
+      score_percent: assignment?.score_percent ?? null,
+      findings_count: assignment?.findings_count ?? 0,
+      conducted_at: new Date().toISOString(),
+      status: "completed",
+    })
+    .eq("id", assessment.id)
+    .eq("organization_id", input.organizationId)
+    .select("id, rules_snapshot, profile_snapshot, score_percent")
+    .single();
+  if (error) throw new Error(error.message);
+  return data;
 }
