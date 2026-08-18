@@ -21,6 +21,7 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ForbiddenState, UpgradeState } from "@/components/shared/state-panels";
 import { requireModuleAccess } from "@/lib/auth/org-context";
+import { permissionFlags } from "@/lib/services/rbac";
 import { listTemplates } from "@/lib/services/checklists";
 import {
   getCompanyReadiness,
@@ -42,6 +43,13 @@ export default async function ContractorDetailPage({
   });
   if (!access.entitled) return <UpgradeState featureName="Contractor management" />;
   if (!access.permitted) return <ForbiddenState />;
+
+  const flags = await permissionFlags(access.supabase, access.organization.id, access.user.id);
+  const canUpdate = flags.hasAny(["contractor.update", "contractor.manage"]);
+  const canApprove = flags.hasAny(["contractor.approve", "contractor.manage"]);
+  const canManageWorkers = flags.hasAny(["contractor_worker.manage", "contractor.manage"]);
+  const canManageDocs = flags.hasAny(["contractor_document.manage", "contractor.manage"]);
+  const canVerifyDocs = flags.hasAny(["contractor_document.verify", "contractor.manage"]);
 
   let bundle;
   try {
@@ -96,6 +104,7 @@ export default async function ContractorDetailPage({
             <p>Insurance: {company.insurance_expires_on ?? "—"}</p>
             <p>Safety score: {company.safety_score ?? "—"}</p>
           </section>
+          {canApprove ? (
           <ActionForm action={transitionContractorAction} className="space-y-3 rounded-2xl border border-border bg-card p-4">
             <h2 className="text-sm font-semibold">Status change</h2>
             <input type="hidden" name="companyId" value={id} />
@@ -109,6 +118,8 @@ export default async function ContractorDetailPage({
             <Textarea name="reason" placeholder="Reason" rows={2} />
             <Button type="submit">Apply</Button>
           </ActionForm>
+          ) : null}
+          {canUpdate ? (
           <ActionForm action={addContractorContactAction} className="space-y-3 rounded-2xl border border-border bg-card p-4">
             <h2 className="text-sm font-semibold">Add contact</h2>
             <input type="hidden" name="companyId" value={id} />
@@ -116,6 +127,8 @@ export default async function ContractorDetailPage({
             <Input name="email" type="email" placeholder="Email" />
             <Button type="submit">Add</Button>
           </ActionForm>
+          ) : null}
+          {canUpdate ? (
           <ActionForm action={inviteContractorContactAction} className="space-y-3 rounded-2xl border border-border bg-card p-4">
             <h2 className="text-sm font-semibold">Portal invite</h2>
             <input type="hidden" name="companyId" value={id} />
@@ -123,11 +136,13 @@ export default async function ContractorDetailPage({
             <Input name="fullName" placeholder="Name" />
             <Button type="submit">Invite to /contractor</Button>
           </ActionForm>
+          ) : null}
         </div>
       ) : null}
 
       {tab === "workers" ? (
         <div className="space-y-4">
+          {canManageWorkers ? (
           <ActionForm action={createContractorWorkerAction} className="grid gap-3 rounded-2xl border border-border bg-card p-4 md:grid-cols-4">
             <input type="hidden" name="companyId" value={id} />
             <Input name="fullName" placeholder="Full name" required />
@@ -135,6 +150,7 @@ export default async function ContractorDetailPage({
             <Input name="employeeNumber" placeholder="Employee no." />
             <Button type="submit">Add worker</Button>
           </ActionForm>
+          ) : null}
           <RecordsTable
             columns={["Name", "Trade", "Status", "Induction", "Profile"]}
             empty="No workers."
@@ -151,6 +167,7 @@ export default async function ContractorDetailPage({
 
       {tab === "documents" ? (
         <div className="space-y-4">
+          {canManageDocs ? (
           <ActionForm action={uploadContractorDocumentAction} className="grid gap-3 rounded-2xl border border-border bg-card p-4 md:grid-cols-4">
             <input type="hidden" name="companyId" value={id} />
             <Input name="title" placeholder="Title" required />
@@ -162,6 +179,7 @@ export default async function ContractorDetailPage({
             </label>
             <Button type="submit">Upload</Button>
           </ActionForm>
+          ) : null}
           <RecordsTable
             columns={["Title", "Type", "Expires", "Verify", "Action"]}
             empty="No documents."
@@ -170,7 +188,7 @@ export default async function ContractorDetailPage({
               d.doc_type,
               d.expires_on ?? "—",
               <StatusPill key="v" value={d.verification_status} />,
-              d.verification_status === "pending" ? (
+              d.verification_status === "pending" && canVerifyDocs ? (
                 <ActionForm key={d.id} action={verifyContractorDocumentAction} className="flex gap-2">
                   <input type="hidden" name="documentId" value={d.id} />
                   <input type="hidden" name="companyId" value={id} />
@@ -191,6 +209,7 @@ export default async function ContractorDetailPage({
 
       {tab === "prequalification" ? (
         <div className="space-y-4">
+          {canUpdate ? (
           <ActionForm action={startPrequalificationAction} className="flex flex-wrap items-end gap-3">
             <input type="hidden" name="companyId" value={id} />
             <div className="space-y-1">
@@ -207,6 +226,7 @@ export default async function ContractorDetailPage({
               Start
             </Button>
           </ActionForm>
+          ) : null}
           <RecordsTable
             columns={["Status", "Outcome", "Score"]}
             empty="No prequalification yet."
@@ -270,11 +290,13 @@ export default async function ContractorDetailPage({
 
       {tab === "performance" ? (
         <div className="space-y-4">
+          {canUpdate ? (
           <ActionForm action={recordPerformanceAction} className="flex flex-wrap gap-3 rounded-2xl border border-border bg-card p-4">
             <input type="hidden" name="companyId" value={id} />
             <Input name="safetyScore" type="number" placeholder="Score" />
             <Button type="submit">Record score</Button>
           </ActionForm>
+          ) : null}
           <RecordsTable
             columns={["Score", "Incidents", "Findings", "CAPA", "Notes"]}
             empty="No performance rows."

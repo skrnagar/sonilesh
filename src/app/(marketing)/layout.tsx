@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Navbar } from "@/components/marketing/navbar";
 import { Footer } from "@/components/marketing/footer";
 import { OrganizationJsonLd } from "@/components/marketing/json-ld";
+import { CommandPaletteHost } from "@/components/marketing/command-palette-host";
 import { brand } from "@/lib/marketing/content";
 import { metadataForPath } from "@/lib/marketing/seo";
 
@@ -32,6 +33,7 @@ export default function MarketingLayout({
         Skip to content
       </a>
       <Navbar />
+      <CommandPaletteHost />
       <main id="main-content" className="flex-1">
         {children}
       </main>

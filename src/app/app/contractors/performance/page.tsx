@@ -9,6 +9,7 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ForbiddenState, UpgradeState } from "@/components/shared/state-panels";
 import { requireModuleAccess } from "@/lib/auth/org-context";
+import { permissionFlags } from "@/lib/services/rbac";
 import { listContractorCompanies } from "@/lib/services/contractors";
 
 export default async function ContractorPerformancePage() {
@@ -18,6 +19,9 @@ export default async function ContractorPerformancePage() {
   });
   if (!access.entitled) return <UpgradeState featureName="Contractor management" />;
   if (!access.permitted) return <ForbiddenState />;
+
+  const flags = await permissionFlags(access.supabase, access.organization.id, access.user.id);
+  const canUpdate = flags.hasAny(["contractor.update", "contractor.manage"]);
 
   const [companies, { data: rows }] = await Promise.all([
     listContractorCompanies(access.supabase, access.organization.id),
@@ -39,6 +43,7 @@ export default async function ContractorPerformancePage() {
         </p>
       </div>
       <ContractorsNav current="/app/contractors/performance" />
+      {canUpdate ? (
       <ActionForm
         action={recordPerformanceAction}
         className="grid gap-3 rounded-2xl border border-border bg-card p-4 md:grid-cols-4"
@@ -70,6 +75,7 @@ export default async function ContractorPerformancePage() {
         </div>
         <Button type="submit">Record</Button>
       </ActionForm>
+      ) : null}
       <RecordsTable
         columns={["Company", "Score", "Incidents", "Findings", "Open CAPA", "Notes"]}
         empty="No performance records."

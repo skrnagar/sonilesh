@@ -5,7 +5,11 @@ import {
   canTransitionDocument,
   suggestNextVersion,
 } from "@/lib/services/documents";
-import { assertPrivateAttachmentPath, isSignedUrl } from "@/lib/services/attachments";
+import {
+  assertPrivateAttachmentPath,
+  assertOrgScopedStoragePath,
+  isSignedUrl,
+} from "@/lib/services/attachments";
 
 describe("document engine", () => {
   it("isolates records by organization id", () => {
@@ -48,5 +52,12 @@ describe("signed URL vs public path", () => {
   it("detects signed URLs not public object paths", () => {
     expect(isSignedUrl("https://proj.supabase.co/storage/v1/object/sign/ehs-attachments/x?token=abc")).toBe(true);
     expect(isSignedUrl("https://proj.supabase.co/storage/v1/object/public/ehs-attachments/x")).toBe(false);
+  });
+
+  it("rejects storage paths outside the organization prefix", () => {
+    expect(() =>
+      assertOrgScopedStoragePath("org-a", "org-b/events/id/file.pdf"),
+    ).toThrow(/outside this organization/i);
+    expect(assertOrgScopedStoragePath("org-a", "org-a/events/id/file.pdf")).toBe("org-a/events/id/file.pdf");
   });
 });

@@ -21,7 +21,8 @@ export type PlatformPermission =
   | "saas.usage.view"
   | "saas.billing.view"
   | "saas.billing.manage"
-  | "saas.audit.view";
+  | "saas.audit.view"
+  | "saas.ai.observability";
 
 const ALL: PlatformPermission[] = [
   "saas.organizations.view",
@@ -40,6 +41,7 @@ const ALL: PlatformPermission[] = [
   "saas.billing.view",
   "saas.billing.manage",
   "saas.audit.view",
+  "saas.ai.observability",
 ];
 
 const ROLE_PERMISSIONS: Record<PlatformRole, PlatformPermission[]> = {
@@ -157,6 +159,7 @@ export const ADMIN_HREF_PERMISSION: Record<string, PlatformPermission | null> = 
   "/admin/billing": "saas.billing.view",
   "/admin/support": "saas.organizations.view",
   "/admin/audit": "saas.audit.view",
+  "/admin/ai/observability": "saas.ai.observability",
   "/admin/obligations": "saas.features.view",
   "/admin/settings": "saas.organizations.update",
 };

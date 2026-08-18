@@ -17,7 +17,7 @@ export default async function RequirementsPage() {
   if (!access.permitted) return <ForbiddenState />;
 
   const siteId = access.siteId;
-  const [rows, entries, templates] = await Promise.all([
+  const [rows, entries, templates, courses, contractors, mocs, risks] = await Promise.all([
     listRequirements(access.supabase, access.organization.id, siteId),
     listLegalRegister(access.supabase, access.organization.id, siteId),
     access.supabase
@@ -26,6 +26,34 @@ export default async function RequirementsPage() {
       .eq("organization_id", access.organization.id)
       .eq("checklist_type", "compliance")
       .eq("is_active", true),
+    access.supabase
+      .from("training_courses")
+      .select("id, title")
+      .eq("organization_id", access.organization.id)
+      .eq("is_active", true)
+      .order("title")
+      .limit(50),
+    access.supabase
+      .from("contractor_companies")
+      .select("id, name")
+      .eq("organization_id", access.organization.id)
+      .is("deleted_at", null)
+      .order("name")
+      .limit(50),
+    access.supabase
+      .from("moc_requests")
+      .select("id, moc_number, title")
+      .eq("organization_id", access.organization.id)
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false })
+      .limit(50),
+    access.supabase
+      .from("risk_assessments")
+      .select("id, title")
+      .eq("organization_id", access.organization.id)
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false })
+      .limit(50),
   ]);
 
   return (
@@ -73,6 +101,50 @@ export default async function RequirementsPage() {
             ))}
           </Select>
         </div>
+        <div>
+          <Label htmlFor="trainingCourseId">Required training (optional)</Label>
+          <Select id="trainingCourseId" name="trainingCourseId" defaultValue="">
+            <option value="">None — uses Training engine</option>
+            {(courses.data ?? []).map((row) => (
+              <option key={row.id} value={row.id}>
+                {row.title}
+              </option>
+            ))}
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="contractorCompanyId">Contractor (optional)</Label>
+          <Select id="contractorCompanyId" name="contractorCompanyId" defaultValue="">
+            <option value="">None — uses Contractor engine</option>
+            {(contractors.data ?? []).map((row) => (
+              <option key={row.id} value={row.id}>
+                {row.name}
+              </option>
+            ))}
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="mocRequestId">Related MOC (optional)</Label>
+          <Select id="mocRequestId" name="mocRequestId" defaultValue="">
+            <option value="">None — uses MOC engine</option>
+            {(mocs.data ?? []).map((row) => (
+              <option key={row.id} value={row.id}>
+                {row.moc_number} — {row.title}
+              </option>
+            ))}
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="riskAssessmentId">Related risk assessment (optional)</Label>
+          <Select id="riskAssessmentId" name="riskAssessmentId" defaultValue="">
+            <option value="">None — uses Risk engine</option>
+            {(risks.data ?? []).map((row) => (
+              <option key={row.id} value={row.id}>
+                {row.title}
+              </option>
+            ))}
+          </Select>
+        </div>
         <Button type="submit">Add requirement</Button>
       </ActionForm>
       <ul className="divide-y rounded-2xl border border-border bg-card">
@@ -81,6 +153,10 @@ export default async function RequirementsPage() {
             <p className="font-medium">{row.title}</p>
             <p className="text-xs text-muted-foreground">
               {(row.sites as { name?: string } | null)?.name ?? "Org-wide"} · {row.frequency} · {row.status}
+              {row.training_course_id ? " · training" : ""}
+              {row.contractor_company_id ? " · contractor" : ""}
+              {row.moc_request_id ? " · moc" : ""}
+              {row.risk_assessment_id ? " · risk" : ""}
             </p>
           </li>
         ))}

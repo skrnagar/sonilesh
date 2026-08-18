@@ -3,6 +3,15 @@ import { writeAuditLog } from "@/lib/services/audit";
 import { requireFeature } from "@/lib/services/entitlements";
 import { requirePermission } from "@/lib/services/rbac";
 import { computeIndicatorCoverage } from "@/lib/compliance/applicability";
+import { notifyUsers } from "@/lib/services/notifications";
+import {
+  applyEsgVerification,
+  canAdvanceEsgVerification,
+  type EsgPeriodStatus,
+  type EsgVerificationStatus,
+} from "@/lib/esg/verification";
+
+export { applyEsgVerification, canAdvanceEsgVerification } from "@/lib/esg/verification";
 
 export const BRSR_CORE_KEYS = [
   { key: "ghg_emissions", label: "GHG emissions (Scope 1+2)", unit: "tCO2e", attribute: 1 },
@@ -73,6 +82,7 @@ export async function refreshHealthSafetyMetric(
   periodStart: string,
   periodEnd: string,
 ) {
+  await requirePermission(supabase, organizationId, userId, "esg.manage");
   await requireFeature(supabase, organizationId, "esg_reporting");
   const computed = await computeEmployeeHealthSafetyFromIncidents(
     supabase,
@@ -104,6 +114,7 @@ export async function refreshHealthSafetyMetric(
     notes: computed.notes,
     source: "ehs_events",
     recorded_by: userId,
+    verification_status: "draft",
   });
   return computed;
 }
@@ -149,6 +160,118 @@ export async function upsertEsgMetric(
     notes: input.notes ?? null,
     source: "manual",
     recorded_by: input.userId,
+    verification_status: "draft",
+  });
+}
+
+export async function advanceEsgMetricVerification(
+  supabase: SupabaseClient,
+  input: {
+    organizationId: string;
+    userId: string;
+    metricValueId: string;
+    toStatus: EsgVerificationStatus;
+    notes?: string;
+  },
+) {
+  await requireFeature(supabase, input.organizationId, "esg");
+  if (input.toStatus === "verified") {
+    await requirePermission(supabase, input.organizationId, input.userId, "esg.verify");
+  } else if (input.toStatus === "published") {
+    await requirePermission(supabase, input.organizationId, input.userId, "esg.approve");
+  } else {
+    await requirePermission(supabase, input.organizationId, input.userId, "esg.manage");
+  }
+
+  const { data: row, error } = await supabase
+    .from("esg_metric_values")
+    .select("id, value, unit, verification_status, metric_key, period")
+    .eq("id", input.metricValueId)
+    .eq("organization_id", input.organizationId)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!row) throw new Error("Metric value not found in this organization.");
+
+  const fromStatus = (row.verification_status || "draft") as EsgVerificationStatus;
+  if (!canAdvanceEsgVerification(fromStatus, input.toStatus)) {
+    throw new Error(`Cannot move ESG verification from ${fromStatus} to ${input.toStatus}.`);
+  }
+
+  const next = applyEsgVerification(row, input.toStatus);
+  const patch: Record<string, unknown> = { verification_status: next.verification_status };
+  if (input.toStatus === "verified" || input.toStatus === "published") {
+    patch.verified_by = input.userId;
+    patch.verified_at = new Date().toISOString();
+  }
+
+  const { error: updateError } = await supabase
+    .from("esg_metric_values")
+    .update(patch)
+    .eq("id", row.id)
+    .eq("organization_id", input.organizationId);
+  if (updateError) throw new Error(updateError.message);
+
+  await supabase.from("esg_metric_verifications").insert({
+    organization_id: input.organizationId,
+    metric_value_id: row.id,
+    from_status: fromStatus,
+    to_status: input.toStatus,
+    recorded_value: row.value,
+    recorded_unit: row.unit,
+    notes: input.notes || null,
+    created_by: input.userId,
+  });
+
+  await writeAuditLog(supabase, {
+    organizationId: input.organizationId,
+    actorUserId: input.userId,
+    action: "esg.metric_verified",
+    entityType: "esg_metric_value",
+    entityId: row.id,
+    newValues: { fromStatus, toStatus: input.toStatus, value: row.value },
+  });
+
+  if (input.toStatus === "submitted") {
+    await notifyUsers(supabase, {
+      organizationId: input.organizationId,
+      userIds: [input.userId],
+      title: "ESG verification required",
+      body: `${row.metric_key} · ${row.period}`,
+      link: "/app/esg/metrics",
+      eventKey: "esg.verification_required",
+    });
+  }
+  return { id: row.id, value: row.value, verification_status: input.toStatus };
+}
+
+export async function setReportingPeriodStatus(
+  supabase: SupabaseClient,
+  input: {
+    organizationId: string;
+    userId: string;
+    periodId: string;
+    status: EsgPeriodStatus;
+  },
+) {
+  await requireFeature(supabase, input.organizationId, "esg");
+  if (["approved", "published", "locked"].includes(input.status)) {
+    await requirePermission(supabase, input.organizationId, input.userId, "esg.approve");
+  } else {
+    await requirePermission(supabase, input.organizationId, input.userId, "esg.manage");
+  }
+  const { error } = await supabase
+    .from("esg_reporting_periods")
+    .update({ status: input.status })
+    .eq("id", input.periodId)
+    .eq("organization_id", input.organizationId);
+  if (error) throw new Error(error.message);
+  await writeAuditLog(supabase, {
+    organizationId: input.organizationId,
+    actorUserId: input.userId,
+    action: "esg.period_status",
+    entityType: "esg_reporting_period",
+    entityId: input.periodId,
+    newValues: { status: input.status },
   });
 }
 

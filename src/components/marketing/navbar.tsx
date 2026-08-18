@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { BrandLockup } from "@/components/brand/brand-lockup";
 import { Container } from "@/components/marketing/container";
 import { MegaMenu } from "@/components/marketing/mega-menu";
+import { openMarketingCommandPalette } from "@/lib/marketing/command-events";
 import { isNavPathActive, primaryNav, type PrimaryNavItem } from "@/lib/marketing/nav";
 import { cn } from "@/lib/utils";
 
@@ -357,6 +358,13 @@ export function Navbar() {
         </nav>
 
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+          <button
+            type="button"
+            className="hidden min-h-11 items-center rounded-lg px-2.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground lg:inline-flex"
+            onClick={() => openMarketingCommandPalette()}
+          >
+            Press ⌘K / Ctrl+K to search
+          </button>
           <Button asChild variant="ghost" className="hidden min-h-11 text-foreground lg:inline-flex">
             <Link href="/login">Sign in</Link>
           </Button>

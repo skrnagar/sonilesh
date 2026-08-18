@@ -1,10 +1,11 @@
+import Link from "next/link";
 import { ActionForm } from "@/components/shared/action-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { ForbiddenState, UpgradeState } from "@/components/shared/state-panels";
-import { saveLicenseAction, saveLicenseConditionAction } from "@/app/actions/legal-register";
+import { saveLicenseAction, saveLicenseConditionAction, raiseLicenseConditionFindingAction } from "@/app/actions/legal-register";
 import { requireModuleAccess } from "@/lib/auth/org-context";
 import { listRegulatoryPermits } from "@/lib/services/regulatory";
 
@@ -26,7 +27,7 @@ export default async function LicensesPage() {
       .order("name"),
     access.supabase
       .from("permit_conditions")
-      .select("id, regulatory_permit_id, condition_text, due_date, status")
+      .select("id, regulatory_permit_id, condition_text, due_date, status, finding_id")
       .eq("organization_id", access.organization.id),
   ]);
 
@@ -92,8 +93,22 @@ export default async function LicensesPage() {
             </p>
             <ul className="mt-2 list-disc pl-5 text-xs">
               {(byPermit.get(row.id) ?? []).map((c) => (
-                <li key={c.id}>
-                  {c.condition_text} {c.due_date ? `(due ${c.due_date})` : ""} · {c.status}
+                <li key={c.id} className="flex flex-wrap items-center gap-2">
+                  <span>
+                    {c.condition_text} {c.due_date ? `(due ${c.due_date})` : ""} · {c.status}
+                  </span>
+                  {c.finding_id ? (
+                    <Link className="underline" href="/app/findings">
+                      Finding
+                    </Link>
+                  ) : (
+                    <ActionForm action={raiseLicenseConditionFindingAction}>
+                      <input type="hidden" name="conditionId" value={c.id} />
+                      <Button type="submit" size="sm" variant="outline">
+                        Raise finding
+                      </Button>
+                    </ActionForm>
+                  )}
                 </li>
               ))}
             </ul>

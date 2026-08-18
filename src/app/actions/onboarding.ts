@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { requireModuleAccess } from "@/lib/auth/org-context";
 import { requireUser } from "@/lib/auth/session";
 import {
   completeOnboarding,
@@ -294,6 +295,10 @@ export async function inviteUsersAction(formData: FormData): Promise<void> {
   const skip = formData.get("skip") === "1";
   try {
     await requireOrgMembership(organizationId, user.id, supabase);
+    const access = await requireModuleAccess({ permission: "users.manage" });
+    if (!access.permitted || access.organization.id !== organizationId) {
+      throw new Error("Missing permission: users.manage");
+    }
     if (!skip) {
       const emails = String(formData.get("emails") || "")
         .split(/[\n,;]+/)

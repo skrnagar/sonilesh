@@ -1,0 +1,54 @@
+import { NextResponse } from "next/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { processImportJob } from "@/lib/import/service";
+import { nextRetryAt, shouldRetry } from "@/lib/integrations/webhooks";
+
+export async function POST(request: Request) {
+  const secret = process.env.CRON_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const header = request.headers.get("authorization");
+  if (!secret || header !== `Bearer ${secret}`) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const supabase = createAdminClient();
+  const { data: imports } = await supabase
+    .from("import_jobs")
+    .select("id, organization_id, created_by")
+    .in("status", ["queued", "processing"])
+    .limit(10);
+
+  let processed = 0;
+  for (const job of imports ?? []) {
+    await processImportJob(supabase, {
+      organizationId: job.organization_id,
+      userId: job.created_by ?? job.organization_id,
+      jobId: job.id,
+    });
+    processed += 1;
+  }
+
+  const { data: deliveries } = await supabase
+    .from("integration_webhook_deliveries")
+    .select("id, attempt_count, organization_id")
+    .in("status", ["pending", "retrying"])
+    .lte("next_attempt_at", new Date().toISOString())
+    .limit(20);
+
+  let retried = 0;
+  for (const row of deliveries ?? []) {
+    const nextAttempt = (row.attempt_count ?? 0) + 1;
+    await supabase
+      .from("integration_webhook_deliveries")
+      .update({
+        attempt_count: nextAttempt,
+        status: shouldRetry(nextAttempt) ? "retrying" : "failed",
+        next_attempt_at: shouldRetry(nextAttempt) ? nextRetryAt(nextAttempt) : null,
+        last_error: "Delivery worker is architecture-only until a signed outbound send is configured.",
+      })
+      .eq("id", row.id)
+      .eq("organization_id", row.organization_id);
+    retried += 1;
+  }
+
+  return NextResponse.json({ imports: processed, webhookRetries: retried });
+}

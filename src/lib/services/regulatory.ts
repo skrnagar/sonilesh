@@ -117,6 +117,69 @@ export async function addPermitCondition(
   return data;
 }
 
+export async function raisePermitConditionFinding(
+  supabase: SupabaseClient,
+  input: {
+    organizationId: string;
+    userId: string;
+    conditionId: string;
+  },
+) {
+  await requirePermission(supabase, input.organizationId, input.userId, "regulatory_permits.manage");
+  const { data: condition } = await supabase
+    .from("permit_conditions")
+    .select("id, condition_text, due_date, status, owner_id, finding_id, regulatory_permit_id")
+    .eq("id", input.conditionId)
+    .eq("organization_id", input.organizationId)
+    .maybeSingle();
+  if (!condition) throw new Error("Condition not found in this organization.");
+  if (condition.finding_id) return { id: condition.finding_id, existing: true as const };
+
+  const { data: finding, error } = await supabase
+    .from("checklist_findings")
+    .insert({
+      organization_id: input.organizationId,
+      assignment_id: null,
+      permit_condition_id: condition.id,
+      title: `License condition: ${condition.condition_text}`.slice(0, 200),
+      description: "Raised from a regulatory license/consent condition — not an EHS PTW finding.",
+      due_date: condition.due_date,
+      owner_id: condition.owner_id,
+      status: "open",
+      created_by: input.userId,
+    })
+    .select("id")
+    .single();
+  if (error) throw new Error(error.message);
+
+  await supabase
+    .from("permit_conditions")
+    .update({ finding_id: finding.id, status: "overdue" })
+    .eq("id", condition.id)
+    .eq("organization_id", input.organizationId);
+
+  await writeAuditLog(supabase, {
+    organizationId: input.organizationId,
+    actorUserId: input.userId,
+    action: "compliance.finding_created",
+    entityType: "checklist_finding",
+    entityId: finding.id,
+    newValues: { permit_condition_id: condition.id },
+  });
+
+  if (condition.owner_id) {
+    await notifyUsers(supabase, {
+      organizationId: input.organizationId,
+      userIds: [condition.owner_id],
+      title: "Compliance finding assigned",
+      body: condition.condition_text,
+      link: "/app/findings",
+      eventKey: "compliance.finding_assigned",
+    });
+  }
+  return { id: finding.id, existing: false as const };
+}
+
 export async function createRegulatoryUpdate(
   supabase: SupabaseClient,
   input: {

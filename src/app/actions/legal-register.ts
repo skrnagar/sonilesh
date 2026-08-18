@@ -60,6 +60,10 @@ export async function saveRequirementAction(formData: FormData): Promise<ActionR
       frequency: String(formData.get("frequency") || "annual"),
       siteId: String(formData.get("siteId") || "") || null,
       checklistTemplateId: String(formData.get("templateId") || "") || null,
+      trainingCourseId: String(formData.get("trainingCourseId") || "") || null,
+      contractorCompanyId: String(formData.get("contractorCompanyId") || "") || null,
+      mocRequestId: String(formData.get("mocRequestId") || "") || null,
+      riskAssessmentId: String(formData.get("riskAssessmentId") || "") || null,
     });
     revalidatePath("/app/compliance/requirements");
     return { ok: true };
@@ -160,6 +164,28 @@ export async function saveUpdateImpactAction(formData: FormData): Promise<Action
       notes: String(formData.get("notes") || "") || undefined,
     });
     revalidatePath("/app/compliance/reviews");
+    return { ok: true };
+  } catch (err) {
+    if (isNextRedirect(err)) throw err;
+    return failed(err);
+  }
+}
+
+export async function raiseLicenseConditionFindingAction(formData: FormData): Promise<ActionResult> {
+  try {
+    const access = await requireModuleAccess({
+      featureCode: "regulatory_compliance",
+      permission: "regulatory_permits.manage",
+    });
+    if (!access.entitled || !access.permitted) return { ok: false, error: "Not allowed" };
+    const { raisePermitConditionFinding } = await import("@/lib/services/regulatory");
+    await raisePermitConditionFinding(access.supabase, {
+      organizationId: access.organization.id,
+      userId: access.user.id,
+      conditionId: String(formData.get("conditionId") || ""),
+    });
+    revalidatePath("/app/compliance/licenses");
+    revalidatePath("/app/findings");
     return { ok: true };
   } catch (err) {
     if (isNextRedirect(err)) throw err;

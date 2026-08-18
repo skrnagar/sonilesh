@@ -16,6 +16,19 @@ const INCIDENT_EVENT_KEYS = new Set([
   "ehs_event.created",
   "ehs_event.assigned",
   "incident.alert",
+  "capa.assigned",
+  "capa.verified",
+  "capa.closed",
+  "capa.overdue",
+  "permit.requested",
+  "permit.approved",
+  "permit.rejected",
+  "permit.suspended",
+  "compliance.due",
+  "compliance.overdue",
+  "inspection.assigned",
+  "document.approved",
+  "moc.approved",
 ]);
 
 export function incidentAlertsEnabled(config: unknown): boolean {
@@ -92,6 +105,8 @@ export async function notifyUsers(
   const allowed = await orgAllowsEvent(supabase, input.organizationId, input.eventKey);
   if (!allowed) return;
 
+  // Filter by event key only for keys tracked in INCIDENT_EVENT_KEYS to avoid
+  // unnecessary DB round-trips for generic events.
   const recipients = await filterByUserPreferences(
     supabase,
     input.organizationId,
@@ -160,19 +175,20 @@ export async function notifySiteSupervisors(
     .is("deleted_at", null);
 
   const userByMember = new Map((members ?? []).map((m) => [m.id, m.user_id]));
-  const recipients: string[] = [];
+  const recipientSet = new Set<string>();
   for (const row of roles ?? []) {
     const code = (row.roles as { code?: string } | null)?.code;
     if (!code) continue;
     if (!["supervisor", "ehs_officer", "ehs_manager", "site_manager"].includes(code)) continue;
+    // org-level roles (site_id null) always match; site-scoped roles only match the requested site.
     if (input.siteId && row.site_id && row.site_id !== input.siteId) continue;
     const userId = userByMember.get(row.member_id);
-    if (userId && userId !== input.actorUserId) recipients.push(userId);
+    if (userId && userId !== input.actorUserId) recipientSet.add(userId);
   }
 
   await notifyUsers(supabase, {
     organizationId: input.organizationId,
-    userIds: recipients,
+    userIds: Array.from(recipientSet),
     title: input.title,
     body: input.body,
     link: input.link,

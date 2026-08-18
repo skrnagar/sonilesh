@@ -147,3 +147,18 @@ export async function requireModuleAccess(opts: {
   }
   return { ...ctx, entitled: true as const, permitted: true as const };
 }
+
+/** Membership + feature + permission, or throw. Use in mutating server actions. */
+export async function requireWriteAccess(opts: {
+  featureCode?: string;
+  permission: string;
+}) {
+  const access = await requireModuleAccess(opts);
+  if (opts.featureCode && !access.entitled) {
+    throw new Error("This module is not enabled for your plan.");
+  }
+  if (!access.permitted) {
+    throw new Error(`Missing permission: ${opts.permission}`);
+  }
+  return access;
+}

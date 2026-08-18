@@ -38,6 +38,7 @@ import {
   Shield,
   ShieldAlert,
   MapPin,
+  Sparkles,
   Users,
   type LucideIcon,
 } from "lucide-react";
@@ -79,6 +80,7 @@ const ICONS: Record<string, LucideIcon> = {
   Settings,
   Shield,
   ShieldAlert,
+  Sparkles,
   Users,
 };
 
@@ -98,6 +100,7 @@ export function SidebarNavLink({
   return (
     <Link
       href={href}
+      prefetch={false}
       title={label}
       className={cn(
         "sidebar-nav-link flex min-h-11 items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",

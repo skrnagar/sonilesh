@@ -59,6 +59,25 @@ export function hasSupabaseConfig() {
   return Boolean(env.NEXT_PUBLIC_SUPABASE_URL && env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 }
 
+export function isProductionRuntime() {
+  return process.env.VERCEL_ENV === "production";
+}
+
+/**
+ * Required for production: public Supabase URL + anon/publishable key + service role.
+ * AI / billing provider secrets are optional and must not block local or preview boots.
+ */
+export function assertRequiredServerEnv(opts?: { strict?: boolean }) {
+  const missing: string[] = [];
+  if (!resolveSupabaseUrl()) missing.push("NEXT_PUBLIC_SUPABASE_URL");
+  if (!resolveAnonKey()) missing.push("NEXT_PUBLIC_SUPABASE_ANON_KEY");
+  const requireServiceRole = opts?.strict ?? isProductionRuntime();
+  if (requireServiceRole && !resolveServiceRoleKey()) {
+    missing.push("SUPABASE_SERVICE_ROLE_KEY");
+  }
+  return { ok: missing.length === 0, missing };
+}
+
 export function isSelfHosted() {
   return env.DEPLOYMENT_MODE === "self_hosted" || process.env.DEPLOYMENT_MODE === "self_hosted";
 }

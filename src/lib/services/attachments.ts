@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { writeAuditLog } from "@/lib/services/audit";
+import { requirePermission } from "@/lib/services/rbac";
 import type { CustomFieldType } from "@/lib/reporting/types";
 
 const MAX_UPLOAD_BYTES = 15 * 1024 * 1024;
@@ -36,6 +37,35 @@ export function isSignedUrl(url: string | null | undefined) {
 
 export function sanitizeAttachmentName(name: string) {
   return name.replace(/[^\w.\-]+/g, "_").slice(0, 80) || "upload.bin";
+}
+
+export function assertOrgScopedStoragePath(organizationId: string, storagePath: string) {
+  const path = assertPrivateAttachmentPath(storagePath);
+  const prefix = `${organizationId}/`;
+  if (!path.startsWith(prefix)) {
+    throw new Error("Storage path is outside this organization");
+  }
+  if (path.includes("..")) {
+    throw new Error("Invalid storage path");
+  }
+  return path;
+}
+
+export async function createSignedUploadTicket(
+  supabase: SupabaseClient,
+  input: { organizationId: string; folder: string; fileName: string },
+) {
+  const folder = input.folder.replace(/[^\w.\-/]+/g, "_").replace(/^\/+|\/+$/g, "") || "uploads";
+  const safeName = sanitizeAttachmentName(input.fileName);
+  const path = assertOrgScopedStoragePath(
+    input.organizationId,
+    `${input.organizationId}/${folder}/${Date.now()}-${safeName}`,
+  );
+  const { data, error } = await supabase.storage
+    .from("ehs-attachments")
+    .createSignedUploadUrl(path);
+  if (error || !data) throw new Error(error?.message ?? "Could not create upload URL");
+  return { path: data.path, token: data.token, signedUrl: data.signedUrl };
 }
 
 export async function uploadEntityAttachment(
@@ -167,6 +197,45 @@ export async function uploadReportAttachment(
     });
   if (uploadError) throw new Error(uploadError.message);
 
+  return recordUploadedReportAttachment(supabase, {
+    organizationId: input.organizationId,
+    userId: input.userId,
+    eventId: input.eventId,
+    storagePath,
+    fileName: safeName,
+    mimeType: mime,
+    fileSize: input.file.size,
+  });
+}
+
+export async function recordUploadedReportAttachment(
+  supabase: SupabaseClient,
+  input: {
+    organizationId: string;
+    userId: string;
+    eventId: string;
+    storagePath: string;
+    fileName: string;
+    mimeType: string;
+    fileSize: number;
+  },
+) {
+  const { data: event } = await supabase
+    .from("ehs_events")
+    .select("id")
+    .eq("id", input.eventId)
+    .eq("organization_id", input.organizationId)
+    .is("deleted_at", null)
+    .maybeSingle();
+  if (!event) throw new Error("Report not found in this organization");
+
+  const storagePath = assertOrgScopedStoragePath(input.organizationId, input.storagePath);
+  const mime = validateAttachmentFile({
+    name: input.fileName,
+    type: input.mimeType,
+    size: input.fileSize,
+  });
+  const safeName = sanitizeAttachmentName(input.fileName);
   const kind = mime.startsWith("image/") ? "photo" : "document";
   const { data, error } = await supabase
     .from("ehs_event_attachments")
@@ -176,7 +245,7 @@ export async function uploadReportAttachment(
       storage_path: storagePath,
       file_name: safeName,
       mime_type: mime,
-      file_size: input.file.size,
+      file_size: input.fileSize,
       kind,
       uploaded_by: input.userId,
     })
@@ -274,17 +343,59 @@ export async function uploadPermitAttachment(
     });
   if (uploadError) throw new Error(uploadError.message);
 
+  return recordUploadedPermitAttachment(supabase, {
+    organizationId: input.organizationId,
+    userId: input.userId,
+    permitId: input.permitId,
+    storagePath,
+    fileName: safeName,
+    mimeType: mime,
+    fileSize: input.file.size,
+  });
+}
+
+export async function recordUploadedPermitAttachment(
+  supabase: SupabaseClient,
+  input: {
+    organizationId: string;
+    userId: string;
+    permitId: string;
+    storagePath: string;
+    fileName: string;
+    mimeType: string;
+    fileSize: number;
+  },
+) {
+  const { requirePermission } = await import("@/lib/services/rbac");
+  await requirePermission(supabase, input.organizationId, input.userId, "permits.update");
+
+  const { data: permit } = await supabase
+    .from("permits")
+    .select("id")
+    .eq("id", input.permitId)
+    .eq("organization_id", input.organizationId)
+    .is("deleted_at", null)
+    .maybeSingle();
+  if (!permit) throw new Error("Permit not found in this organization");
+
+  const storagePath = assertOrgScopedStoragePath(input.organizationId, input.storagePath);
+  const mime = validateAttachmentFile({
+    name: input.fileName,
+    type: input.mimeType,
+    size: input.fileSize,
+  });
+  const safeName = sanitizeAttachmentName(input.fileName);
+
   const { data, error } = await supabase
     .from("permit_attachments")
     .insert({
       organization_id: input.organizationId,
       permit_id: input.permitId,
       file_name: safeName,
-      // Legacy NOT NULL column — store path; display uses storage_path + signed URL
       file_url: storagePath,
       storage_path: storagePath,
       content_type: mime,
-      file_size: input.file.size,
+      file_size: input.fileSize,
       uploaded_by: input.userId,
     })
     .select("*")
@@ -473,6 +584,7 @@ export async function upsertCustomFieldDefinition(
     sortOrder?: number;
   },
 ) {
+  await requirePermission(supabase, input.organizationId, input.userId, "settings.manage");
   const { data, error } = await supabase
     .from("report_custom_field_definitions")
     .upsert(
@@ -510,6 +622,7 @@ export async function archiveCustomFieldDefinition(
   supabase: SupabaseClient,
   input: { organizationId: string; userId: string; id: string },
 ) {
+  await requirePermission(supabase, input.organizationId, input.userId, "settings.manage");
   const { data, error } = await supabase
     .from("report_custom_field_definitions")
     .update({

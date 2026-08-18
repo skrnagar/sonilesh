@@ -13,6 +13,7 @@ import { getUserPermissions } from "@/lib/services/rbac";
 import { signOutAction } from "@/app/actions/auth";
 import { WorkspaceContextSwitchers } from "@/components/layout/workspace-context";
 import { Button } from "@/components/ui/button";
+import { brandingCssVars } from "@/lib/branding/validate";
 
 export default async function AppLayout({
   children,
@@ -81,14 +82,7 @@ export default async function AppLayout({
     primaryColor?: string;
     secondaryColor?: string;
   };
-  const tenantStyle: Record<string, string> = {};
-  if (branding.primaryColor) {
-    tenantStyle["--tenant-primary"] = branding.primaryColor;
-    tenantStyle["--primary"] = branding.primaryColor;
-  }
-  if (branding.secondaryColor) {
-    tenantStyle["--tenant-secondary"] = branding.secondaryColor;
-  }
+  const tenantStyle = brandingCssVars(branding);
 
   return (
     <div style={tenantStyle}>

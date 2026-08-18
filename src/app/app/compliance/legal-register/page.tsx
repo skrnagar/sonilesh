@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ActionForm } from "@/components/shared/action-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -76,7 +77,11 @@ export default async function LegalRegisterPage() {
       <ul className="divide-y rounded-2xl border border-border bg-card">
         {rows.map((row) => (
           <li key={row.id} className="px-4 py-3 text-sm">
-            <p className="font-medium">{row.title}</p>
+            <p className="font-medium">
+              <Link className="underline-offset-2 hover:underline" href={`/app/compliance/legal-register/${row.id}`}>
+                {row.title}
+              </Link>
+            </p>
             <p className="text-xs text-muted-foreground">
               {(row.sites as { name?: string } | null)?.name ?? "Org-wide"} · {row.status} ·{" "}
               {(row.regulations as { code?: string } | null)?.code ?? "no catalog link"}

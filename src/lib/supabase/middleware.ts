@@ -11,10 +11,17 @@ function hasSupabaseAuthCookie(request: NextRequest) {
     );
 }
 
+function requestIdFrom(request: NextRequest) {
+  const incoming = request.headers.get("x-request-id")?.trim();
+  return incoming && incoming.length <= 128 ? incoming : crypto.randomUUID();
+}
+
 export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+  const requestId = requestIdFrom(request);
   let supabaseResponse = NextResponse.next({ request });
   supabaseResponse.headers.set("x-ehs-pathname", pathname);
+  supabaseResponse.headers.set("x-request-id", requestId);
   supabaseResponse.headers.set("X-Content-Type-Options", "nosniff");
 
   if (!hasSupabaseConfig()) {
@@ -77,6 +84,7 @@ export async function updateSession(request: NextRequest) {
           });
           supabaseResponse = NextResponse.next({ request });
           supabaseResponse.headers.set("x-ehs-pathname", pathname);
+          supabaseResponse.headers.set("x-request-id", requestId);
           supabaseResponse.headers.set("X-Content-Type-Options", "nosniff");
           supabaseResponse.headers.set("Cache-Control", "private, no-store");
           cookiesToSet.forEach(({ name, value, options }) => {

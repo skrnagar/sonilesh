@@ -11,6 +11,7 @@ import { notifySiteSupervisors } from "@/lib/services/notifications";
 import { requireFeature } from "@/lib/services/entitlements";
 import { createToolboxTalk } from "@/lib/services/supporting";
 import { formatSupabaseUserError } from "@/lib/supabase/errors";
+import { assertOrgScopedStoragePath, sanitizeAttachmentName } from "@/lib/services/attachments";
 
 type ActionResult = { ok: true; id?: string } | { ok: false; error: string };
 
@@ -20,9 +21,22 @@ async function persistMedia(
   folder: string,
   formData: FormData,
 ) {
+  const existingPath = String(formData.get("storage_path") || "").trim();
+  if (existingPath) {
+    const storagePath = assertOrgScopedStoragePath(organizationId, existingPath);
+    const fileName = sanitizeAttachmentName(String(formData.get("file_name") || "capture.jpg"));
+    return {
+      storagePath,
+      fileName,
+      mimeType: String(formData.get("mime_type") || "application/octet-stream"),
+      fileSize: Number(formData.get("file_size") || 0) || null,
+      uploaded: true,
+    };
+  }
+
   const file = formData.get("media");
   if (!(file instanceof File) || file.size === 0) return null;
-  const safeName = file.name.replace(/[^\w.\-]+/g, "_").slice(0, 80) || "capture.jpg";
+  const safeName = sanitizeAttachmentName(file.name);
   const storagePath = `${organizationId}/${folder}/${Date.now()}-${safeName}`;
   const { error } = await supabase.storage.from("ehs-attachments").upload(storagePath, file, {
     contentType: file.type || undefined,

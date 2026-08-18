@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Bell, Menu, PanelLeft, Search } from "lucide-react";
 import { NotificationDropdown } from "@/components/layout/notification-inbox";
 import type { NotificationRow } from "@/lib/services/notifications";
@@ -27,15 +27,25 @@ export function WorkspaceShell({
   contextSlot?: React.ReactNode;
   children: React.ReactNode;
 }) {
-  const router = useRouter();
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [notesOpen, setNotesOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
+  // Local notification state so badge updates when the dropdown marks items read client-side.
+  const [localNotifications, setLocalNotifications] = useState<NotificationRow[]>(notifications);
   const searchRef = useRef<HTMLInputElement>(null);
   const headerRef = useRef<HTMLElement>(null);
   const searchId = useId();
+
+  // Sync if server passes fresh notifications (e.g. after revalidation-driven re-render).
+  useEffect(() => {
+    setLocalNotifications(notifications);
+  }, [notifications]);
+
+  const localUnread = localNotifications.filter((n) => !n.read_at).length;
+  // Fall back to the server-provided count when local list hasn't loaded yet.
+  const badgeCount = localNotifications.length > 0 ? localUnread : notificationCount;
 
   useEffect(() => {
     setCollapsed(localStorage.getItem("sonil-sidebar-collapsed") === "1");
@@ -172,24 +182,27 @@ export function WorkspaceShell({
                 type="button"
                 className="relative inline-flex h-11 w-11 min-h-11 min-w-11 items-center justify-center rounded-xl border border-border bg-card hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 aria-label={
-                  notificationCount > 0
-                    ? `Notifications, ${notificationCount} unread`
+                  badgeCount > 0
+                    ? `Notifications, ${badgeCount} unread`
                     : "Notifications"
                 }
                 aria-expanded={notesOpen}
                 onClick={() => {
-                  if (!notesOpen) router.refresh();
                   setNotesOpen((v) => !v);
                   setUserOpen(false);
                 }}
               >
                 <Bell className="h-4 w-4" />
-                {notificationCount > 0 ? (
+                {badgeCount > 0 ? (
                   <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-destructive" />
                 ) : null}
               </button>
               {notesOpen ? (
-                <NotificationDropdown items={notifications} unreadCount={notificationCount} />
+                <NotificationDropdown
+                  items={localNotifications}
+                  unreadCount={badgeCount}
+                  onUpdate={setLocalNotifications}
+                />
               ) : null}
             </div>
             <ThemeToggle className="min-h-11 min-w-11" />

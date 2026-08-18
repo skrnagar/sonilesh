@@ -1,8 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireUser } from "@/lib/auth/session";
-import { requireOrgContext } from "@/lib/auth/org-context";
+import { requireWriteAccess } from "@/lib/auth/org-context";
 import {
   createPpeItem,
   issuePpe,
@@ -18,8 +17,10 @@ function failed(err: unknown): ActionResult {
 
 export async function createPpeItemAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      featureCode: "ppe_management",
+      permission: "ppe.manage",
+    });
     const name = String(formData.get("name") || "").trim();
     if (!name) return { ok: false, error: "PPE name is required" };
     await createPpeItem(supabase, {
@@ -43,8 +44,10 @@ export async function createPpeItemAction(formData: FormData): Promise<ActionRes
 
 export async function issuePpeAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      featureCode: "ppe_management",
+      permission: "ppe.issue",
+    });
     await issuePpe(supabase, {
       organizationId: organization.id,
       userId: user.id,
@@ -66,8 +69,10 @@ export async function issuePpeAction(formData: FormData): Promise<ActionResult> 
 
 export async function returnPpeAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      featureCode: "ppe_management",
+      permission: "ppe.return",
+    });
     await returnPpe(supabase, {
       organizationId: organization.id,
       userId: user.id,
@@ -86,8 +91,10 @@ export async function returnPpeAction(formData: FormData): Promise<ActionResult>
 
 export async function schedulePpeInspectionAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      featureCode: "ppe_management",
+      permission: "ppe.inspect",
+    });
     const { assignment } = await schedulePpeInspection(supabase, {
       organizationId: organization.id,
       userId: user.id,

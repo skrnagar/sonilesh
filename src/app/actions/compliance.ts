@@ -224,6 +224,7 @@ export async function snapshotAssessmentAction(formData: FormData): Promise<Acti
     await snapshotAssessmentFromChecklist(access.supabase, {
       organizationId: access.organization.id,
       assessmentId: String(formData.get("assessmentId") || ""),
+      userId: access.user.id,
     });
     revalidatePath("/app/compliance/assessments");
     return { ok: true };

@@ -1,12 +1,18 @@
-import Link from "next/link";
 import { ForbiddenState, UpgradeState } from "@/components/shared/state-panels";
+import { ComplianceCalendarViews } from "@/components/compliance/compliance-calendar-views";
 import { requireModuleAccess } from "@/lib/auth/org-context";
-import { dueTone } from "@/lib/compliance/applicability";
+import type { CalendarEvent } from "@/lib/compliance/calendar";
 
 export default async function ComplianceCalendarPage({
   searchParams,
 }: {
-  searchParams: Promise<{ domain?: string }>;
+  searchParams: Promise<{
+    domain?: string;
+    view?: string;
+    site?: string;
+    owner?: string;
+    status?: string;
+  }>;
 }) {
   const access = await requireModuleAccess({
     featureCode: "regulatory_compliance",
@@ -15,59 +21,99 @@ export default async function ComplianceCalendarPage({
   if (!access.entitled) return <UpgradeState featureName="Regulatory compliance" />;
   if (!access.permitted) return <ForbiddenState />;
 
-  const { domain } = await searchParams;
-  const { data: tasks } = await access.supabase
-    .from("compliance_task_instances")
-    .select(
-      `
-      id, period_label, due_date, status,
-      org_applicable_compliances (
-        applicability_status,
-        compliance_obligations (
-          title, frequency,
-          compliance_domains ( code, name )
+  const { domain, view, site, owner, status } = await searchParams;
+  const calendarView = view === "week" || view === "list" ? view : "month";
+  const orgId = access.organization.id;
+
+  const [{ data: tasks }, { data: licenses }, { data: sites }] = await Promise.all([
+    access.supabase
+      .from("compliance_task_instances")
+      .select(
+        `
+        id, period_label, due_date, status,
+        org_applicable_compliances (
+          owner_id, applicability_status,
+          compliance_obligations (
+            title, frequency,
+            compliance_domains ( code, name )
+          )
         )
+      `,
       )
-    `,
-    )
-    .eq("organization_id", access.organization.id)
-    .neq("status", "cancelled")
-    .order("due_date", { ascending: true })
-    .limit(200);
+      .eq("organization_id", orgId)
+      .neq("status", "cancelled")
+      .order("due_date", { ascending: true })
+      .limit(200),
+    access.supabase
+      .from("regulatory_permits")
+      .select("id, name, expires_on, status, site_id")
+      .eq("organization_id", orgId)
+      .not("expires_on", "is", null)
+      .order("expires_on")
+      .limit(50),
+    access.supabase
+      .from("sites")
+      .select("id, name")
+      .eq("organization_id", orgId)
+      .is("deleted_at", null)
+      .order("name"),
+  ]);
 
-  const { data: licenses } = await access.supabase
-    .from("regulatory_permits")
-    .select("id, name, expires_on, status")
-    .eq("organization_id", access.organization.id)
-    .not("expires_on", "is", null)
-    .order("expires_on")
-    .limit(50);
-
-  const rows = (tasks ?? []).filter((task) => {
+  const events: CalendarEvent[] = [];
+  for (const task of tasks ?? []) {
     const nested = task.org_applicable_compliances as {
+      owner_id?: string | null;
       applicability_status?: string;
-      compliance_obligations?: { compliance_domains?: { code?: string; name?: string } | null } | null;
+      compliance_obligations?: {
+        title?: string;
+        compliance_domains?: { code?: string; name?: string } | null;
+      } | null;
     } | null;
-    if (nested?.applicability_status === "manually_excluded") return false;
-    if (domain && nested?.compliance_obligations?.compliance_domains?.code !== domain) return false;
-    return true;
-  });
+    if (nested?.applicability_status === "manually_excluded") continue;
+    if (domain && nested?.compliance_obligations?.compliance_domains?.code !== domain) continue;
+    if (owner && nested?.owner_id !== owner) continue;
+    if (status && task.status !== status) continue;
+    events.push({
+      id: task.id,
+      title: nested?.compliance_obligations?.title || "Filing",
+      date: task.due_date,
+      kind: "task",
+      status: task.status,
+      href: `/app/compliance/tasks/${task.id}`,
+      ownerId: nested?.owner_id,
+      category: nested?.compliance_obligations?.compliance_domains?.code,
+      completed: ["filed", "verified"].includes(task.status),
+    });
+  }
+  for (const row of licenses ?? []) {
+    if (!row.expires_on) continue;
+    if (site && row.site_id !== site) continue;
+    if (status && row.status !== status) continue;
+    events.push({
+      id: row.id,
+      title: row.name,
+      date: row.expires_on,
+      kind: "license",
+      status: row.status,
+      href: "/app/compliance/licenses",
+      siteId: row.site_id,
+      completed: ["surrendered"].includes(row.status),
+    });
+  }
 
-  const toneClass = {
-    green: "border-emerald-300 bg-emerald-50",
-    amber: "border-amber-300 bg-amber-50",
-    red: "border-red-300 bg-red-50",
-  };
+  const today = new Date().toISOString().slice(0, 10);
 
   return (
     <div className="space-y-4">
       <div>
         <h1 className="text-xl font-semibold">Compliance calendar</h1>
         <p className="text-sm text-muted-foreground">
-          Green &gt;30 days, amber 7–30, red &lt;7 or overdue.
+          Month, week, and list views of filings and license expiries. Green/amber/red are due-date
+          tones, not a legal determination.
         </p>
       </div>
-      <form className="flex gap-2 text-sm">
+      <form className="flex flex-wrap gap-2 text-sm">
+        <input type="hidden" name="view" value={calendarView} />
         <select name="domain" defaultValue={domain ?? ""} className="rounded-md border border-border bg-background px-2 py-1">
           <option value="">All domains</option>
           <option value="ehs">EHS</option>
@@ -79,58 +125,26 @@ export default async function ComplianceCalendarPage({
           <option value="esg_g">ESG Governance</option>
           <option value="tax">Tax</option>
         </select>
+        <select name="site" defaultValue={site ?? ""} className="rounded-md border border-border bg-background px-2 py-1">
+          <option value="">All sites</option>
+          {(sites ?? []).map((row: { id: string; name: string }) => (
+            <option key={row.id} value={row.id}>
+              {row.name}
+            </option>
+          ))}
+        </select>
+        <select name="status" defaultValue={status ?? ""} className="rounded-md border border-border bg-background px-2 py-1">
+          <option value="">All statuses</option>
+          <option value="open">Open</option>
+          <option value="in_progress">In progress</option>
+          <option value="overdue">Overdue</option>
+          <option value="filed">Filed</option>
+        </select>
         <button className="underline" type="submit">
           Filter
         </button>
       </form>
-      <ul className="space-y-2">
-        {rows.map((task) => {
-          const nested = task.org_applicable_compliances as {
-            compliance_obligations?: {
-              title?: string;
-              compliance_domains?: { name?: string } | null;
-            } | null;
-          } | null;
-          const tone = dueTone(task.due_date);
-          return (
-            <li key={task.id}>
-              <Link
-                href={`/app/compliance/tasks/${task.id}`}
-                className={`block rounded-xl border px-4 py-3 ${toneClass[tone]}`}
-              >
-                <div className="flex justify-between gap-3">
-                  <span className="font-medium">{nested?.compliance_obligations?.title}</span>
-                  <span className="text-sm">{task.due_date}</span>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {nested?.compliance_obligations?.compliance_domains?.name} · {task.period_label} · {task.status}
-                </p>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-      {(licenses ?? []).length ? (
-        <div className="space-y-2">
-          <h2 className="text-sm font-semibold">License expiries (not PTW)</h2>
-          <ul className="space-y-2">
-            {(licenses ?? []).map((row) => (
-              <li key={row.id}>
-                <Link
-                  href="/app/compliance/licenses"
-                  className={`block rounded-xl border px-4 py-3 ${toneClass[dueTone(row.expires_on as string)]}`}
-                >
-                  <div className="flex justify-between gap-3">
-                    <span className="font-medium">{row.name}</span>
-                    <span className="text-sm">{row.expires_on}</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">License / consent · {row.status}</p>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
+      <ComplianceCalendarViews events={events} today={today} view={calendarView} />
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { requireUser } from "@/lib/auth/session";
+import { requireOrgContext } from "@/lib/auth/org-context";
 import {
   addReportComment,
   assignReport,
@@ -64,10 +64,10 @@ const createSchema = z.object({
 
 export async function createEventAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const intent = String(formData.get("intent") || formData.get("submit") || "");
     const parsed = createSchema.safeParse({
-      organizationId: formData.get("organizationId"),
+      organizationId: organization.id,
       eventTypeCode: formData.get("eventTypeCode"),
       title: String(formData.get("title") || "").trim() || undefined,
       description: formData.get("description"),
@@ -142,8 +142,8 @@ export async function createEventAction(formData: FormData): Promise<ActionResul
 
 export async function transitionEventAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
-    const organizationId = String(formData.get("organizationId") || "");
+    const { supabase, user, organization } = await requireOrgContext();
+    const organizationId = organization.id;
     const eventId = String(formData.get("eventId") || "");
     const toStatus = String(formData.get("toStatus") || "") as EhsEventStatus;
     const note = String(formData.get("note") || "") || undefined;
@@ -173,10 +173,10 @@ export async function transitionEventAction(formData: FormData): Promise<ActionR
 
 export async function saveInvestigationAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const eventId = String(formData.get("eventId") || "");
     await upsertInvestigation(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       eventId,
       method: String(formData.get("method") || "") || undefined,
@@ -194,12 +194,12 @@ export async function saveInvestigationAction(formData: FormData): Promise<Actio
 
 export async function createCapaAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const eventId = String(formData.get("eventId") || "");
     const title = String(formData.get("title") || "").trim();
     if (!title) return { ok: false, error: "CAPA title is required" };
     await createCapaForEvent(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       eventId,
       title,
@@ -217,9 +217,9 @@ export async function createCapaAction(formData: FormData): Promise<ActionResult
 
 export async function assignReportAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     await assignReport(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       eventId: String(formData.get("eventId") || ""),
       assigneeId: String(formData.get("assigneeId") || ""),
@@ -234,10 +234,10 @@ export async function assignReportAction(formData: FormData): Promise<ActionResu
 
 export async function addCommentAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const eventId = String(formData.get("eventId") || "");
     await addReportComment(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       eventId,
       body: String(formData.get("body") || ""),
@@ -252,16 +252,30 @@ export async function addCommentAction(formData: FormData): Promise<ActionResult
 
 export async function uploadAttachmentAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const eventId = String(formData.get("eventId") || "");
-    const { collectFiles, uploadReportAttachments } = await import("@/lib/services/attachments");
-    const files = collectFiles(formData);
-    await uploadReportAttachments(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
-      userId: user.id,
-      eventId,
-      files,
-    });
+    const { recordUploadedReportAttachment } = await import("@/lib/services/attachments");
+    const paths = formData.getAll("storage_path").map(String).filter(Boolean);
+    const names = formData.getAll("file_name").map(String);
+    const mimes = formData.getAll("mime_type").map(String);
+    const sizes = formData.getAll("file_size").map(String);
+    if (!paths.length) {
+      return { ok: false, error: "Select at least one file" };
+    }
+    if (paths.length > 12) {
+      return { ok: false, error: "Maximum 12 files per upload" };
+    }
+    for (let i = 0; i < paths.length; i += 1) {
+      await recordUploadedReportAttachment(supabase, {
+        organizationId: organization.id,
+        userId: user.id,
+        eventId,
+        storagePath: paths[i],
+        fileName: names[i] || "upload.bin",
+        mimeType: mimes[i] || "application/octet-stream",
+        fileSize: Number(sizes[i] || 0) || 1,
+      });
+    }
     revalidatePath(`/app/incidents/${eventId}`);
     revalidatePath(`/app/near-misses/${eventId}`);
     revalidatePath(`/app/hazards/${eventId}`);

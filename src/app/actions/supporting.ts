@@ -1,8 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireUser } from "@/lib/auth/session";
-import { requireOrgContext } from "@/lib/auth/org-context";
+import { requireWriteAccess } from "@/lib/auth/org-context";
 import {
   createContractor,
   createTrainingCourse,
@@ -17,8 +16,9 @@ function failed(err: unknown): ActionResult {
 
 export async function createTrainingCourseAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      permission: "training.manage",
+    });
     const code = String(formData.get("code") || "").trim();
     const title = String(formData.get("title") || "").trim();
     if (!code || !title) return { ok: false, error: "Course code and title are required" };
@@ -39,8 +39,9 @@ export async function createTrainingCourseAction(formData: FormData): Promise<Ac
 
 export async function assignTrainingAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      permission: "training.manage",
+    });
     const courseId = String(formData.get("courseId") || "");
     const assigneeId = String(formData.get("assigneeId") || user.id);
     if (!courseId) return { ok: false, error: "Select a course" };
@@ -62,8 +63,10 @@ export async function assignTrainingAction(formData: FormData): Promise<ActionRe
 
 export async function createContractorAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      featureCode: "contractor_management",
+      permission: "contractor.create",
+    });
     const name = String(formData.get("name") || "").trim();
     if (!name) return { ok: false, error: "Company name is required" };
     await createContractor(supabase, {

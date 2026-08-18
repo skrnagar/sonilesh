@@ -10,6 +10,7 @@ import {
   type Frequency,
   type OrgComplianceProfileInput,
 } from "@/lib/compliance/applicability";
+import { nextExpiryReminder } from "@/lib/compliance/calendar";
 
 export type ComplianceProfileRow = OrgComplianceProfileInput & {
   organization_id: string;
@@ -30,6 +31,9 @@ export async function evaluateApplicability(
   organizationId: string,
   actorUserId?: string,
 ) {
+  if (actorUserId) {
+    await requirePermission(supabase, organizationId, actorUserId, "compliance.manage");
+  }
   const profile = await loadProfile(supabase, organizationId);
   if (!profile) {
     return { applied: 0, skipped: 0 };
@@ -440,7 +444,7 @@ export async function processComplianceReminders(supabase: SupabaseClient) {
       title,
       body: task.org_applicable_compliances?.compliance_obligations?.title ?? "Compliance task",
       link: `/app/compliance/tasks/${task.id}`,
-      eventKey: "compliance.reminder",
+      eventKey: stage === "overdue" || stage === "escalate" ? "compliance.overdue" : "compliance.review_due",
     });
     await supabase
       .from("compliance_task_instances")
@@ -448,6 +452,98 @@ export async function processComplianceReminders(supabase: SupabaseClient) {
       .eq("id", task.id);
     notified += 1;
   }
+
+  const { data: licenses } = await supabase
+    .from("regulatory_permits")
+    .select("id, organization_id, name, expires_on, reminder_stage, created_by")
+    .not("expires_on", "is", null)
+    .in("status", ["active", "under_renewal"]);
+  for (const license of licenses ?? []) {
+    if (!license.expires_on) continue;
+    const days = Math.floor(
+      (new Date(license.expires_on).getTime() - new Date(today).getTime()) / 86400000,
+    );
+    const next = nextExpiryReminder(days, license.reminder_stage);
+    if (!next) continue;
+    const recipients = license.created_by ? [license.created_by] : [];
+    await notifyUsers(supabase, {
+      organizationId: license.organization_id,
+      userIds: recipients,
+      title: `License ${next.title.toLowerCase()}: ${license.name}`,
+      body: "Regulatory license / consent — not EHS PTW.",
+      link: "/app/compliance/licenses",
+      eventKey: "compliance.license_expiring",
+    });
+    await supabase
+      .from("regulatory_permits")
+      .update({ reminder_stage: next.stage })
+      .eq("id", license.id)
+      .eq("organization_id", license.organization_id);
+    notified += 1;
+  }
+
+  const { data: evidenceRows } = await supabase
+    .from("compliance_evidence")
+    .select("id, organization_id, file_name, expires_at, reminder_stage, uploaded_by")
+    .not("expires_at", "is", null);
+  for (const row of evidenceRows ?? []) {
+    if (!row.expires_at) continue;
+    const days = Math.floor(
+      (new Date(row.expires_at).getTime() - new Date(today).getTime()) / 86400000,
+    );
+    const next = nextExpiryReminder(days, row.reminder_stage);
+    if (!next) continue;
+    const recipients = row.uploaded_by ? [row.uploaded_by] : [];
+    await notifyUsers(supabase, {
+      organizationId: row.organization_id,
+      userIds: recipients,
+      title: `Evidence ${next.title.toLowerCase()}: ${row.file_name}`,
+      link: "/app/compliance/expiry",
+      eventKey: "compliance.evidence_expiring",
+    });
+    await supabase
+      .from("compliance_evidence")
+      .update({ reminder_stage: next.stage })
+      .eq("id", row.id)
+      .eq("organization_id", row.organization_id);
+    notified += 1;
+  }
+
+  const { data: periods } = await supabase
+    .from("esg_reporting_periods")
+    .select("id, organization_id, period_label, period_end, reminder_stage")
+    .in("status", ["open", "data_collection", "review"])
+    .not("period_end", "is", null);
+  for (const period of periods ?? []) {
+    if (!period.period_end) continue;
+    const days = Math.floor(
+      (new Date(period.period_end).getTime() - new Date(today).getTime()) / 86400000,
+    );
+    const next = nextExpiryReminder(days, period.reminder_stage);
+    if (!next) continue;
+    const { data: members } = await supabase
+      .from("organization_members")
+      .select("user_id")
+      .eq("organization_id", period.organization_id)
+      .eq("status", "active")
+      .is("deleted_at", null)
+      .limit(20);
+    await notifyUsers(supabase, {
+      organizationId: period.organization_id,
+      userIds: (members ?? []).map((m) => m.user_id).filter(Boolean) as string[],
+      title: `ESG period closing: ${period.period_label}`,
+      body: next.title,
+      link: "/app/esg/periods",
+      eventKey: "esg.period_closing",
+    });
+    await supabase
+      .from("esg_reporting_periods")
+      .update({ reminder_stage: next.stage })
+      .eq("id", period.id)
+      .eq("organization_id", period.organization_id);
+    notified += 1;
+  }
+
   return { notified };
 }
 
@@ -574,8 +670,9 @@ export async function createComplianceAssessment(
 /** Completing an assessment copies live checklist totals into the frozen snapshot. Live rule changes do not rewrite this row. */
 export async function snapshotAssessmentFromChecklist(
   supabase: SupabaseClient,
-  input: { organizationId: string; assessmentId: string },
+  input: { organizationId: string; assessmentId: string; userId: string },
 ) {
+  await requirePermission(supabase, input.organizationId, input.userId, "compliance.assess");
   const { data: assessment } = await supabase
     .from("compliance_assessments")
     .select("id, checklist_assignment_id, rules_snapshot, profile_snapshot")

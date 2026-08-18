@@ -14,6 +14,7 @@ import {
   readFieldQueue,
   removeFieldQueueItem,
 } from "@/lib/field/offline-queue";
+import { attachDirectUpload } from "@/lib/storage/direct-upload";
 
 type Result = { ok: boolean; error?: string };
 
@@ -55,6 +56,13 @@ export function FieldSubmitForm({
       enqueueFieldUpdate(submitLabel, formData);
       setQueued(true);
       setPending(false);
+      return;
+    }
+    try {
+      await attachDirectUpload(formData, "field/evidence");
+    } catch (err) {
+      setPending(false);
+      setError(err instanceof Error ? err.message : "Upload failed");
       return;
     }
     const result = await action(formData);

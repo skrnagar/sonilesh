@@ -1,13 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireOrgContext } from "@/lib/auth/org-context";
-import { requirePermission } from "@/lib/services/rbac";
+import { requireWriteAccess } from "@/lib/auth/org-context";
 import { writeAuditLog } from "@/lib/services/audit";
 
 export async function requestPlanChangeAction(formData: FormData): Promise<void> {
-  const { supabase, user, organization } = await requireOrgContext();
-  await requirePermission(supabase, organization.id, user.id, "billing.view");
+  const { supabase, user, organization } = await requireWriteAccess({
+    permission: "settings.manage",
+  });
   const planId = String(formData.get("planId") || "");
   if (!planId) return;
 

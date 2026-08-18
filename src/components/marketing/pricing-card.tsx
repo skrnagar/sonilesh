@@ -10,6 +10,7 @@ type PricingCardProps = {
   cta: string;
   href: string;
   featured?: boolean;
+  highlighted?: boolean;
 };
 
 export function PricingCard({
@@ -19,14 +20,16 @@ export function PricingCard({
   cta,
   href,
   featured,
+  highlighted,
 }: PricingCardProps) {
   return (
     <div
       className={cn(
         "relative flex flex-col rounded-xl border bg-card p-6 transition-[box-shadow,border-color] duration-200 motion-reduce:transition-none",
-        featured
+        highlighted || featured
           ? "border-[var(--mkt-safety)] bg-card shadow-[var(--shadow-md)]"
           : "border-border bg-card shadow-[var(--shadow-sm)] hover:border-accent/40",
+        highlighted && "ring-2 ring-[var(--mkt-safety)]/40",
       )}
     >
       {featured ? (
@@ -36,7 +39,7 @@ export function PricingCard({
         />
       ) : null}
       <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--mkt-safety)]">
-        {featured ? "Most requested" : "Plan"}
+        {highlighted ? "Fits your answers" : featured ? "Most requested" : "Plan"}
       </p>
       <h3 className="mt-3 font-display text-2xl font-semibold tracking-tight text-primary">{name}</h3>
       <p className="mt-2 text-sm text-foreground/80">{audience}</p>

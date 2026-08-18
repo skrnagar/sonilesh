@@ -3,9 +3,20 @@
 import { revalidatePath } from "next/cache";
 import { requireOrgContext } from "@/lib/auth/org-context";
 import {
+  listNotificationsForUser,
   markAllNotificationsRead,
   markNotificationRead,
+  type NotificationRow,
 } from "@/lib/services/notifications";
+
+export async function listRecentNotificationsAction(): Promise<NotificationRow[]> {
+  const { supabase, user, organization } = await requireOrgContext();
+  return listNotificationsForUser(supabase, {
+    organizationId: organization.id,
+    userId: user.id,
+    limit: 12,
+  });
+}
 
 export async function markNotificationReadAction(formData: FormData): Promise<void> {
   const notificationId = String(formData.get("notificationId") || "");
@@ -17,10 +28,11 @@ export async function markNotificationReadAction(formData: FormData): Promise<vo
     userId: user.id,
     notificationId,
   });
-  revalidatePath("/app", "layout");
   revalidatePath("/app/notifications");
-  revalidatePath("/field", "layout");
   revalidatePath("/field/notifications");
+  // Revalidate layouts so the bell badge count refreshes.
+  revalidatePath("/app", "layout");
+  revalidatePath("/field", "layout");
 }
 
 export async function markAllNotificationsReadAction(formData?: FormData): Promise<void> {
@@ -30,8 +42,8 @@ export async function markAllNotificationsReadAction(formData?: FormData): Promi
     organizationId: organization.id,
     userId: user.id,
   });
-  revalidatePath("/app", "layout");
   revalidatePath("/app/notifications");
-  revalidatePath("/field", "layout");
   revalidatePath("/field/notifications");
+  revalidatePath("/app", "layout");
+  revalidatePath("/field", "layout");
 }

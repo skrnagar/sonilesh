@@ -1,10 +1,9 @@
 import { PageHero } from "@/components/marketing/page-hero";
 import { Container } from "@/components/marketing/container";
 import { SectionHeader } from "@/components/marketing/section-header";
-import { PricingCard } from "@/components/marketing/pricing-card";
+import { PricingBoard } from "@/components/marketing/pricing-board";
 import { ComparisonTable } from "@/components/marketing/comparison-table";
 import { CTASection } from "@/components/marketing/cta-section";
-import { pricingTiers } from "@/lib/marketing/content";
 import { metadataForPath } from "@/lib/marketing/seo";
 
 export const metadata = metadataForPath("/pricing");
@@ -25,11 +24,7 @@ export default function PricingPage() {
 
       <section className="mkt-section">
         <Container>
-          <div className="grid gap-4 lg:grid-cols-3">
-            {pricingTiers.map((tier) => (
-              <PricingCard key={tier.name} {...tier} />
-            ))}
-          </div>
+          <PricingBoard />
         </Container>
       </section>
 

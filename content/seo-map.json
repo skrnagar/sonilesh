@@ -289,6 +289,50 @@
       "indexed": true
     },
     {
+      "path": "/field-experience",
+      "title": "Field Experience | EHS360",
+      "description": "SONIL EHS360 field experience for fast incident, LMRA, permit, and inspection capture where work happens.",
+      "h1": "Field capture where work happens",
+      "primaryKeyword": "EHS field app",
+      "secondaryKeywords": ["LMRA software", "mobile EHS reporting"],
+      "intent": "commercial",
+      "targetWordCount": 700,
+      "indexed": true
+    },
+    {
+      "path": "/solutions/infrastructure",
+      "title": "EHS for Infrastructure | EHS360",
+      "description": "Govern safety across corridors, substations, industrial campuses, and long-running capital programs.",
+      "h1": "Infrastructure",
+      "primaryKeyword": "infrastructure EHS software",
+      "secondaryKeywords": ["EPC safety software"],
+      "intent": "commercial",
+      "targetWordCount": 800,
+      "indexed": true
+    },
+    {
+      "path": "/solutions/mining",
+      "title": "EHS for Mining | EHS360",
+      "description": "Strengthen critical risk management from pit to plant with closed-loop actions.",
+      "h1": "Mining",
+      "primaryKeyword": "mining EHS software",
+      "secondaryKeywords": ["critical risk management"],
+      "intent": "commercial",
+      "targetWordCount": 800,
+      "indexed": true
+    },
+    {
+      "path": "/solutions/power-energy",
+      "title": "EHS for Power & Energy | EHS360",
+      "description": "Protect people and assets across generation, transmission corridors, substations, and maintenance windows.",
+      "h1": "Power & Energy",
+      "primaryKeyword": "power sector EHS software",
+      "secondaryKeywords": ["permit to work energy"],
+      "intent": "commercial",
+      "targetWordCount": 800,
+      "indexed": true
+    },
+    {
       "path": "/compare/vs-rakhsha",
       "title": "EHS360 vs Rakhsha (draft)",
       "description": "Draft comparison — not published for search until claims are verified against the live product.",

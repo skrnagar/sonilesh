@@ -10,6 +10,12 @@ import { DashboardPreview } from "@/components/marketing/dashboard-preview";
 import { getModule } from "@/lib/marketing/content";
 import { getProductPage } from "@/lib/marketing/product-routes";
 import { getSeoEntry } from "@/lib/marketing/seo";
+import {
+  MarketingCapaChart,
+  MarketingComplianceChart,
+  MarketingEsgCharts,
+} from "@/components/marketing/charts/lazy";
+import { RiskHeatmap } from "@/components/marketing/charts/risk-heatmap";
 
 const NARRATIVE: Record<string, { problem: string; how: string; capabilities: string[] }> = {
   "contractor-management": {
@@ -87,6 +93,66 @@ export function ProductModulePage({ slug }: { slug: string }) {
                   </li>
                 ))}
               </ul>
+            </div>
+          </Container>
+        </section>
+      ) : null}
+
+      {slug === "esg-brsr-reporting" ? (
+        <section className="pb-16 md:pb-20">
+          <Container>
+            <SectionHeader
+              eyebrow="Sample views"
+              title="Illustrative GHG and materiality"
+              description="Round sample figures only — not a live inventory, not SEBI filing, and not assurance."
+            />
+            <div className="mt-8">
+              <MarketingEsgCharts />
+            </div>
+          </Container>
+        </section>
+      ) : null}
+
+      {slug === "compliance-tracking" ? (
+        <section className="pb-16 md:pb-20">
+          <Container>
+            <SectionHeader
+              eyebrow="Sample views"
+              title="Illustrative obligation status"
+              description="Round sample counts by domain — not a live legal register."
+            />
+            <div className="mt-8">
+              <MarketingComplianceChart />
+            </div>
+          </Container>
+        </section>
+      ) : null}
+
+      {slug === "risk-assessment-jsa" ? (
+        <section className="border-y border-border py-16 md:py-20">
+          <Container>
+            <SectionHeader
+              eyebrow="Sample views"
+              title="Default 5×5 likelihood × consequence"
+              description="Same band concept as the in-product risk matrix. Counts are sample data."
+            />
+            <div className="mt-8 max-w-xl rounded-xl border border-border bg-card p-4">
+              <RiskHeatmap />
+            </div>
+          </Container>
+        </section>
+      ) : null}
+
+      {slug === "capa-tracking" ? (
+        <section className="border-y border-border py-16 md:py-20">
+          <Container>
+            <SectionHeader
+              eyebrow="Sample views"
+              title="CAPA by status"
+              description="Illustrative pipeline counts — not a live workspace."
+            />
+            <div className="mt-8 max-w-xl rounded-xl border border-border bg-card p-4">
+              <MarketingCapaChart />
             </div>
           </Container>
         </section>

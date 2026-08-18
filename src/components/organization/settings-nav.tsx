@@ -16,8 +16,12 @@ const LINKS = [
   { href: "/app/settings/ehs/risk-matrix", label: "Risk matrix" },
   { href: "/app/settings/ehs/permit-types", label: "Permit types" },
   { href: "/app/settings/ehs/checklists", label: "Checklists" },
+  { href: "/app/settings/analytics/metrics", label: "Analytics metrics" },
+  { href: "/app/settings/analytics/targets", label: "Analytics targets" },
   { href: "/app/settings/contractors/categories", label: "Contractors" },
+  { href: "/app/settings/api", label: "API keys" },
   { href: "/app/settings/subscription", label: "Subscription" },
+  { href: "/app/settings/ai/evaluation", label: "AI evaluation" },
   { href: "/app/settings/billing", label: "Billing" },
 ];
 

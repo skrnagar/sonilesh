@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { ForbiddenState, UpgradeState } from "@/components/shared/state-panels";
 import { requireModuleAccess } from "@/lib/auth/org-context";
+import { permissionFlags } from "@/lib/services/rbac";
 
 export default async function ContractorInductionsPage() {
   const access = await requireModuleAccess({
@@ -16,6 +17,10 @@ export default async function ContractorInductionsPage() {
   });
   if (!access.entitled) return <UpgradeState featureName="Contractor management" />;
   if (!access.permitted) return <ForbiddenState />;
+
+  const flags = await permissionFlags(access.supabase, access.organization.id, access.user.id);
+  const canUpdate = flags.hasAny(["contractor.update", "contractor.manage"]);
+  const canManageWorkers = flags.hasAny(["contractor_worker.manage", "contractor.manage"]);
 
   const orgId = access.organization.id;
   const [{ data: inductions }, { data: sites }, { data: workers }, { data: records }] = await Promise.all([
@@ -39,6 +44,7 @@ export default async function ContractorInductionsPage() {
       </div>
       <ContractorsNav current="/app/contractors/inductions" />
       <div className="grid gap-4 lg:grid-cols-2">
+        {canUpdate ? (
         <ActionForm action={createInductionAction} className="space-y-3 rounded-2xl border border-border bg-card p-4">
           <p className="text-sm font-semibold">New induction</p>
           <Label>Title</Label>
@@ -56,6 +62,8 @@ export default async function ContractorInductionsPage() {
           <Input name="validityDays" type="number" min={0} />
           <Button type="submit">Create</Button>
         </ActionForm>
+        ) : null}
+        {canManageWorkers ? (
         <ActionForm action={recordInductionAction} className="space-y-3 rounded-2xl border border-border bg-card p-4">
           <p className="text-sm font-semibold">Record completion</p>
           <Label>Induction</Label>
@@ -82,6 +90,7 @@ export default async function ContractorInductionsPage() {
           </Select>
           <Button type="submit">Record</Button>
         </ActionForm>
+        ) : null}
       </div>
       <RecordsTable
         columns={["Worker", "Induction", "Completed", "Expires"]}

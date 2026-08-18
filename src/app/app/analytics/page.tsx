@@ -1,54 +1,43 @@
-﻿import { NamedBarChart, IncidentTrendChart, SeverityChart } from "@/components/dashboard/charts";
-import { ModuleShell } from "@/components/modules/module-shell";
-import { requireModuleAccess } from "@/lib/auth/org-context";
-import { getDashboardSnapshot } from "@/lib/services/dashboard";
+﻿import { AnalyticsFilterBar } from "@/components/analytics/filter-bar";
+import { AnalyticsSubnav } from "@/components/analytics/subnav";
+import { MetricGrid } from "@/components/analytics/metric-grid";
+import { IncidentTrendChart, SeverityChart } from "@/components/dashboard/charts";
+import { analyticsGate, loadAnalyticsAccess, loadControlTower, type AnalyticsSearch } from "@/lib/analytics/page-load";
 
-export default async function AnalyticsPage() {
-  const access = await requireModuleAccess({
-    featureCode: "advanced_analytics",
-    permission: "analytics.view",
-  });
-  if (!access.entitled || !access.permitted) {
-    return (
-      <ModuleShell
-        title="Analytics"
-        description="Advanced EHS analytics"
-        featureCode="advanced_analytics"
-        permission="analytics.view"
-      />
-    );
-  }
-
-  const snapshot = await getDashboardSnapshot(
-    access.supabase,
-    access.organization.id,
-    access.organization.name,
-    {},
-  );
+export default async function AnalyticsOverviewPage({
+  searchParams,
+}: {
+  searchParams: Promise<AnalyticsSearch>;
+}) {
+  const search = await searchParams;
+  const access = await loadAnalyticsAccess("advanced_analytics");
+  const gate = analyticsGate(access, "Advanced analytics");
+  if (!gate.ok) return gate.node;
+  const { ctx, tower, query } = await loadControlTower(access, search);
 
   return (
-    <ModuleShell
-      title="Analytics"
-      description="Trends from the same tenant-scoped query layer as the dashboard — not demo numbers."
-      featureCode="advanced_analytics"
-      permission="analytics.view"
-    >
-      <div className="grid min-w-0 gap-4 xl:grid-cols-2">
-        <IncidentTrendChart data={snapshot.incidentTrend} />
-        <SeverityChart data={snapshot.severitySeries} />
-        <NamedBarChart
-          title="CAPA aging"
-          empty="No open CAPA to age."
-          data={snapshot.capaAging}
-          color="var(--chart-5)"
-        />
-        <NamedBarChart
-          title="Inspection status"
-          empty="No inspection assignments yet."
-          data={snapshot.inspectionSeries}
-          color="var(--chart-3)"
-        />
+    <div className="space-y-5">
+      <div>
+        <h1 className="font-display text-xl font-semibold">Analytics</h1>
+        <p className="text-sm text-muted-foreground">
+          Same metric services as the Control Tower. Periods use {ctx.timezone}.
+        </p>
       </div>
-    </ModuleShell>
+      <AnalyticsSubnav current="/app/analytics" />
+      <AnalyticsFilterBar
+        action="/app/analytics"
+        query={query}
+        sites={ctx.sites}
+        projects={ctx.projects}
+        departments={ctx.departments}
+        bus={ctx.bus}
+        range={ctx.period.key}
+      />
+      <MetricGrid metrics={tower.metrics.slice(0, 8)} />
+      <div className="grid min-w-0 gap-4 xl:grid-cols-2">
+        <IncidentTrendChart data={tower.incidents.trend} />
+        <SeverityChart data={tower.incidents.severitySeries} />
+      </div>
+    </div>
   );
 }

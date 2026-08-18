@@ -1,8 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireUser } from "@/lib/auth/session";
-import { requireOrgContext } from "@/lib/auth/org-context";
+import { requireWriteAccess } from "@/lib/auth/org-context";
 import { formatSupabaseUserError, isNextRedirect } from "@/lib/supabase/errors";
 import type { ActionResult } from "@/app/actions/events";
 import {
@@ -41,10 +40,16 @@ function revalidateContractor(companyId?: string) {
   if (companyId) revalidatePath(`/app/contractors/${companyId}`);
 }
 
+async function requireContractorWrite(permission: string) {
+  return requireWriteAccess({
+    featureCode: "contractor_management",
+    permission,
+  });
+}
+
 export async function createContractorCompanyAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireContractorWrite("contractor.create");
     const name = String(formData.get("name") || "").trim();
     if (!name) return { ok: false, error: "Company name is required" };
     const row = await createContractorCompany(supabase, {
@@ -71,8 +76,7 @@ export async function createContractorCompanyAction(formData: FormData): Promise
 
 export async function transitionContractorAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireContractorWrite("contractor.approve");
     await transitionContractorStatus(supabase, {
       organizationId: organization.id,
       userId: user.id,
@@ -90,8 +94,7 @@ export async function transitionContractorAction(formData: FormData): Promise<Ac
 
 export async function addContractorContactAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireContractorWrite("contractor.update");
     await addContractorContact(supabase, {
       organizationId: organization.id,
       userId: user.id,
@@ -112,8 +115,7 @@ export async function addContractorContactAction(formData: FormData): Promise<Ac
 
 export async function inviteContractorContactAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireContractorWrite("contractor.update");
     const result = await inviteContractorContact(supabase, {
       organizationId: organization.id,
       userId: user.id,
@@ -136,8 +138,7 @@ export async function inviteContractorContactAction(formData: FormData): Promise
 
 export async function startPrequalificationAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireContractorWrite("contractor.update");
     const row = await startPrequalification(supabase, {
       organizationId: organization.id,
       userId: user.id,
@@ -154,8 +155,7 @@ export async function startPrequalificationAction(formData: FormData): Promise<A
 
 export async function scorePrequalificationAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireContractorWrite("contractor.approve");
     await scorePrequalification(supabase, {
       organizationId: organization.id,
       userId: user.id,
@@ -172,8 +172,7 @@ export async function scorePrequalificationAction(formData: FormData): Promise<A
 
 export async function createContractorContractAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireContractorWrite("contractor.update");
     await createContractorContract(supabase, {
       organizationId: organization.id,
       userId: user.id,
@@ -194,8 +193,7 @@ export async function createContractorContractAction(formData: FormData): Promis
 
 export async function requestSiteAssignmentAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireContractorWrite("contractor_access.manage");
     await requestSiteAssignment(supabase, {
       organizationId: organization.id,
       userId: user.id,
@@ -215,8 +213,7 @@ export async function requestSiteAssignmentAction(formData: FormData): Promise<A
 
 export async function approveSiteAssignmentAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireContractorWrite("contractor_access.approve");
     await approveSiteAssignment(supabase, {
       organizationId: organization.id,
       userId: user.id,
@@ -234,8 +231,7 @@ export async function approveSiteAssignmentAction(formData: FormData): Promise<A
 
 export async function requestProjectAssignmentAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireContractorWrite("contractor_access.manage");
     await requestProjectAssignment(supabase, {
       organizationId: organization.id,
       userId: user.id,
@@ -253,8 +249,7 @@ export async function requestProjectAssignmentAction(formData: FormData): Promis
 
 export async function approveProjectAssignmentAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireContractorWrite("contractor_access.approve");
     await approveProjectAssignment(supabase, {
       organizationId: organization.id,
       userId: user.id,
@@ -271,8 +266,7 @@ export async function approveProjectAssignmentAction(formData: FormData): Promis
 
 export async function createContractorWorkerAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireContractorWrite("contractor_worker.manage");
     await createContractorWorker(supabase, {
       organizationId: organization.id,
       userId: user.id,
@@ -293,8 +287,7 @@ export async function createContractorWorkerAction(formData: FormData): Promise<
 
 export async function assignContractorWorkerAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireContractorWrite("contractor_access.manage");
     await assignContractorWorker(supabase, {
       organizationId: organization.id,
       userId: user.id,
@@ -312,8 +305,7 @@ export async function assignContractorWorkerAction(formData: FormData): Promise<
 
 export async function approveWorkerAssignmentAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireContractorWrite("contractor_access.approve");
     await approveWorkerAssignment(supabase, {
       organizationId: organization.id,
       userId: user.id,
@@ -330,8 +322,7 @@ export async function approveWorkerAssignmentAction(formData: FormData): Promise
 
 export async function createInductionAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireContractorWrite("contractor.update");
     await createInduction(supabase, {
       organizationId: organization.id,
       userId: user.id,
@@ -349,8 +340,7 @@ export async function createInductionAction(formData: FormData): Promise<ActionR
 
 export async function recordInductionAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireContractorWrite("contractor_worker.manage");
     await recordInduction(supabase, {
       organizationId: organization.id,
       userId: user.id,
@@ -368,8 +358,7 @@ export async function recordInductionAction(formData: FormData): Promise<ActionR
 
 export async function createContractorAssessmentAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireContractorWrite("contractor.update");
     const row = await createContractorAssessment(supabase, {
       organizationId: organization.id,
       userId: user.id,
@@ -389,8 +378,7 @@ export async function createContractorAssessmentAction(formData: FormData): Prom
 
 export async function recordPerformanceAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireContractorWrite("contractor.update");
     await recordContractorPerformance(supabase, {
       organizationId: organization.id,
       userId: user.id,
@@ -413,8 +401,7 @@ export async function recordPerformanceAction(formData: FormData): Promise<Actio
 
 export async function uploadContractorDocumentAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireContractorWrite("contractor_document.manage");
     const file = formData.get("file");
     await uploadContractorDocument(supabase, {
       organizationId: organization.id,
@@ -438,8 +425,7 @@ export async function uploadContractorDocumentAction(formData: FormData): Promis
 
 export async function verifyContractorDocumentAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireContractorWrite("contractor_document.verify");
     await verifyContractorDocument(supabase, {
       organizationId: organization.id,
       userId: user.id,
@@ -457,8 +443,7 @@ export async function verifyContractorDocumentAction(formData: FormData): Promis
 
 export async function upsertContractorCategoryAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireContractorWrite("contractor.manage");
     await upsertContractorCategory(supabase, {
       organizationId: organization.id,
       userId: user.id,
@@ -477,8 +462,7 @@ export async function upsertContractorCategoryAction(formData: FormData): Promis
 
 export async function upsertContractorSettingsAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireContractorWrite("contractor.manage");
     const passRaw = String(formData.get("prequalPassPercent") || "").trim();
     const condRaw = String(formData.get("prequalConditionalPercent") || "").trim();
     const types = String(formData.get("mandatoryDocTypes") || "")

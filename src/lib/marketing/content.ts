@@ -435,32 +435,77 @@ export const lifecycleSteps = [
 
 export const trustIndustries = industries.map((i) => i.name);
 
-export const resources = [
+export type ResourceCategory = "Guides" | "Tools" | "Checkers";
+
+export type ResourceAvailability = "AVAILABLE" | "COMING_SOON";
+
+export type MarketingResource = {
+  id: string;
+  title: string;
+  description: string;
+  category: ResourceCategory;
+  availability: ResourceAvailability;
+  href?: string;
+  cta?: string;
+};
+
+export const marketingResources: MarketingResource[] = [
+  {
+    id: "brsr-applicability",
+    title: "BRSR Applicability Checker",
+    description: "Same listed-company rules as the in-app engine. Orientation, not legal advice.",
+    category: "Checkers",
+    availability: "AVAILABLE",
+    href: "/resources/brsr-applicability",
+    cta: "Open checker",
+  },
+  {
+    id: "glossary",
+    title: "EHS & ESG glossary",
+    description: "Short definitions for BRSR, TRIR, CAPA, EPR, and other terms buyers search.",
+    category: "Tools",
+    availability: "AVAILABLE",
+    href: "/resources#glossary",
+    cta: "Browse glossary",
+  },
   {
     id: "implementation",
     title: "Implementation overview",
-    body: "How organizations structure sites, roles, and module rollout.",
-    status: "Coming soon",
+    description: "How organizations structure sites, roles, and module rollout.",
+    category: "Guides",
+    availability: "COMING_SOON",
   },
   {
     id: "field-adoption",
     title: "Field adoption guide",
-    body: "Patterns for getting supervisors and crews to report — including LMRA — in the moment.",
-    status: "Coming soon",
+    description: "Patterns for getting supervisors and crews to report — including LMRA — in the moment.",
+    category: "Guides",
+    availability: "COMING_SOON",
   },
   {
     id: "capa-playbook",
     title: "Closed-loop CAPA playbook",
-    body: "From finding to verified effectiveness without spreadsheet drift.",
-    status: "Coming soon",
+    description: "From finding to verified effectiveness without spreadsheet drift.",
+    category: "Guides",
+    availability: "COMING_SOON",
   },
   {
     id: "analytics-leadership",
     title: "Analytics for HSE leadership",
-    body: "Which signals matter from site operations to executive review.",
-    status: "Coming soon",
+    description: "Which signals matter from site operations to executive review.",
+    category: "Guides",
+    availability: "COMING_SOON",
   },
-] as const;
+];
+
+/** Homepage and legacy imports — ordered: available first, then planned guides. */
+export const resources = marketingResources;
+
+export const resourceCategories: ResourceCategory[] = ["Checkers", "Tools", "Guides"];
+
+export function resourcesForCategory(category: ResourceCategory) {
+  return marketingResources.filter((item) => item.category === category);
+}
 
 export const pricingTiers = [
   {

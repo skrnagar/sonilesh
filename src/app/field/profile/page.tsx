@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireOrgContext } from "@/lib/auth/org-context";
 import { signOutAction } from "@/app/actions/auth";
 import { FieldPageHeader, FieldCard, fieldSecondaryBtnClass } from "@/components/field/field-ui";
@@ -17,6 +18,9 @@ export default async function FieldProfilePage() {
         </p>
         <p className="font-medium text-foreground">{organization.name}</p>
       </FieldCard>
+      <Link href="/field/ai" className={fieldSecondaryBtnClass}>
+        Field Copilot (my records)
+      </Link>
       <FieldCard>
         <FieldThemeSettings />
       </FieldCard>

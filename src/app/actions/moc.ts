@@ -1,8 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireUser } from "@/lib/auth/session";
-import { requireOrgContext } from "@/lib/auth/org-context";
+import { requireModuleAccess, requireWriteAccess } from "@/lib/auth/org-context";
 import {
   addMocAction,
   addMocImpact,
@@ -29,8 +28,10 @@ function revalidateMoc(id: string) {
 
 export async function createMocAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      featureCode: "moc",
+      permission: "moc.manage",
+    });
     const title = String(formData.get("title") || "").trim();
     if (!title) return { ok: false, error: "Title is required" };
     const row = await createMocRequest(supabase, {
@@ -57,8 +58,9 @@ export async function createMocAction(formData: FormData): Promise<ActionResult>
 
 export async function transitionMocAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const access = await requireModuleAccess({ featureCode: "moc" });
+    if (!access.entitled) throw new Error("This module is not enabled for your plan.");
+    const { user, organization, supabase } = access;
     const mocId = String(formData.get("mocId") || "");
     await transitionMoc(supabase, {
       organizationId: organization.id,
@@ -77,8 +79,10 @@ export async function transitionMocAction(formData: FormData): Promise<ActionRes
 
 export async function linkMocRiskAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      featureCode: "moc",
+      permission: "moc.manage",
+    });
     const mocId = String(formData.get("mocId") || "");
     await linkMocRisk(supabase, {
       organizationId: organization.id,
@@ -96,8 +100,10 @@ export async function linkMocRiskAction(formData: FormData): Promise<ActionResul
 
 export async function addMocImpactAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      featureCode: "moc",
+      permission: "moc.manage",
+    });
     const mocId = String(formData.get("mocId") || "");
     await addMocImpact(supabase, {
       organizationId: organization.id,
@@ -117,8 +123,10 @@ export async function addMocImpactAction(formData: FormData): Promise<ActionResu
 
 export async function decideMocApprovalAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      featureCode: "moc",
+      permission: "moc.approve",
+    });
     const mocId = String(formData.get("mocId") || "");
     await decideMocApproval(supabase, {
       organizationId: organization.id,
@@ -137,8 +145,10 @@ export async function decideMocApprovalAction(formData: FormData): Promise<Actio
 
 export async function addMocCapaAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      featureCode: "moc",
+      permission: "moc.manage",
+    });
     const mocId = String(formData.get("mocId") || "");
     await addMocAction(supabase, {
       organizationId: organization.id,
@@ -159,8 +169,10 @@ export async function addMocCapaAction(formData: FormData): Promise<ActionResult
 
 export async function linkMocDocumentAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      featureCode: "moc",
+      permission: "moc.manage",
+    });
     const mocId = String(formData.get("mocId") || "");
     await linkMocDocument(supabase, {
       organizationId: organization.id,
@@ -178,8 +190,10 @@ export async function linkMocDocumentAction(formData: FormData): Promise<ActionR
 
 export async function implementMocAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      featureCode: "moc",
+      permission: "moc.implement",
+    });
     const mocId = String(formData.get("mocId") || "");
     await implementMoc(supabase, {
       organizationId: organization.id,
@@ -197,8 +211,10 @@ export async function implementMocAction(formData: FormData): Promise<ActionResu
 
 export async function verifyMocAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      featureCode: "moc",
+      permission: "moc.verify",
+    });
     const mocId = String(formData.get("mocId") || "");
     await verifyMoc(supabase, {
       organizationId: organization.id,

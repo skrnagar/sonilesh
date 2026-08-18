@@ -97,3 +97,22 @@ export async function userHasPermission(
     return false;
   }
 }
+
+export async function permissionFlags(
+  supabase: SupabaseClient,
+  organizationId: string,
+  userId: string,
+) {
+  const { profile } = await requireUser();
+  if (profile?.id === userId && profile.is_platform_admin) {
+    return {
+      has: () => true,
+      hasAny: () => true,
+    };
+  }
+  const codes = new Set(await getUserPermissions(supabase, organizationId, userId));
+  return {
+    has: (code: string) => codes.has(code),
+    hasAny: (list: string[]) => list.some((code) => codes.has(code)),
+  };
+}

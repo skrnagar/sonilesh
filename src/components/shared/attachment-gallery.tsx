@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { ActionResult } from "@/app/actions/events";
 import type { AttachmentView } from "@/lib/services/attachments";
 import { Button } from "@/components/ui/button";
+import { attachDirectUploads } from "@/lib/storage/direct-upload";
 
 export function AttachmentGallery({ items }: { items: AttachmentView[] }) {
   if (!items.length) {
@@ -86,16 +87,28 @@ export function MultiFileUploadForm({
       setError("Select at least one file");
       return;
     }
+    setPending(true);
+    setError(null);
     const formData = new FormData();
     formData.set("organizationId", organizationId);
     formData.set(entityFieldName, entityId);
     if (extraFields) {
       for (const [k, v] of Object.entries(extraFields)) formData.set(k, v);
     }
-    for (const file of files) formData.append("files", file);
+    try {
+      const uploaded = await attachDirectUploads(files, `app/${entityFieldName}/${entityId}`);
+      for (const row of uploaded) {
+        formData.append("storage_path", row.path);
+        formData.append("file_name", row.fileName);
+        formData.append("mime_type", row.mimeType);
+        formData.append("file_size", String(row.fileSize));
+      }
+    } catch (err) {
+      setPending(false);
+      setError(err instanceof Error ? err.message : "Upload failed");
+      return;
+    }
 
-    setPending(true);
-    setError(null);
     const result = await action(formData);
     setPending(false);
     if (!result.ok) {

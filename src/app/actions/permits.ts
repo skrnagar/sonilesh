@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireUser } from "@/lib/auth/session";
+import { requireOrgContext } from "@/lib/auth/org-context";
 import {
   addPermitComment,
   addPermitWorker,
@@ -36,11 +36,11 @@ function revalidatePermit(id: string) {
 
 export async function createPermitAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const asDraft = formData.get("asDraft") === "1" || formData.get("asDraft") === "on";
     const contractorCompanyId = String(formData.get("contractorCompanyId") || "");
     const siteId = String(formData.get("siteId") || "") || undefined;
-    const organizationId = String(formData.get("organizationId") || "");
+    const organizationId = organization.id;
     let contractorName = String(formData.get("contractorName") || "") || undefined;
     if (contractorCompanyId) {
       const { data: company } = await supabase
@@ -65,7 +65,7 @@ export async function createPermitAction(formData: FormData): Promise<ActionResu
       }
     }
     const row = await createPermit(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       permitTypeCode: String(formData.get("permitTypeCode") || ""),
       title: String(formData.get("title") || "").trim(),
@@ -108,10 +108,10 @@ export async function createPermitAction(formData: FormData): Promise<ActionResu
 
 export async function transitionPermitAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const permitId = String(formData.get("permitId") || "");
     await transitionPermit(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       permitId,
       toStatus: String(formData.get("toStatus") || ""),
@@ -129,10 +129,10 @@ export async function transitionPermitAction(formData: FormData): Promise<Action
 
 export async function linkRiskAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const permitId = String(formData.get("permitId") || "");
     await linkRiskToPermit(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       permitId,
       riskAssessmentId: String(formData.get("riskAssessmentId") || "") || undefined,
@@ -149,10 +149,10 @@ export async function linkRiskAction(formData: FormData): Promise<ActionResult> 
 
 export async function updateChecklistItemAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const permitId = String(formData.get("permitId") || "");
     await updateChecklistItem(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       itemId: String(formData.get("itemId") || ""),
       responseValue: String(formData.get("responseValue") || "") || undefined,
@@ -169,10 +169,10 @@ export async function updateChecklistItemAction(formData: FormData): Promise<Act
 
 export async function decideApprovalAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const permitId = String(formData.get("permitId") || "");
     await decidePermitApproval(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       approvalId: String(formData.get("approvalId") || ""),
       decision: String(formData.get("decision") || "approved") as
@@ -192,10 +192,10 @@ export async function decideApprovalAction(formData: FormData): Promise<ActionRe
 
 export async function addWorkerAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const permitId = String(formData.get("permitId") || "");
     await addPermitWorker(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       permitId,
       workerName: String(formData.get("workerName") || "") || undefined,
@@ -213,14 +213,14 @@ export async function addWorkerAction(formData: FormData): Promise<ActionResult>
 
 export async function upsertIsolationAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const permitId = String(formData.get("permitId") || "");
     const isolationType = String(formData.get("isolationType") || "electrical");
     if (!ISOLATION_TYPES.includes(isolationType as (typeof ISOLATION_TYPES)[number])) {
       return { ok: false, error: "Invalid isolation type" };
     }
     await upsertIsolation(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       permitId,
       isolationId: String(formData.get("isolationId") || "") || undefined,
@@ -246,10 +246,10 @@ export async function upsertIsolationAction(formData: FormData): Promise<ActionR
 
 export async function requestExtensionAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const permitId = String(formData.get("permitId") || "");
     await requestExtension(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       permitId,
       newValidTo: String(formData.get("newValidTo") || ""),
@@ -265,10 +265,10 @@ export async function requestExtensionAction(formData: FormData): Promise<Action
 
 export async function decideExtensionAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const permitId = String(formData.get("permitId") || "");
     await decideExtension(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       extensionId: String(formData.get("extensionId") || ""),
       decision: String(formData.get("decision") || "approved") as "approved" | "rejected",
@@ -283,10 +283,10 @@ export async function decideExtensionAction(formData: FormData): Promise<ActionR
 
 export async function suspendPermitAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const permitId = String(formData.get("permitId") || "");
     await suspendPermit(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       permitId,
       reasonCode: String(formData.get("reasonCode") || "other"),
@@ -302,10 +302,10 @@ export async function suspendPermitAction(formData: FormData): Promise<ActionRes
 
 export async function resumePermitAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const permitId = String(formData.get("permitId") || "");
     await resumePermit(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       permitId,
     });
@@ -319,10 +319,10 @@ export async function resumePermitAction(formData: FormData): Promise<ActionResu
 
 export async function startCloseoutAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const permitId = String(formData.get("permitId") || "");
     await startCloseout(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       permitId,
       notes: String(formData.get("notes") || "") || undefined,
@@ -342,10 +342,10 @@ export async function startCloseoutAction(formData: FormData): Promise<ActionRes
 
 export async function completeCloseoutAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const permitId = String(formData.get("permitId") || "");
     await completeCloseout(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       permitId,
       closeoutNotes: String(formData.get("closeoutNotes") || "") || undefined,
@@ -360,10 +360,10 @@ export async function completeCloseoutAction(formData: FormData): Promise<Action
 
 export async function addCommentAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const permitId = String(formData.get("permitId") || "");
     await addPermitComment(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       permitId,
       body: String(formData.get("body") || ""),
@@ -378,16 +378,27 @@ export async function addCommentAction(formData: FormData): Promise<ActionResult
 
 export async function uploadPermitAttachmentsAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const permitId = String(formData.get("permitId") || "");
-    const { collectFiles, uploadPermitAttachments } = await import("@/lib/services/attachments");
-    const files = collectFiles(formData);
-    await uploadPermitAttachments(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
-      userId: user.id,
-      permitId,
-      files,
-    });
+    const { recordUploadedPermitAttachment } = await import("@/lib/services/attachments");
+    const paths = formData.getAll("storage_path").map(String).filter(Boolean);
+    const names = formData.getAll("file_name").map(String);
+    const mimes = formData.getAll("mime_type").map(String);
+    const sizes = formData.getAll("file_size").map(String);
+    if (!paths.length) {
+      return { ok: false, error: "Select at least one file" };
+    }
+    for (let i = 0; i < paths.length; i += 1) {
+      await recordUploadedPermitAttachment(supabase, {
+        organizationId: organization.id,
+        userId: user.id,
+        permitId,
+        storagePath: paths[i],
+        fileName: names[i] || "upload.bin",
+        mimeType: mimes[i] || "application/octet-stream",
+        fileSize: Number(sizes[i] || 0) || 1,
+      });
+    }
     revalidatePermit(permitId);
     return { ok: true };
   } catch (err) {

@@ -1,9 +1,13 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+/** Server-side page size — never dump unbounded event lists into the browser. */
+export const EVENT_LIST_PAGE_SIZE = 50;
+
 export async function listEventsByType(
   supabase: SupabaseClient,
   organizationId: string,
   typeCode: string,
+  opts?: { limit?: number },
 ) {
   const { data: eventType } = await supabase
     .from("event_types")
@@ -26,7 +30,8 @@ export async function listEventsByType(
     .eq("organization_id", organizationId)
     .eq("event_type_id", eventType.id)
     .is("deleted_at", null)
-    .order("occurred_at", { ascending: false });
+    .order("occurred_at", { ascending: false })
+    .limit(opts?.limit ?? EVENT_LIST_PAGE_SIZE);
 
   if (error) throw new Error(error.message);
   return data ?? [];

@@ -21,6 +21,7 @@ import {
 import { writeAuditLog } from "@/lib/services/audit";
 import { formatSupabaseUserError, isNextRedirect } from "@/lib/supabase/errors";
 import type { ActionResult } from "@/app/actions/events";
+import { sanitizeBranding, sanitizeCurrency, sanitizeLocale, sanitizeTimezone } from "@/lib/branding/validate";
 
 function planLimitResult(err: unknown): ActionResult | null {
   if (err instanceof PlanLimitError) {
@@ -103,7 +104,10 @@ export async function createSiteAction(formData: FormData): Promise<ActionResult
       longitude: formData.get("longitude")
         ? Number(formData.get("longitude"))
         : null,
-      timezone: String(formData.get("timezone") || "") || undefined,
+      timezone: sanitizeTimezone(String(formData.get("timezone") || "")) || undefined,
+      locale: sanitizeLocale(String(formData.get("locale") || "")) || undefined,
+      currency: sanitizeCurrency(String(formData.get("currency") || "")) || undefined,
+      jurisdictionId: String(formData.get("jurisdictionId") || "") || null,
       siteType:
         String(formData.get("siteType") || "permanent") === "temporary_project"
           ? "temporary_project"
@@ -360,12 +364,18 @@ export async function updateOrganizationProfileAction(
       .eq("id", access.organization.id);
     if (orgError) return { ok: false, error: orgError.message };
 
-    const branding = {
+    const branding = sanitizeBranding({
       primaryColor: String(formData.get("primaryColor") || "").trim() || null,
       secondaryColor: String(formData.get("secondaryColor") || "").trim() || null,
       logoUrl: String(formData.get("logoUrl") || formData.get("logo_url") || "").trim() || null,
-      companyName: String(formData.get("name") || previous?.name || ""),
-    };
+      terminology: {
+        capaLabel: String(formData.get("capaLabel") || ""),
+        incidentLabel: String(formData.get("incidentLabel") || ""),
+        permitLabel: String(formData.get("permitLabel") || ""),
+        hazardLabel: String(formData.get("hazardLabel") || ""),
+        siteLabel: String(formData.get("siteLabel") || ""),
+      },
+    });
 
     const hierarchyConfig = {
       use_business_units: formData.get("useBusinessUnits") === "on",
@@ -383,10 +393,12 @@ export async function updateOrganizationProfileAction(
       settingsPatch.branding = branding;
     }
     if (section === "regional" || section === "general") {
-      settingsPatch.locale = String(formData.get("language") || formData.get("locale") || "en");
+      settingsPatch.locale = sanitizeLocale(String(formData.get("language") || formData.get("locale") || "en")) ?? "en";
       settingsPatch.date_format = String(formData.get("dateFormat") || "dd/MM/yyyy");
       settingsPatch.time_format = String(formData.get("timeFormat") || "24h");
-      settingsPatch.language = String(formData.get("language") || "en");
+      settingsPatch.language = sanitizeLocale(String(formData.get("language") || "en")) ?? "en";
+      const jurisdictionId = String(formData.get("jurisdictionId") || "");
+      settingsPatch.default_jurisdiction_id = jurisdictionId || null;
     }
     if (section === "hierarchy") {
       settingsPatch.hierarchy_config = hierarchyConfig;

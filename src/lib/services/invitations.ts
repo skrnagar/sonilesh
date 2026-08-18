@@ -1,9 +1,21 @@
 import { createHash, randomBytes } from "node:crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { INVITE_ROLE_CODES } from "@/lib/constants/organization";
 import { writeAuditLog } from "@/lib/services/audit";
 import { checkLimit } from "@/lib/services/entitlements";
 import { PlanLimitError } from "@/lib/services/hierarchy";
+import { requirePermission } from "@/lib/services/rbac";
 import { createAdminClient } from "@/lib/supabase/admin";
+
+const ASSIGNABLE_ROLE_CODES = new Set<string>(INVITE_ROLE_CODES);
+
+function assertAssignableRole(roleCode: string) {
+  const code = roleCode.trim().toLowerCase();
+  if (!ASSIGNABLE_ROLE_CODES.has(code)) {
+    throw new Error("That role cannot be assigned through invite or role change");
+  }
+  return code;
+}
 
 const DEFAULT_INVITE_DAYS = Number(process.env.INVITE_EXPIRY_DAYS ?? "7");
 
@@ -31,6 +43,8 @@ export async function createOrganizationInvitation(
     expiresInDays?: number;
   },
 ) {
+  await requirePermission(supabase, input.organizationId, input.userId, "users.manage");
+  const roleCode = assertAssignableRole(input.roleCode);
   const email = input.email.trim().toLowerCase();
   if (!email.includes("@")) throw new Error("Valid email required");
 
@@ -71,7 +85,7 @@ export async function createOrganizationInvitation(
         organization_id: input.organizationId,
         email,
         full_name: input.fullName ?? null,
-        role_code: input.roleCode,
+        role_code: roleCode,
         scope: input.scope ?? "organization",
         business_unit_id: input.businessUnitId ?? null,
         site_id: input.siteId ?? null,
@@ -116,7 +130,7 @@ export async function createOrganizationInvitation(
     entityId: data.id,
     newValues: {
       email,
-      role_code: input.roleCode,
+      role_code: roleCode,
       scope: input.scope ?? "organization",
       expires_at: expiresAt,
     },
@@ -147,6 +161,7 @@ export async function acceptOrganizationInvitation(
   if (invite.email.toLowerCase() !== input.email.trim().toLowerCase()) {
     throw new Error("Invitation email does not match signed-in user");
   }
+  const roleCode = assertAssignableRole(String(invite.role_code || ""));
 
   const limit = await checkLimit(admin, invite.organization_id, "max_users", 1);
   if (!limit.allowed) {
@@ -177,7 +192,7 @@ export async function acceptOrganizationInvitation(
   const { data: role } = await admin
     .from("roles")
     .select("id")
-    .eq("code", invite.role_code)
+    .eq("code", roleCode)
     .is("organization_id", null)
     .maybeSingle();
 
@@ -204,7 +219,7 @@ export async function acceptOrganizationInvitation(
     action: "user.invitation_accepted",
     entityType: "organization_invitation",
     entityId: invite.id,
-    newValues: { member_id: member.id, role_code: invite.role_code },
+    newValues: { member_id: member.id, role_code: roleCode },
   });
 
   return { organizationId: invite.organization_id as string, member };
@@ -242,6 +257,7 @@ export async function updateMemberStatus(
     status: "active" | "suspended" | "removed";
   },
 ) {
+  await requirePermission(supabase, input.organizationId, input.actorUserId, "users.manage");
   const { data: previous } = await supabase
     .from("organization_members")
     .select("*")
@@ -297,6 +313,8 @@ export async function assignMemberRoleScope(
     departmentId?: string | null;
   },
 ) {
+  await requirePermission(supabase, input.organizationId, input.actorUserId, "users.manage");
+  const roleCode = assertAssignableRole(input.roleCode);
   const { data: member } = await supabase
     .from("organization_members")
     .select("id")
@@ -308,7 +326,7 @@ export async function assignMemberRoleScope(
   const { data: role } = await supabase
     .from("roles")
     .select("id")
-    .eq("code", input.roleCode)
+    .eq("code", roleCode)
     .is("organization_id", null)
     .maybeSingle();
   if (!role) throw new Error("Unknown role");
@@ -353,7 +371,7 @@ export async function assignMemberRoleScope(
     entityId: data.id,
     newValues: {
       member_id: input.memberId,
-      role_code: input.roleCode,
+      role_code: roleCode,
       scope,
       site_id: input.siteId,
       business_unit_id: input.businessUnitId,

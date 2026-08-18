@@ -1,8 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireUser } from "@/lib/auth/session";
-import { requireOrgContext } from "@/lib/auth/org-context";
+import { requireWriteAccess } from "@/lib/auth/org-context";
 import {
   createChemical,
   uploadSds,
@@ -18,8 +17,10 @@ function failed(err: unknown): ActionResult {
 
 export async function createChemicalAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      featureCode: "chemical_sds",
+      permission: "chemicals.manage",
+    });
     const name = String(formData.get("name") || "").trim();
     if (!name) return { ok: false, error: "Chemical name is required" };
     const row = await createChemical(supabase, {
@@ -46,8 +47,10 @@ export async function createChemicalAction(formData: FormData): Promise<ActionRe
 
 export async function uploadSdsAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      featureCode: "chemical_sds",
+      permission: "chemicals.manage",
+    });
     const chemicalId = String(formData.get("chemicalId") || "");
     const files = collectFiles(formData);
     if (!files[0]) return { ok: false, error: "Upload the SDS file. The file is the authoritative SDS." };
@@ -74,8 +77,10 @@ export async function uploadSdsAction(formData: FormData): Promise<ActionResult>
 
 export async function upsertChemicalInventoryAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      featureCode: "chemical_sds",
+      permission: "chemicals.manage",
+    });
     const chemicalId = String(formData.get("chemicalId") || "");
     await upsertChemicalInventory(supabase, {
       organizationId: organization.id,

@@ -33,6 +33,8 @@ export default function BrsrApplicabilityPage() {
         description="The checker is orientation. A demo walks the entitled ESG and compliance workspaces on a real tenant."
         primaryHref="/book-a-demo"
         primaryLabel="Book a Demo"
+        secondaryHref="/product/compliance-tracking"
+        secondaryLabel="Compliance tracking"
       />
     </>
   );

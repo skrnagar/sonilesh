@@ -13,17 +13,16 @@ import { Button } from "@/components/ui/button";
 import { Container } from "@/components/marketing/container";
 import { SectionHeader } from "@/components/marketing/section-header";
 import { FeatureCard } from "@/components/marketing/feature-card";
-import { ModuleCard } from "@/components/marketing/module-card";
 import { IndustryCard } from "@/components/marketing/industry-card";
 import { CTASection } from "@/components/marketing/cta-section";
 import { ProductScreenshot } from "@/components/marketing/product-screenshot";
-import { DashboardPreview } from "@/components/marketing/dashboard-preview";
+import { LazyDashboardPreview, LazyPricingBoard, LazyWorkflowDiagram } from "@/components/marketing/lazy-previews";
 import { MobilePreview } from "@/components/marketing/mobile-preview";
-import { WorkflowDiagram } from "@/components/marketing/workflow-diagram";
-import { PricingCard } from "@/components/marketing/pricing-card";
+import { ResourceCard } from "@/components/marketing/resource-card";
+import { ModuleBento } from "@/components/marketing/module-bento";
+import { ControlRoomVisuals } from "@/components/marketing/charts/lazy";
 import { ScrollCue } from "@/components/marketing/motion";
 import { Reveal, Stagger } from "@/components/marketing/reveal";
-import { productHrefForModule } from "@/lib/marketing/product-routes";
 import { metadataForPath } from "@/lib/marketing/seo";
 import {
   architectureSteps,
@@ -32,8 +31,6 @@ import {
   company,
   executionPillars,
   listCanonicalIndustries,
-  modules,
-  pricingTiers,
   productFacts,
   resources,
 } from "@/lib/marketing/content";
@@ -84,7 +81,7 @@ export default function HomePage() {
           <div className="relative min-w-0">
             <div className="relative pb-4 lg:pb-8 lg:pl-10 xl:pl-16">
               <ProductScreenshot title="SONIL EHS360 · Control board" stage>
-                <DashboardPreview />
+                <LazyDashboardPreview />
               </ProductScreenshot>
               <div className="pointer-events-none relative z-10 mx-auto mt-5 w-fit lg:absolute lg:bottom-0 lg:left-0 lg:mx-0 lg:mt-0">
                 <MobilePreview className="scale-[0.92] shadow-[var(--shadow-lg)] lg:origin-bottom-left lg:scale-[0.78] xl:scale-[0.86]" />
@@ -207,18 +204,9 @@ export default function HomePage() {
               description="EHS modules plus compliance tracking and ESG/BRSR — entitled per tenant, governed by role. Contractor management is a company register today, not a full contractor OS."
             />
           </Reveal>
-          <Stagger className="mt-10 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-            {modules.slice(0, 6).map((mod) => (
-              <ModuleCard
-                key={mod.slug}
-                name={mod.name}
-                summary={mod.summary}
-                field={mod.field}
-                dashboard={mod.dashboard}
-                href={productHrefForModule(mod.slug)}
-              />
-            ))}
-          </Stagger>
+          <div className="mt-10">
+            <ModuleBento />
+          </div>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild variant="outline">
               <Link href="/product">Browse product</Link>
@@ -247,6 +235,7 @@ export default function HomePage() {
               </Button>
             </div>
           </Reveal>
+          <ControlRoomVisuals />
         </Container>
       </section>
 
@@ -297,7 +286,7 @@ export default function HomePage() {
             />
           </Reveal>
           <div className="mt-12">
-            <WorkflowDiagram />
+            <LazyWorkflowDiagram />
           </div>
         </Container>
       </section>
@@ -420,10 +409,8 @@ export default function HomePage() {
               description="Team, Business, and Enterprise — sold through Contact Sales. No invented dollar amounts, logos, or G2 badges."
             />
           </Reveal>
-          <div className="mt-10 grid gap-4 lg:grid-cols-3">
-            {pricingTiers.map((tier) => (
-              <PricingCard key={tier.name} {...tier} />
-            ))}
+          <div className="mt-10">
+            <LazyPricingBoard />
           </div>
         </Container>
       </section>
@@ -433,30 +420,21 @@ export default function HomePage() {
           <Reveal>
             <SectionHeader
               eyebrow="Resources"
-              title="Guides as the product matures"
-              description="A glossary, a BRSR applicability checker on the same rules engine as the app, and pillar guides as they are written — no fabricated whitepapers."
+              title="Practical tools and guidance for EHS teams"
+              description="Live checkers and glossary terms today; pillar guides as they are written — no fabricated whitepapers."
             />
           </Reveal>
           <div className="mt-10 grid gap-3 md:grid-cols-2">
             {resources.map((item) => (
-              <div
-                key={item.title}
-                className="rounded-xl border border-border bg-card p-5 shadow-[var(--shadow-sm)] transition-colors hover:border-accent/40 motion-reduce:transition-none"
-              >
-                <p className="inline-flex rounded-full bg-[var(--mkt-safety)]/12 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--mkt-safety)]">
-                  {item.status}
-                </p>
-                <h3 className="mt-3 font-display text-base font-semibold text-primary">{item.title}</h3>
-                <p className="mt-2 text-sm text-foreground/80">{item.body}</p>
-              </div>
+              <ResourceCard key={item.id} resource={item} />
             ))}
           </div>
           <div className="mt-8 flex flex-wrap gap-3">
             <Button asChild variant="outline">
-              <Link href="/resources">Resources</Link>
+              <Link href="/resources">All resources</Link>
             </Button>
             <Button asChild variant="outline">
-              <Link href="/resources/brsr-applicability">BRSR checker</Link>
+              <Link href="/resources/brsr-applicability">Open checker</Link>
             </Button>
           </div>
         </Container>

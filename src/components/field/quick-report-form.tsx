@@ -10,6 +10,7 @@ import {
   FieldError,
 } from "@/components/field/field-ui";
 import { FIELD_LABELS } from "@/lib/field/labels";
+import { attachDirectUpload } from "@/lib/storage/direct-upload";
 
 type Mode = "incident" | "near-miss" | "lmra";
 
@@ -58,6 +59,13 @@ export function QuickCaptureForm({ mode, action }: Props) {
     setError(null);
     formData.set("gps", coords);
     formData.set("mode", mode === "lmra" ? "hazard" : mode);
+    try {
+      await attachDirectUpload(formData, `field/${mode}`);
+    } catch (err) {
+      setPending(false);
+      setError(err instanceof Error ? err.message : "Photo upload failed");
+      return;
+    }
     const result = await action(formData);
     setPending(false);
     if (!result.ok) {

@@ -29,6 +29,8 @@ export default async function JurisdictionsPage() {
             </span>
             <span className="text-muted-foreground">
               {row.level}
+              {row.language ? ` · ${row.language}` : ""}
+              {row.currency_code ? ` · ${row.currency_code}` : ""}
               {row.organization_id ? " · org" : " · catalog"}
             </span>
           </li>

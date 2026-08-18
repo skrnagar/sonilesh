@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import {
+  listRecentNotificationsAction,
   markAllNotificationsReadAction,
   markNotificationReadAction,
 } from "@/app/actions/notifications";
@@ -26,18 +27,60 @@ function formatWhen(iso: string) {
 
 export function NotificationDropdown({
   items,
-  unreadCount,
+  unreadCount: initialUnreadCount,
+  onUpdate,
 }: {
   items: NotificationRow[];
   unreadCount: number;
+  onUpdate?: (rows: NotificationRow[]) => void;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const [loaded, setLoaded] = useState(items);
+  const [loading, setLoading] = useState(items.length === 0);
+
+  // Derive unread count from local state so it stays accurate after client-side updates.
+  const unreadCount = loaded.filter((n) => !n.read_at).length;
+  // Suppress unused-variable warning while keeping the prop for future server-driven badge sync.
+  void initialUnreadCount;
+
+  function updateLoaded(rows: NotificationRow[]) {
+    setLoaded(rows);
+    onUpdate?.(rows);
+  }
+
+  useEffect(() => {
+    if (items.length) {
+      setLoaded(items);
+      setLoading(false);
+      return;
+    }
+    let cancelled = false;
+    listRecentNotificationsAction()
+      .then((rows) => {
+        if (!cancelled) {
+          setLoaded(rows);
+          onUpdate?.(rows);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setLoaded([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items]);
 
   function markAll() {
     startTransition(async () => {
       await markAllNotificationsReadAction();
-      router.refresh();
+      const now = new Date().toISOString();
+      const updated = loaded.map((row) => ({ ...row, read_at: row.read_at ?? now }));
+      updateLoaded(updated);
     });
   }
 
@@ -47,11 +90,14 @@ export function NotificationDropdown({
         const fd = new FormData();
         fd.set("notificationId", item.id);
         await markNotificationReadAction(fd);
+        const now = new Date().toISOString();
+        const updated = loaded.map((row) =>
+          row.id === item.id ? { ...row, read_at: now } : row,
+        );
+        updateLoaded(updated);
       }
       if (item.link) {
         router.push(item.link);
-      } else {
-        router.refresh();
       }
     });
   }
@@ -79,12 +125,14 @@ export function NotificationDropdown({
         ) : null}
       </div>
       <ul className="max-h-80 overflow-y-auto">
-        {items.length === 0 ? (
+        {loading ? (
+          <li className="px-4 py-6 text-sm text-muted-foreground">Loading alerts…</li>
+        ) : loaded.length === 0 ? (
           <li className="px-4 py-6 text-sm text-muted-foreground">
             No EHS alerts for this workspace yet.
           </li>
         ) : (
-          items.map((item) => (
+          loaded.map((item) => (
             <li key={item.id} className="border-b border-border last:border-0">
               <button
                 type="button"

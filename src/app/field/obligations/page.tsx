@@ -43,6 +43,13 @@ export default async function FieldObligationsPage() {
     .in("status", ["open", "in_progress"])
     .limit(50);
 
+  const { data: evidence } = await supabase
+    .from("compliance_evidence")
+    .select("id, file_name, expires_at, task_instance_id")
+    .eq("organization_id", organization.id)
+    .eq("uploaded_by", user.id)
+    .limit(20);
+
   return (
     <div className="space-y-4">
       <FieldPageHeader
@@ -82,6 +89,20 @@ export default async function FieldObligationsPage() {
           ))
         ) : (
           <FieldEmpty text="No open requirements assigned to you." />
+        )}
+      </FieldSection>
+      <FieldSection title="My required evidence">
+        {(evidence ?? []).length ? (
+          (evidence ?? []).map((row) => (
+            <div key={row.id} className="rounded-xl border border-border bg-card px-4 py-3 text-sm">
+              <p className="font-medium">{row.file_name}</p>
+              <p className="text-xs text-muted-foreground">
+                {row.expires_at ? `Expires ${row.expires_at}` : "No expiry recorded"}
+              </p>
+            </div>
+          ))
+        ) : (
+          <FieldEmpty text="No evidence files uploaded by you." />
         )}
       </FieldSection>
     </div>

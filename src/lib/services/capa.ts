@@ -122,7 +122,7 @@ export async function createCapa(
       eventKey: "capa.assigned",
       title: `CAPA assigned: ${data.title}`,
       body: data.description ?? "A corrective action was assigned to you.",
-      link: "/field/actions",
+      link: `/app/capa`,
     }).catch((err) => console.error("[capa] notify owner failed", err));
   }
 
@@ -220,7 +220,7 @@ export async function transitionCapa(
         eventKey: "capa.rework",
         title: `CAPA returned for rework: ${current.title}`,
         body: input.notes ?? "Verification was not accepted.",
-        link: "/field/actions",
+        link: "/app/capa",
       });
     } else if (
       (input.toStatus === "verified" || input.toStatus === "closed") &&
@@ -234,7 +234,7 @@ export async function transitionCapa(
         eventKey: `capa.${input.toStatus}`,
         title: `CAPA ${input.toStatus}: ${current.title}`,
         body: input.notes ?? `Your action was ${input.toStatus}.`,
-        link: "/field/actions",
+        link: "/app/capa",
       });
     }
   } catch (err) {
@@ -294,27 +294,33 @@ export async function getCapaDashboardStats(
   supabase: SupabaseClient,
   organizationId: string,
 ) {
-  const { data } = await supabase
-    .from("capa_items")
-    .select("id, status, due_date, owner_id, priority, site_id")
-    .eq("organization_id", organizationId)
-    .is("deleted_at", null);
+  const openStatuses = ["open", "in_progress", "pending_verification"] as const;
+  const [{ count: total }, { data: openRows }] = await Promise.all([
+    supabase
+      .from("capa_items")
+      .select("id", { count: "exact", head: true })
+      .eq("organization_id", organizationId)
+      .is("deleted_at", null),
+    supabase
+      .from("capa_items")
+      .select("id, status, due_date, owner_id")
+      .eq("organization_id", organizationId)
+      .is("deleted_at", null)
+      .in("status", [...openStatuses]),
+  ]);
 
-  const rows = data ?? [];
-  const open = rows.filter((r) =>
-    ["open", "in_progress", "pending_verification"].includes(r.status),
-  );
+  const rows = openRows ?? [];
   const overdue = rows.filter((r) => isCapaOverdue(r.status, r.due_date));
 
   const byOwner: Record<string, number> = {};
-  for (const r of open) {
+  for (const r of rows) {
     const key = r.owner_id ?? "unassigned";
     byOwner[key] = (byOwner[key] ?? 0) + 1;
   }
 
   return {
-    total: rows.length,
-    open: open.length,
+    total: total ?? 0,
+    open: rows.length,
     overdue: overdue.length,
     pendingVerification: rows.filter((r) => r.status === "pending_verification").length,
     byOwner,

@@ -1,4 +1,5 @@
 import { ForbiddenState, UpgradeState } from "@/components/shared/state-panels";
+import { ExecutiveSubnav } from "@/components/analytics/subnav";
 import { requireModuleAccess } from "@/lib/auth/org-context";
 import { isEvidenceExpired } from "@/lib/compliance/applicability";
 
@@ -47,6 +48,7 @@ export default async function ExecutiveCompliancePage() {
           compliance certificate.
         </p>
       </div>
+      <ExecutiveSubnav current="/app/executive/compliance" />
       <div className="grid gap-4 md:grid-cols-4">
         {[
           { label: "Open/overdue filings", value: overdue },

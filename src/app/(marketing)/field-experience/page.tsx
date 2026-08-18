@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHero } from "@/components/marketing/page-hero";
 import { Container } from "@/components/marketing/container";
@@ -7,12 +6,9 @@ import { FeatureCard } from "@/components/marketing/feature-card";
 import { MobilePreview } from "@/components/marketing/mobile-preview";
 import { CTASection } from "@/components/marketing/cta-section";
 import { Button } from "@/components/ui/button";
+import { metadataForPath } from "@/lib/marketing/seo";
 
-export const metadata: Metadata = {
-  title: "Field Experience",
-  description:
-    "SONIL EHS360 field experience for fast incident, LMRA, permit, and inspection capture where work happens.",
-};
+export const metadata = metadataForPath("/field-experience");
 
 export default function FieldExperiencePage() {
   return (

@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireUser } from "@/lib/auth/session";
+import { requireOrgContext } from "@/lib/auth/org-context";
 import {
   addAssessmentStep,
   addControlAndOptionalCapa,
@@ -22,7 +22,7 @@ function failed(err: unknown): ActionResult {
 
 export async function createRiskAssessmentAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const typeCode = String(formData.get("typeCode") || "risk_assessment") as
       | "risk_assessment"
       | "jsa"
@@ -31,7 +31,7 @@ export async function createRiskAssessmentAction(formData: FormData): Promise<Ac
     if (title.length < 2) return { ok: false, error: "Title required" };
 
     const row = await createRiskAssessment(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       typeCode,
       title,
@@ -55,10 +55,10 @@ export async function createRiskAssessmentAction(formData: FormData): Promise<Ac
 
 export async function upsertHazardAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const assessmentId = String(formData.get("assessmentId") || "");
     await upsertHazard(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       assessmentId,
       hazardId: String(formData.get("hazardId") || "") || undefined,
@@ -88,13 +88,13 @@ export async function upsertHazardAction(formData: FormData): Promise<ActionResu
 
 export async function addControlAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const hierarchy = String(formData.get("hierarchy") || "administrative");
     if (!HIERARCHY_OF_CONTROLS.includes(hierarchy as (typeof HIERARCHY_OF_CONTROLS)[number])) {
       return { ok: false, error: "Invalid hierarchy of controls value" };
     }
     await addControlAndOptionalCapa(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       hazardId: String(formData.get("hazardId") || ""),
       hierarchy: hierarchy as (typeof HIERARCHY_OF_CONTROLS)[number],
@@ -117,10 +117,10 @@ export async function addControlAction(formData: FormData): Promise<ActionResult
 
 export async function transitionRiskAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const assessmentId = String(formData.get("assessmentId") || "");
     await transitionRiskAssessment(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       assessmentId,
       toStatus: String(formData.get("toStatus") || ""),
@@ -136,10 +136,10 @@ export async function transitionRiskAction(formData: FormData): Promise<ActionRe
 
 export async function addTeamMemberAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const assessmentId = String(formData.get("assessmentId") || "");
     await addTeamMember(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       assessmentId,
       memberName: String(formData.get("memberName") || "") || undefined,
@@ -155,10 +155,10 @@ export async function addTeamMemberAction(formData: FormData): Promise<ActionRes
 
 export async function addStepAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const assessmentId = String(formData.get("assessmentId") || "");
     await addAssessmentStep(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       assessmentId,
       stepName: String(formData.get("stepName") || ""),
@@ -175,9 +175,9 @@ export async function addStepAction(formData: FormData): Promise<ActionResult> {
 
 export async function updateMatrixAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     await updateRiskMatrix(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       matrixId: String(formData.get("matrixId") || ""),
       name: String(formData.get("name") || "") || undefined,
@@ -199,9 +199,9 @@ export async function updateMatrixAction(formData: FormData): Promise<ActionResu
 
 export async function createRiskFromReportAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const row = await createRiskFromReport(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       eventId: String(formData.get("eventId") || ""),
       typeCode: (String(formData.get("typeCode") || "risk_assessment") as

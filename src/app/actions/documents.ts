@@ -1,8 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireUser } from "@/lib/auth/session";
-import { requireOrgContext } from "@/lib/auth/org-context";
+import { requireWriteAccess } from "@/lib/auth/org-context";
 import {
   acknowledgeDocument,
   addDocumentVersion,
@@ -31,8 +30,10 @@ function tagsFrom(formData: FormData) {
 
 export async function createDocumentAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      featureCode: "document_control",
+      permission: "documents.manage",
+    });
     const title = String(formData.get("title") || "").trim();
     if (!title) return { ok: false, error: "Title is required" };
     const row = await createControlledDocument(supabase, {
@@ -58,8 +59,10 @@ export async function createDocumentAction(formData: FormData): Promise<ActionRe
 
 export async function addDocumentVersionAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      featureCode: "document_control",
+      permission: "documents.manage",
+    });
     const documentId = String(formData.get("documentId") || "");
     const files = collectFiles(formData);
     await addDocumentVersion(supabase, {
@@ -80,8 +83,10 @@ export async function addDocumentVersionAction(formData: FormData): Promise<Acti
 
 export async function submitDocumentVersionAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      featureCode: "document_control",
+      permission: "documents.manage",
+    });
     const versionId = String(formData.get("versionId") || "");
     const documentId = String(formData.get("documentId") || "");
     await submitDocumentVersion(supabase, {
@@ -99,8 +104,10 @@ export async function submitDocumentVersionAction(formData: FormData): Promise<A
 
 export async function decideDocumentVersionAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      featureCode: "document_control",
+      permission: "documents.approve",
+    });
     const documentId = String(formData.get("documentId") || "");
     await decideDocumentVersion(supabase, {
       organizationId: organization.id,
@@ -119,8 +126,10 @@ export async function decideDocumentVersionAction(formData: FormData): Promise<A
 
 export async function publishDocumentVersionAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      featureCode: "document_control",
+      permission: "documents.manage",
+    });
     const documentId = String(formData.get("documentId") || "");
     await publishDocumentVersion(supabase, {
       organizationId: organization.id,
@@ -138,8 +147,10 @@ export async function publishDocumentVersionAction(formData: FormData): Promise<
 
 export async function acknowledgeDocumentAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      featureCode: "document_control",
+      permission: "documents.acknowledge",
+    });
     const documentId = String(formData.get("documentId") || "");
     await acknowledgeDocument(supabase, {
       organizationId: organization.id,
@@ -157,8 +168,10 @@ export async function acknowledgeDocumentAction(formData: FormData): Promise<Act
 
 export async function distributeDocumentAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      featureCode: "document_control",
+      permission: "documents.manage",
+    });
     const documentId = String(formData.get("documentId") || "");
     await distributeDocument(supabase, {
       organizationId: organization.id,
@@ -177,8 +190,10 @@ export async function distributeDocumentAction(formData: FormData): Promise<Acti
 
 export async function scheduleDocumentReviewAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      featureCode: "document_control",
+      permission: "documents.manage",
+    });
     const documentId = String(formData.get("documentId") || "");
     const dueOn = String(formData.get("dueOn") || "");
     if (!dueOn) return { ok: false, error: "Review due date is required" };
@@ -198,8 +213,10 @@ export async function scheduleDocumentReviewAction(formData: FormData): Promise<
 
 export async function linkDocumentAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { user } = await requireUser();
-    const { organization, supabase } = await requireOrgContext();
+    const { user, organization, supabase } = await requireWriteAccess({
+      featureCode: "document_control",
+      permission: "documents.manage",
+    });
     const documentId = String(formData.get("documentId") || "");
     await linkDocument(supabase, {
       organizationId: organization.id,

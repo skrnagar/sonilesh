@@ -30,23 +30,28 @@ export default async function OrganizationSettingsPage({
   const access = await requireModuleAccess({ permission: "settings.manage" });
   if (!access.permitted) return <ForbiddenState />;
 
-  const { data: org } = await access.supabase
-    .from("organizations")
-    .select("*")
-    .eq("id", access.organization.id)
-    .single();
-
-  const { data: settings } = await access.supabase
-    .from("organization_settings")
-    .select("*")
-    .eq("organization_id", access.organization.id)
-    .maybeSingle();
+  const [{ data: org }, { data: settings }, { data: jurisdictions }] = await Promise.all([
+    access.supabase.from("organizations").select("*").eq("id", access.organization.id).single(),
+    access.supabase
+      .from("organization_settings")
+      .select("*")
+      .eq("organization_id", access.organization.id)
+      .maybeSingle(),
+    access.supabase
+      .from("jurisdictions")
+      .select("id, code, name, country_code")
+      .or(`organization_id.is.null,organization_id.eq.${access.organization.id}`)
+      .eq("is_active", true)
+      .order("code"),
+  ]);
 
   const branding = (settings?.branding ?? {}) as {
     primaryColor?: string;
     secondaryColor?: string;
     logoUrl?: string;
+    terminology?: Record<string, string>;
   };
+  const terminology = branding.terminology ?? {};
   const hierarchy = (settings?.hierarchy_config ?? {}) as Record<string, boolean>;
   const notifications = (settings?.notification_config ?? {}) as Record<string, boolean>;
   const security = (settings?.security_config ?? {}) as {
@@ -156,9 +161,15 @@ export default async function OrganizationSettingsPage({
                 defaultValue={branding.secondaryColor ?? ""}
               />
             </Field>
+            <Field label="CAPA label" id="capaLabel">
+              <Input id="capaLabel" name="capaLabel" defaultValue={terminology.capaLabel ?? "CAPA"} />
+            </Field>
+            <Field label="Incident label" id="incidentLabel">
+              <Input id="incidentLabel" name="incidentLabel" defaultValue={terminology.incidentLabel ?? "Incident"} />
+            </Field>
             <p className="md:col-span-2 text-xs text-muted-foreground">
-              Applied as CSS variables in the authenticated workspace only. Marketing remains
-              EHS360-branded.
+              Colors must be hex (#RGB or #RRGGBB). Labels are plain text only — CSS and scripts are
+              rejected. Custom domains are architecture-only.
             </p>
           </div>
         ) : null}
@@ -188,6 +199,20 @@ export default async function OrganizationSettingsPage({
               <Select id="timeFormat" name="timeFormat" defaultValue={settings?.time_format ?? "24h"}>
                 <option value="24h">24-hour</option>
                 <option value="12h">12-hour</option>
+              </Select>
+            </Field>
+            <Field label="Regulatory jurisdiction" id="jurisdictionId">
+              <Select
+                id="jurisdictionId"
+                name="jurisdictionId"
+                defaultValue={settings?.default_jurisdiction_id ?? ""}
+              >
+                <option value="">None — use site-level jurisdictions</option>
+                {(jurisdictions ?? []).map((row) => (
+                  <option key={row.id} value={row.id}>
+                    {row.code} — {row.name}
+                  </option>
+                ))}
               </Select>
             </Field>
           </div>

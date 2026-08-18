@@ -104,7 +104,15 @@ export default async function SitesPage() {
         </div>
         <div className="space-y-1">
           <Label htmlFor="timezone">Timezone</Label>
-          <Input id="timezone" name="timezone" defaultValue="Asia/Kolkata" />
+          <Input id="timezone" name="timezone" placeholder="UTC" />
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="locale">Locale</Label>
+          <Input id="locale" name="locale" placeholder="en" />
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="currency">Currency</Label>
+          <Input id="currency" name="currency" placeholder="USD" />
         </div>
         <div className="space-y-1">
           <Label htmlFor="latitude">Latitude</Label>

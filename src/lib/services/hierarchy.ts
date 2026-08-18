@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { writeAuditLog } from "@/lib/services/audit";
 import { checkLimit } from "@/lib/services/entitlements";
+import { requirePermission } from "@/lib/services/rbac";
 import { slugify } from "@/lib/utils";
 
 export class PlanLimitError extends Error {
@@ -32,6 +33,15 @@ async function assertOrgMember(
   return data.id as string;
 }
 
+async function assertHierarchyManageAccess(
+  supabase: SupabaseClient,
+  organizationId: string,
+  userId: string,
+) {
+  await assertOrgMember(supabase, organizationId, userId);
+  await requirePermission(supabase, organizationId, userId, "settings.manage");
+}
+
 function codeOrSlug(value: string, fallback: string) {
   const raw = value.trim() || fallback;
   return raw.toUpperCase().replace(/[^A-Z0-9_-]+/g, "_").slice(0, 32);
@@ -48,7 +58,7 @@ export async function createBusinessUnit(
     headMemberId?: string | null;
   },
 ) {
-  await assertOrgMember(supabase, input.organizationId, input.userId);
+  await assertHierarchyManageAccess(supabase, input.organizationId, input.userId);
   const code = codeOrSlug(input.code || slugify(input.name), "BU");
   const { data, error } = await supabase
     .from("business_units")
@@ -89,7 +99,7 @@ export async function updateBusinessUnit(
     status?: "active" | "inactive" | "archived";
   },
 ) {
-  await assertOrgMember(supabase, input.organizationId, input.userId);
+  await assertHierarchyManageAccess(supabase, input.organizationId, input.userId);
   const { data: previous } = await supabase
     .from("business_units")
     .select("*")
@@ -139,13 +149,16 @@ export async function createSiteRecord(
     latitude?: number | null;
     longitude?: number | null;
     timezone?: string;
+    locale?: string;
+    currency?: string;
+    jurisdictionId?: string | null;
     siteManagerMemberId?: string | null;
     siteType?: "permanent" | "temporary_project";
     startDate?: string | null;
     endDate?: string | null;
   },
 ) {
-  await assertOrgMember(supabase, input.organizationId, input.userId);
+  await assertHierarchyManageAccess(supabase, input.organizationId, input.userId);
   const limit = await checkLimit(supabase, input.organizationId, "max_sites", 1);
   if (!limit.allowed) {
     throw new PlanLimitError(
@@ -178,6 +191,9 @@ export async function createSiteRecord(
       latitude: input.latitude ?? null,
       longitude: input.longitude ?? null,
       timezone: input.timezone ?? null,
+      locale: input.locale ?? null,
+      currency: input.currency ?? null,
+      jurisdiction_id: input.jurisdictionId ?? null,
       site_manager_member_id: input.siteManagerMemberId ?? null,
       site_type: input.siteType ?? "permanent",
       status: "active",
@@ -209,7 +225,7 @@ export async function updateSiteRecord(
     patch: Record<string, unknown>;
   },
 ) {
-  await assertOrgMember(supabase, input.organizationId, input.userId);
+  await assertHierarchyManageAccess(supabase, input.organizationId, input.userId);
   const { data: previous } = await supabase
     .from("sites")
     .select("*")
@@ -253,7 +269,7 @@ export async function createProjectRecord(
     status?: string;
   },
 ) {
-  await assertOrgMember(supabase, input.organizationId, input.userId);
+  await assertHierarchyManageAccess(supabase, input.organizationId, input.userId);
   const limit = await checkLimit(supabase, input.organizationId, "max_projects", 1);
   if (!limit.allowed) {
     throw new PlanLimitError(
@@ -322,7 +338,7 @@ export async function updateProjectRecord(
     patch: Record<string, unknown>;
   },
 ) {
-  await assertOrgMember(supabase, input.organizationId, input.userId);
+  await assertHierarchyManageAccess(supabase, input.organizationId, input.userId);
   const { data: previous } = await supabase
     .from("projects")
     .select("*")
@@ -361,7 +377,7 @@ export async function createDepartmentRecord(
     headMemberId?: string | null;
   },
 ) {
-  await assertOrgMember(supabase, input.organizationId, input.userId);
+  await assertHierarchyManageAccess(supabase, input.organizationId, input.userId);
   if (input.siteId) {
     const { data: site } = await supabase
       .from("sites")
@@ -414,7 +430,7 @@ export async function createLocationRecord(
     description?: string | null;
   },
 ) {
-  await assertOrgMember(supabase, input.organizationId, input.userId);
+  await assertHierarchyManageAccess(supabase, input.organizationId, input.userId);
   const { data: site } = await supabase
     .from("sites")
     .select("id")

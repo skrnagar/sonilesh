@@ -210,3 +210,61 @@ export async function saveReportingPeriodAction(formData: FormData): Promise<Act
     return failed(err);
   }
 }
+
+export async function advanceEsgVerificationAction(formData: FormData): Promise<ActionResult> {
+  try {
+    const access = await requireModuleAccess({
+      featureCode: "esg_reporting",
+      permission: "esg.manage",
+    });
+    if (!access.entitled) return { ok: false, error: "ESG is not enabled." };
+    if (!access.permitted) return { ok: false, error: "Missing permission: esg.manage" };
+    const { advanceEsgMetricVerification } = await import("@/lib/services/esg");
+    await advanceEsgMetricVerification(access.supabase, {
+      organizationId: access.organization.id,
+      userId: access.user.id,
+      metricValueId: String(formData.get("metricValueId") || ""),
+      toStatus: String(formData.get("toStatus") || "submitted") as
+        | "draft"
+        | "submitted"
+        | "in_review"
+        | "verified"
+        | "published",
+    });
+    revalidatePath("/app/esg/metrics");
+    return { ok: true };
+  } catch (err) {
+    if (isNextRedirect(err)) throw err;
+    return failed(err);
+  }
+}
+
+export async function setReportingPeriodStatusAction(formData: FormData): Promise<ActionResult> {
+  try {
+    const access = await requireModuleAccess({
+      featureCode: "esg_reporting",
+      permission: "esg.manage",
+    });
+    if (!access.entitled) return { ok: false, error: "ESG is not enabled." };
+    if (!access.permitted) return { ok: false, error: "Missing permission: esg.manage" };
+    const { setReportingPeriodStatus } = await import("@/lib/services/esg");
+    await setReportingPeriodStatus(access.supabase, {
+      organizationId: access.organization.id,
+      userId: access.user.id,
+      periodId: String(formData.get("periodId") || ""),
+      status: String(formData.get("status") || "open") as
+        | "open"
+        | "data_collection"
+        | "review"
+        | "approved"
+        | "published"
+        | "closed"
+        | "locked",
+    });
+    revalidatePath("/app/esg/periods");
+    return { ok: true };
+  } catch (err) {
+    if (isNextRedirect(err)) throw err;
+    return failed(err);
+  }
+}

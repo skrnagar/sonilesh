@@ -44,7 +44,7 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react", "recharts", "date-fns"],
     serverActions: {
-      bodySizeLimit: "24mb",
+      bodySizeLimit: "4mb",
     },
   },
   images: {

@@ -441,17 +441,15 @@ button.bg-primary:hover {
   }
 }
 
-@keyframes mkt-tick-roll {
+@keyframes mkt-kpi-pulse {
   0%,
-  42% {
-    transform: translateY(0);
-  }
-  50%,
-  92% {
-    transform: translateY(-33.333%);
-  }
   100% {
-    transform: translateY(-66.666%);
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.12);
   }
 }
 
@@ -535,17 +533,16 @@ button.bg-primary:hover {
   animation-delay: 100ms;
 }
 
-.mkt-tick {
+.mkt-kpi-pulse {
   display: inline-block;
-  height: 1.2em;
-  overflow: hidden;
-  vertical-align: bottom;
-}
-
-.mkt-tick-track {
-  display: flex;
-  flex-direction: column;
-  animation: mkt-tick-roll 4.5s ease-in-out infinite;
+  width: 0.4rem;
+  height: 0.4rem;
+  margin-left: 0.4rem;
+  margin-bottom: 0.15rem;
+  vertical-align: middle;
+  border-radius: 999px;
+  background: var(--mkt-safety);
+  animation: mkt-kpi-pulse 2.4s ease-in-out infinite;
 }
 
 .mkt-status-cycle {
@@ -619,9 +616,41 @@ button.bg-primary:hover {
   /* Desktop pin lives in markup + md:sticky. Never pin below 768px. */
 }
 
+.mkt-bento {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 768px) {
+  .mkt-bento {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .mkt-bento-incidents {
+    grid-column: span 4;
+    grid-row: span 2;
+  }
+
+  .mkt-bento-capa {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  .mkt-bento-tile {
+    grid-column: span 3;
+  }
+}
+
+@media (min-width: 1024px) {
+  .mkt-bento-tile {
+    grid-column: span 2;
+  }
+}
+
 @media (min-width: 768px) {
   .mkt-lifecycle-runway {
-    min-height: 155vh;
+    min-height: 110vh;
   }
 }
 
@@ -709,7 +738,7 @@ button.bg-primary:hover {
   .mkt-fade-in,
   .mkt-reveal.is-inview,
   .mkt-stagger.is-inview > *,
-  .mkt-tick-track,
+  .mkt-kpi-pulse,
   .mkt-status-cycle,
   .mkt-scroll-cue-chevron {
     animation: none !important;
@@ -721,7 +750,8 @@ button.bg-primary:hover {
     transform: none !important;
   }
 
-  .mkt-tick-track {
+  .mkt-kpi-pulse {
+    opacity: 0.7;
     transform: none;
   }
 

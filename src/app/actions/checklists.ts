@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireUser } from "@/lib/auth/session";
+import { requireOrgContext } from "@/lib/auth/org-context";
 import {
   addSectionWithQuestions,
   completeAssignment,
@@ -39,10 +39,11 @@ function revalidateChecklist(type: string, id?: string) {
 
 export async function seedChecklistTemplatesAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    void formData;
+    const { supabase, user, organization } = await requireOrgContext();
     await ensureDefaultTemplates(
       supabase,
-      String(formData.get("organizationId") || ""),
+      organization.id,
       user.id,
     );
     revalidateChecklist("inspection");
@@ -55,10 +56,10 @@ export async function seedChecklistTemplatesAction(formData: FormData): Promise<
 
 export async function createTemplateAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const checklistType = String(formData.get("checklistType") || "inspection") as ChecklistType;
     const row = await createChecklistTemplate(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       code: String(formData.get("code") || "").trim(),
       name: String(formData.get("name") || "").trim(),
@@ -73,7 +74,7 @@ export async function createTemplateAction(formData: FormData): Promise<ActionRe
       .filter(Boolean);
     if (prompts.length) {
       await addSectionWithQuestions(supabase, {
-        organizationId: String(formData.get("organizationId") || ""),
+        organizationId: organization.id,
         templateId: row.id,
         title: sectionTitle,
         questions: prompts.map((prompt) => ({
@@ -97,10 +98,10 @@ export async function createTemplateAction(formData: FormData): Promise<ActionRe
 
 export async function createAssignmentAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const checklistType = String(formData.get("checklistType") || "inspection") as ChecklistType;
     const row = await createAssignment(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       templateId: String(formData.get("templateId") || ""),
       title: String(formData.get("title") || "").trim(),
@@ -125,13 +126,13 @@ export async function createAssignmentAction(formData: FormData): Promise<Action
 
 export async function saveResponseAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const assignmentId = String(formData.get("assignmentId") || "");
     const value = String(formData.get("value") || "");
     const isNa = value === "na";
     const isFailing = value === "fail" || value === "no";
     await recordResponse(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       assignmentId,
       questionId: String(formData.get("questionId") || ""),
@@ -154,10 +155,10 @@ export async function saveResponseAction(formData: FormData): Promise<ActionResu
 
 export async function completeAssignmentAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const assignmentId = String(formData.get("assignmentId") || "");
     await completeAssignment(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       assignmentId,
       reportNotes: String(formData.get("reportNotes") || "") || undefined,
@@ -172,10 +173,10 @@ export async function completeAssignmentAction(formData: FormData): Promise<Acti
 
 export async function transitionAssignmentAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const assignmentId = String(formData.get("assignmentId") || "");
     await transitionAssignment(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       assignmentId,
       toStatus: String(formData.get("toStatus") || ""),
@@ -191,9 +192,9 @@ export async function transitionAssignmentAction(formData: FormData): Promise<Ac
 
 export async function updateFindingAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     await updateFinding(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       findingId: String(formData.get("findingId") || ""),
       categoryId: String(formData.get("categoryId") || "") || undefined,
@@ -212,9 +213,9 @@ export async function updateFindingAction(formData: FormData): Promise<ActionRes
 
 export async function linkFindingCapaAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     await linkFindingToCapa(supabase, {
-      organizationId: String(formData.get("organizationId") || ""),
+      organizationId: organization.id,
       userId: user.id,
       findingId: String(formData.get("findingId") || ""),
       checklistType: String(formData.get("checklistType") || "") as ChecklistType | undefined,
@@ -230,13 +231,13 @@ export async function linkFindingCapaAction(formData: FormData): Promise<ActionR
 
 export async function uploadChecklistEvidenceAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user } = await requireUser();
+    const { supabase, user, organization } = await requireOrgContext();
     const assignmentId = String(formData.get("assignmentId") || "");
     const files = collectFiles(formData);
     if (!files.length) return { ok: false, error: "Select at least one file" };
     for (const file of files) {
       await uploadChecklistEvidence(supabase, {
-        organizationId: String(formData.get("organizationId") || ""),
+        organizationId: organization.id,
         userId: user.id,
         assignmentId,
         file,
