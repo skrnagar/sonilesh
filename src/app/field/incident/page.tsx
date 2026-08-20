@@ -8,10 +8,10 @@ import { requireOrgContext } from "@/lib/auth/org-context";
 import { loadReportFormContext } from "@/lib/reporting/form-context";
 
 export default async function FieldIncidentPage() {
-  const role = await resolveFieldRole();
+  const access = await requireOrgContext();
+  const role = await resolveFieldRole(access.supabase, access.membershipId);
   if (!canFieldAction(role, "report_incident")) return <FieldForbidden />;
 
-  const access = await requireOrgContext();
   const ctx = await loadReportFormContext(
     { ...access, entitled: true as const, permitted: true as const },
     "incident",

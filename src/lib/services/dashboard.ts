@@ -187,51 +187,51 @@ export async function getDashboardSnapshot(
     contractorsRes,
     hazardsRes,
   ] = await Promise.all([
-    eventsQuery.order("occurred_at", { ascending: false }).limit(400),
+    eventsQuery.order("occurred_at", { ascending: false }).limit(200),
     supabase
       .from("capa_items")
       .select("id, title, status, due_date, priority, created_at")
       .eq("organization_id", organizationId)
       .is("deleted_at", null)
-      .limit(200),
+      .limit(120),
     supabase
       .from("permits")
       .select("id, status")
       .eq("organization_id", organizationId)
       .is("deleted_at", null)
-      .limit(200),
+      .limit(120),
     supabase
       .from("checklist_assignments")
       .select("id, status, checklist_type, completed_at, created_at")
       .eq("organization_id", organizationId)
       .eq("checklist_type", "inspection")
       .is("deleted_at", null)
-      .limit(200),
+      .limit(120),
     supabase
       .from("checklist_findings")
       .select("id, status")
       .eq("organization_id", organizationId)
       .in("status", ["open", "capa_linked"])
       .is("deleted_at", null)
-      .limit(200),
+      .limit(120),
     supabase
       .from("training_assignments")
       .select("id, status, due_date, expires_at")
       .eq("organization_id", organizationId)
       .is("deleted_at", null)
-      .limit(200),
+      .limit(120),
     supabase
       .from("contractor_companies")
       .select("id, name, status, safety_score")
       .eq("organization_id", organizationId)
       .is("deleted_at", null)
-      .limit(80),
+      .limit(60),
     supabase
       .from("risk_hazards")
       .select("id, residual_likelihood, residual_consequence, residual_band")
       .eq("organization_id", organizationId)
       .is("deleted_at", null)
-      .limit(200),
+      .limit(120),
   ]);
 
   const events = (eventsRes.data ?? []) as EventRow[];

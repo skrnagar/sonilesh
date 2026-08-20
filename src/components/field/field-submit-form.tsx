@@ -54,6 +54,14 @@ export function FieldSubmitForm({
     setError(null);
     setQueued(false);
     if (typeof navigator !== "undefined" && !navigator.onLine) {
+      const hasFile = [...formData.values()].some(
+        (v) => v instanceof File && v.size > 0,
+      );
+      if (hasFile) {
+        setError("Photos need a network connection. Stay online to attach evidence, then submit.");
+        setPending(false);
+        return;
+      }
       enqueueFieldUpdate(submitLabel, formData);
       setQueued(true);
       setPending(false);

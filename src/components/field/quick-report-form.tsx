@@ -105,7 +105,31 @@ export function QuickCaptureForm({
       return;
     }
     router.push("/field");
-    router.refresh();
+  }
+
+  const needsSite = mode === "incident" || mode === "near-miss";
+  const needsSeverity = mode === "incident" || mode === "near-miss";
+  if (needsSite && sites.length === 0) {
+    return (
+      <div className="space-y-3 rounded-xl border border-border bg-muted/40 p-4">
+        <p className="text-sm font-semibold text-foreground">Site required</p>
+        <p className="text-sm text-muted-foreground">
+          Your organization has no active sites yet. Ask an admin to create a site in Settings → Sites,
+          then try again.
+        </p>
+      </div>
+    );
+  }
+  if (needsSeverity && severities.length === 0) {
+    return (
+      <div className="space-y-3 rounded-xl border border-border bg-muted/40 p-4">
+        <p className="text-sm font-semibold text-foreground">Severity levels missing</p>
+        <p className="text-sm text-muted-foreground">
+          Severity options are not available. Contact your administrator to restore system severity
+          levels, then refresh this page.
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -131,26 +155,24 @@ export function QuickCaptureForm({
         </div>
       </div>
 
-      {sites.length > 0 ? (
-        <label className="block space-y-1.5">
-          <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-            Site
-          </span>
-          <select
-            name="siteId"
-            required={mode === "incident" || mode === "near-miss"}
-            defaultValue={defaultSiteId || ""}
-            className={fieldControlClass}
-          >
-            <option value="">Select site</option>
-            {sites.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-        </label>
-      ) : null}
+      <label className="block space-y-1.5">
+        <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          Site
+        </span>
+        <select
+          name="siteId"
+          required={needsSite}
+          defaultValue={defaultSiteId || ""}
+          className={fieldControlClass}
+        >
+          <option value="">Select site</option>
+          {sites.map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.name}
+            </option>
+          ))}
+        </select>
+      </label>
 
       <label className="block space-y-1.5">
         <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
@@ -226,7 +248,7 @@ export function QuickCaptureForm({
         </label>
       ) : null}
 
-      {(mode === "incident" || mode === "near-miss") && severities.length > 0 ? (
+      {(mode === "incident" || mode === "near-miss") ? (
         <label className="block space-y-1.5">
           <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             Severity

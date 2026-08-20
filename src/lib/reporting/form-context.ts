@@ -15,38 +15,50 @@ export async function loadReportFormContext(
     .is("organization_id", null)
     .maybeSingle();
 
+  // Prefer workspace lists already loaded in org context (avoids duplicate unbounded queries).
+  const useCachedSites = access.sites.length > 0;
+  const useCachedProjects = access.projects.length > 0;
+
   const [
-    { data: sites },
-    { data: projects },
+    sitesRes,
+    projectsRes,
     { data: departments },
     { data: locations },
     { data: severities },
     { data: categories },
   ] = await Promise.all([
-    access.supabase
-      .from("sites")
-      .select("id, name")
-      .eq("organization_id", access.organization.id)
-      .is("deleted_at", null)
-      .order("name"),
-    access.supabase
-      .from("projects")
-      .select("id, name")
-      .eq("organization_id", access.organization.id)
-      .is("deleted_at", null)
-      .order("name"),
+    useCachedSites
+      ? Promise.resolve({ data: access.sites })
+      : access.supabase
+          .from("sites")
+          .select("id, name")
+          .eq("organization_id", access.organization.id)
+          .is("deleted_at", null)
+          .order("name")
+          .limit(100),
+    useCachedProjects
+      ? Promise.resolve({ data: access.projects.map((p) => ({ id: p.id, name: p.name })) })
+      : access.supabase
+          .from("projects")
+          .select("id, name")
+          .eq("organization_id", access.organization.id)
+          .is("deleted_at", null)
+          .order("name")
+          .limit(100),
     access.supabase
       .from("departments")
       .select("id, name")
       .eq("organization_id", access.organization.id)
       .is("deleted_at", null)
-      .order("name"),
+      .order("name")
+      .limit(80),
     access.supabase
       .from("locations")
       .select("id, name")
       .eq("organization_id", access.organization.id)
       .is("deleted_at", null)
-      .order("name"),
+      .order("name")
+      .limit(100),
     access.supabase
       .from("severity_levels")
       .select("id, name")
@@ -61,8 +73,12 @@ export async function loadReportFormContext(
           .eq("event_type_id", eventType.id)
           .eq("is_active", true)
           .order("name")
+          .limit(80)
       : Promise.resolve({ data: [] as Array<{ id: string; name: string }> }),
   ]);
+
+  const sites = sitesRes.data ?? [];
+  const projects = projectsRes.data ?? [];
 
   if (eventType && !(categories ?? []).length) {
     await access.supabase.rpc("seed_org_report_categories", {
@@ -74,10 +90,11 @@ export async function loadReportFormContext(
       .eq("organization_id", access.organization.id)
       .eq("event_type_id", eventType.id)
       .eq("is_active", true)
-      .order("name");
+      .order("name")
+      .limit(80);
     return {
-      sites: sites ?? [],
-      projects: projects ?? [],
+      sites,
+      projects,
       departments: departments ?? [],
       locations: locations ?? [],
       severities: severities ?? [],
@@ -99,8 +116,8 @@ export async function loadReportFormContext(
     : [];
 
   return {
-    sites: sites ?? [],
-    projects: projects ?? [],
+    sites,
+    projects,
     departments: departments ?? [],
     locations: locations ?? [],
     severities: severities ?? [],

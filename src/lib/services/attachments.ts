@@ -158,7 +158,22 @@ export function validateAttachmentFile(file: {
   if (file.size > MAX_UPLOAD_BYTES) {
     throw new Error("File exceeds 15 MB limit");
   }
-  const mime = file.type || "application/octet-stream";
+  // Empty / octet-stream is common on mobile camera picks — treat as JPEG when name looks like an image.
+  let mime = (file.type || "").trim().toLowerCase();
+  if (!mime || mime === "application/octet-stream") {
+    const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
+    const byExt: Record<string, string> = {
+      jpg: "image/jpeg",
+      jpeg: "image/jpeg",
+      png: "image/png",
+      webp: "image/webp",
+      heic: "image/heic",
+      heif: "image/heif",
+      gif: "image/gif",
+      pdf: "application/pdf",
+    };
+    mime = byExt[ext] || (/^IMG_/i.test(file.name) ? "image/jpeg" : mime || "image/jpeg");
+  }
   if (!ALLOWED_MIME.has(mime) && !mime.startsWith("image/")) {
     throw new Error(`File type not allowed: ${mime}`);
   }

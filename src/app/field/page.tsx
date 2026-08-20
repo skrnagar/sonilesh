@@ -23,14 +23,18 @@ import {
 } from "@/components/field/field-ui";
 
 export default async function FieldHomePage() {
-  const { supabase, profile, organization, membershipId } = await requireOrgContext();
+  const { supabase, profile, organization, membershipId, sites, projects, siteId, projectId } =
+    await requireOrgContext();
   const orgId = organization.id;
 
-  const [role, { data: sites }, { data: projects }] = await Promise.all([
-    resolveFieldRole(supabase, membershipId),
-    supabase.from("sites").select("name").eq("organization_id", orgId).is("deleted_at", null).limit(1),
-    supabase.from("projects").select("name").eq("organization_id", orgId).is("deleted_at", null).limit(1),
-  ]);
+  const role = await resolveFieldRole(supabase, membershipId);
+  const siteName =
+    sites.find((s) => s.id === siteId)?.name ?? sites[0]?.name ?? "Unassigned site";
+  const projectName =
+    projects.find((p) => p.id === projectId)?.name ??
+    projects.find((p) => ("site_id" in p ? p.site_id === siteId : false))?.name ??
+    projects[0]?.name ??
+    "—";
 
   const quickAll: Array<{
     action: FieldAction;
@@ -116,7 +120,7 @@ export default async function FieldHomePage() {
           {profile?.full_name?.split(" ")[0] || "Field user"}
         </h1>
         <p className="mt-1 truncate text-sm text-muted-foreground">
-          {sites?.[0]?.name ?? "Unassigned"} · {projects?.[0]?.name ?? "—"}
+          {siteName} · {projectName}
         </p>
       </section>
 

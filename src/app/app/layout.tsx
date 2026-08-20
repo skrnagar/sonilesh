@@ -5,10 +5,7 @@ import { requireOrgContext } from "@/lib/auth/org-context";
 import { getRoleCodesForUser } from "@/lib/auth/member-roles";
 import { isContractorPortalOnly, isFieldOnlyRoles } from "@/lib/auth/personas";
 import { listEnabledFeatures } from "@/lib/services/entitlements";
-import {
-  countUnreadNotifications,
-  listNotificationsForUser,
-} from "@/lib/services/notifications";
+import { countUnreadNotifications } from "@/lib/services/notifications";
 import { getUserPermissions } from "@/lib/services/rbac";
 import { signOutAction } from "@/app/actions/auth";
 import { WorkspaceContextSwitchers } from "@/components/layout/workspace-context";
@@ -60,7 +57,8 @@ export default async function AppLayout({
     );
   }
 
-  const [enabledFeatures, permissions, { data: orgSettings }, notificationCount, notifications] =
+  // Count only here — inbox rows load client-side when the bell opens (faster /app navigations).
+  const [enabledFeatures, permissions, { data: orgSettings }, notificationCount] =
     await Promise.all([
       listEnabledFeatures(supabase, organization.id),
       getUserPermissions(supabase, organization.id, user.id),
@@ -70,11 +68,6 @@ export default async function AppLayout({
         .eq("organization_id", organization.id)
         .maybeSingle(),
       countUnreadNotifications(supabase, organization.id, user.id),
-      listNotificationsForUser(supabase, {
-        organizationId: organization.id,
-        userId: user.id,
-        limit: 12,
-      }),
     ]);
 
   const userLabel = profile?.full_name || profile?.email || user.email || "User";
@@ -97,7 +90,6 @@ export default async function AppLayout({
           />
         }
         notificationCount={notificationCount}
-        notifications={notifications}
         contextSlot={
           <WorkspaceContextSwitchers
             organizations={organizations}

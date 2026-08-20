@@ -25,7 +25,7 @@ export function WorkspaceContextSwitchers({
   projectId: string | null;
 }) {
   return (
-    <div className="hidden min-w-0 items-center gap-2 lg:flex">
+    <div className="hidden min-w-0 items-center gap-2 sm:flex">
       {organizations.length > 1 ? (
         <form action={switchOrganizationAction}>
           <label className="sr-only" htmlFor="org-switcher">
