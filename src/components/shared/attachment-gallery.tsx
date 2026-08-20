@@ -122,7 +122,21 @@ export function MultiFileUploadForm({
   return (
     <form onSubmit={onSubmit} className="space-y-3">
       <label className="block space-y-1 text-sm">
-        <span className="font-medium">{label}</span>
+        <span className="font-medium">{label} — take photo</span>
+        <input
+          type="file"
+          accept={accept}
+          capture="environment"
+          disabled={pending}
+          className="block w-full text-sm file:mr-3 file:rounded-md file:border-0 file:bg-primary file:px-3 file:py-2 file:text-sm file:font-medium file:text-primary-foreground"
+          onChange={(e) => {
+            const picked = Array.from(e.target.files ?? []);
+            setFiles(picked);
+          }}
+        />
+      </label>
+      <label className="block space-y-1 text-sm">
+        <span className="font-medium">{label} — attach from device</span>
         <input
           type="file"
           multiple

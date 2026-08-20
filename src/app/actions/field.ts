@@ -34,8 +34,13 @@ async function persistMedia(
     };
   }
 
-  const file = formData.get("media");
-  if (!(file instanceof File) || file.size === 0) return null;
+  const fileEntry =
+    formData.getAll("media").find((v) => v instanceof File && v.size > 0) ??
+    formData.getAll("media_camera").find((v) => v instanceof File && v.size > 0) ??
+    formData.getAll("media_gallery").find((v) => v instanceof File && v.size > 0) ??
+    formData.get("file");
+  const file = fileEntry instanceof File && fileEntry.size > 0 ? fileEntry : null;
+  if (!file) return null;
   const safeName = sanitizeAttachmentName(file.name);
   const storagePath = `${organizationId}/${folder}/${Date.now()}-${safeName}`;
   const { error } = await supabase.storage.from("ehs-attachments").upload(storagePath, file, {
@@ -57,6 +62,33 @@ function revalidateField() {
   revalidatePath("/app/incidents");
 }
 
+async function resolveFieldSiteId(
+  supabase: SupabaseClient,
+  organizationId: string,
+  preferred?: string | null,
+) {
+  const fromForm = preferred?.trim() || "";
+  if (fromForm) {
+    const { data } = await supabase
+      .from("sites")
+      .select("id")
+      .eq("id", fromForm)
+      .eq("organization_id", organizationId)
+      .is("deleted_at", null)
+      .maybeSingle();
+    if (data?.id) return data.id;
+  }
+  const { data: fallback } = await supabase
+    .from("sites")
+    .select("id")
+    .eq("organization_id", organizationId)
+    .is("deleted_at", null)
+    .order("name")
+    .limit(1)
+    .maybeSingle();
+  return fallback?.id ?? undefined;
+}
+
 export async function submitFieldReportAction(formData: FormData): Promise<ActionResult> {
   try {
     const { supabase, user, organization, siteId, projectId } = await requireOrgContext();
@@ -64,16 +96,30 @@ export async function submitFieldReportAction(formData: FormData): Promise<Actio
     const intent = String(formData.get("intent") || "submit");
     const description = String(formData.get("description") || "").trim();
     if (!description) return { ok: false, error: "Description required" };
+    if (description.length < 8) {
+      return { ok: false, error: "Description must be at least 8 characters" };
+    }
 
     const typeParam = String(formData.get("type") || formData.get("category") || "");
-    const eventTypeCode =
+    const reportKind = String(formData.get("report_kind") || "");
+    let eventTypeCode =
       mode === "near-miss" || mode === "near_miss"
         ? "near_miss"
         : mode === "hazard" || mode === "lmra" || mode === "observation"
           ? ["unsafe_act", "unsafe_condition", "hazard", "safety_observation"].includes(typeParam)
             ? typeParam
             : "hazard"
-          : "incident";
+          : ["unsafe_act", "unsafe_condition", "hazard", "safety_observation"].includes(mode)
+            ? mode
+            : "incident";
+
+    // Incident form classification can create UA / UC via shared engine.
+    if (
+      eventTypeCode === "incident" &&
+      (reportKind === "unsafe_act" || reportKind === "unsafe_condition")
+    ) {
+      eventTypeCode = reportKind;
+    }
 
     if (
       ![
@@ -93,6 +139,31 @@ export async function submitFieldReportAction(formData: FormData): Promise<Actio
     const lngRaw = String(formData.get("longitude") || "");
     const immediate = String(formData.get("immediate_action") || "");
     const people = String(formData.get("people") || "");
+    const severityId = String(formData.get("severityId") || "") || undefined;
+    const potentialSeverityId = String(formData.get("potentialSeverityId") || "") || undefined;
+    const categoryId = String(formData.get("categoryId") || "") || undefined;
+    const resolvedSiteId = await resolveFieldSiteId(
+      supabase,
+      organization.id,
+      String(formData.get("siteId") || "") || siteId,
+    );
+
+    if (
+      (intent === "submit" || intent === "true") &&
+      (eventTypeCode === "incident" || eventTypeCode === "near_miss") &&
+      !resolvedSiteId
+    ) {
+      return { ok: false, error: "Site is required — select a site or set workspace site" };
+    }
+    if (
+      (intent === "submit" || intent === "true") &&
+      eventTypeCode === "incident" &&
+      !severityId &&
+      reportKind !== "unsafe_act" &&
+      reportKind !== "unsafe_condition"
+    ) {
+      return { ok: false, error: "Severity is required (includes LTI and Fatal)" };
+    }
 
     const created = await createEhsEvent(supabase, {
       organizationId: organization.id,
@@ -110,8 +181,14 @@ export async function submitFieldReportAction(formData: FormData): Promise<Actio
       immediateAction: immediate || undefined,
       occurredAt: String(formData.get("occurred_at") || new Date().toISOString()),
       submit: intent === "submit" || intent === "true",
-      siteId: siteId || undefined,
+      siteId: resolvedSiteId,
       projectId: projectId || undefined,
+      severityId,
+      potentialSeverityId,
+      categoryId:
+        eventTypeCode === "incident" || eventTypeCode === "near_miss" || eventTypeCode === "hazard"
+          ? categoryId
+          : undefined,
       source: "field",
       latitude: latRaw ? Number(latRaw) : null,
       longitude: lngRaw ? Number(lngRaw) : null,

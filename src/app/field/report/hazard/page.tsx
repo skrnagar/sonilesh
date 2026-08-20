@@ -1,5 +1,12 @@
 import { redirect } from "next/navigation";
 
-export default function LegacyHazardRedirect() {
-  redirect("/field/lmra");
+/** Legacy path — preserve type query when present. */
+export default async function LegacyHazardRedirect({
+  searchParams,
+}: {
+  searchParams: Promise<{ type?: string }>;
+}) {
+  const params = await searchParams;
+  const type = params.type ? `?type=${encodeURIComponent(params.type)}` : "";
+  redirect(`/field/hazard${type}`);
 }

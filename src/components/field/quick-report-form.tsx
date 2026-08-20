@@ -9,29 +9,58 @@ import {
   fieldSecondaryBtnClass,
   FieldError,
 } from "@/components/field/field-ui";
+import { FieldPhotoInputs } from "@/components/field/field-photo-inputs";
 import { FIELD_LABELS } from "@/lib/field/labels";
 import { attachDirectUpload } from "@/lib/storage/direct-upload";
 
-type Mode = "incident" | "near-miss" | "lmra";
+type Mode = "incident" | "near-miss" | "lmra" | "observation";
+
+type Option = { id: string; name: string; code?: string };
 
 type Props = {
   mode: Mode;
+  /** When mode is observation, backend event type (unsafe_act, etc.). */
+  eventTypeCode?: string;
   action: (formData: FormData) => Promise<{ ok: boolean; error?: string; id?: string }>;
+  sites?: Option[];
+  severities?: Option[];
+  categories?: Option[];
+  defaultSiteId?: string;
 };
 
-export function QuickCaptureForm({ mode, action }: Props) {
+export function QuickCaptureForm({
+  mode,
+  eventTypeCode,
+  action,
+  sites = [],
+  severities = [],
+  categories = [],
+  defaultSiteId,
+}: Props) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [coords, setCoords] = useState("");
-  const [photoName, setPhotoName] = useState<string | null>(null);
 
   const copy =
     mode === "lmra"
       ? FIELD_LABELS.lmra
       : mode === "near-miss"
         ? FIELD_LABELS.nearMiss
-        : FIELD_LABELS.incident;
+        : mode === "observation"
+          ? {
+              short:
+                eventTypeCode === "unsafe_condition"
+                  ? "Unsafe condition"
+                  : eventTypeCode === "safety_observation"
+                    ? "Observation"
+                    : eventTypeCode === "hazard"
+                      ? "Hazard"
+                      : "Unsafe act",
+              title: "New report",
+              subtitle: "Photo, location, short description",
+            }
+          : FIELD_LABELS.incident;
 
   async function captureLocation() {
     if (!navigator.geolocation) {
@@ -58,7 +87,10 @@ export function QuickCaptureForm({ mode, action }: Props) {
     setPending(true);
     setError(null);
     formData.set("gps", coords);
-    formData.set("mode", mode === "lmra" ? "hazard" : mode);
+    if (mode === "lmra") formData.set("mode", "hazard");
+    else if (mode === "observation") formData.set("mode", eventTypeCode || "hazard");
+    else formData.set("mode", mode);
+    if (eventTypeCode) formData.set("type", eventTypeCode);
     try {
       await attachDirectUpload(formData, `field/${mode}`);
     } catch (err) {
@@ -78,24 +110,7 @@ export function QuickCaptureForm({ mode, action }: Props) {
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
-      <label className="block space-y-1.5">
-        <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-          Photo
-        </span>
-        <input
-          type="file"
-          name="media"
-          accept="image/*,video/*"
-          capture="environment"
-          onChange={(e) => setPhotoName(e.target.files?.[0]?.name ?? null)}
-          className={fieldControlClass}
-        />
-        {photoName ? (
-          <span className="text-xs text-muted-foreground">{photoName}</span>
-        ) : (
-          <span className="text-xs text-muted-foreground">Optional. Use the camera when you can.</span>
-        )}
-      </label>
+      <FieldPhotoInputs accept="image/*" />
 
       <div className="space-y-1.5">
         <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
@@ -116,6 +131,27 @@ export function QuickCaptureForm({ mode, action }: Props) {
         </div>
       </div>
 
+      {sites.length > 0 ? (
+        <label className="block space-y-1.5">
+          <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Site
+          </span>
+          <select
+            name="siteId"
+            required={mode === "incident" || mode === "near-miss"}
+            defaultValue={defaultSiteId || ""}
+            className={fieldControlClass}
+          >
+            <option value="">Select site</option>
+            {sites.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
+
       <label className="block space-y-1.5">
         <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
           {mode === "lmra" ? "Risks and controls" : "What happened?"}
@@ -123,6 +159,7 @@ export function QuickCaptureForm({ mode, action }: Props) {
         <textarea
           name="description"
           required
+          minLength={8}
           rows={4}
           inputMode="text"
           className={fieldControlClass}
@@ -133,6 +170,19 @@ export function QuickCaptureForm({ mode, action }: Props) {
           }
         />
       </label>
+
+      {mode === "incident" ? (
+        <label className="block space-y-1.5">
+          <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Classification
+          </span>
+          <select name="report_kind" defaultValue="incident" className={fieldControlClass}>
+            <option value="incident">Incident</option>
+            <option value="unsafe_act">Unsafe Act</option>
+            <option value="unsafe_condition">Unsafe Condition</option>
+          </select>
+        </label>
+      ) : null}
 
       {mode === "lmra" ? (
         <>
@@ -158,6 +208,43 @@ export function QuickCaptureForm({ mode, action }: Props) {
             </select>
           </label>
         </>
+      ) : null}
+
+      {(mode === "incident" || mode === "near-miss") && categories.length > 0 ? (
+        <label className="block space-y-1.5">
+          <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Category
+          </span>
+          <select name="categoryId" defaultValue="" className={fieldControlClass}>
+            <option value="">Optional</option>
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
+
+      {(mode === "incident" || mode === "near-miss") && severities.length > 0 ? (
+        <label className="block space-y-1.5">
+          <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Severity
+          </span>
+          <select
+            name={mode === "near-miss" ? "potentialSeverityId" : "severityId"}
+            required
+            defaultValue=""
+            className={fieldControlClass}
+          >
+            <option value="">Select severity</option>
+            {severities.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+        </label>
       ) : null}
 
       <label className="block space-y-1.5">

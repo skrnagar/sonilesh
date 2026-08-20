@@ -14,10 +14,19 @@ export async function uploadToSignedUrl(input: {
   return input.path;
 }
 
+function firstNonEmptyFile(formData: FormData, ...keys: string[]) {
+  for (const key of keys) {
+    for (const value of formData.getAll(key)) {
+      if (value instanceof File && value.size > 0) return value;
+    }
+  }
+  return null;
+}
+
 /** Browser → signed PUT → metadata fields. Does not send file bytes through Next.js. */
 export async function attachDirectUpload(formData: FormData, folder: string) {
-  const file = formData.get("media") ?? formData.get("file");
-  if (!(file instanceof File) || file.size === 0) return formData;
+  const file = firstNonEmptyFile(formData, "media", "media_camera", "media_gallery", "file");
+  if (!file) return formData;
   const ticketData = new FormData();
   ticketData.set("fileName", file.name);
   ticketData.set("mimeType", file.type || "application/octet-stream");
@@ -27,6 +36,8 @@ export async function attachDirectUpload(formData: FormData, folder: string) {
   if (!ticket.ok) throw new Error(ticket.error);
   await uploadToSignedUrl({ path: ticket.path, token: ticket.token, file });
   formData.delete("media");
+  formData.delete("media_camera");
+  formData.delete("media_gallery");
   formData.delete("file");
   formData.set("storage_path", ticket.path);
   formData.set("file_name", file.name);

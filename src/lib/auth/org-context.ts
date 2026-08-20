@@ -52,7 +52,10 @@ export const requireOrgContext = cache(async () => {
       return { id: org.id, name: org.name, membershipId: row.id };
     });
 
-    const needWorkspaceLists = pathname.startsWith("/app") || pathname.startsWith("/admin");
+    const needWorkspaceLists =
+      pathname.startsWith("/app") ||
+      pathname.startsWith("/admin") ||
+      pathname.startsWith("/field");
 
     const [{ data: sites }, { data: projects }] = needWorkspaceLists
       ? await Promise.all([
@@ -76,15 +79,14 @@ export const requireOrgContext = cache(async () => {
           { data: [] as Array<{ id: string; name: string; site_id: string | null }> },
         ];
 
+    // Always org-validate workspace cookies — stale site/project ids caused field incident create to fail.
     const siteId =
-      requestedSiteId &&
-      (!needWorkspaceLists || (sites ?? []).some((site) => site.id === requestedSiteId))
+      requestedSiteId && (sites ?? []).some((site) => site.id === requestedSiteId)
         ? requestedSiteId
         : null;
     const projectId =
       requestedProjectId &&
-      (!needWorkspaceLists ||
-        (projects ?? []).some((project) => project.id === requestedProjectId))
+      (projects ?? []).some((project) => project.id === requestedProjectId)
         ? requestedProjectId
         : null;
 

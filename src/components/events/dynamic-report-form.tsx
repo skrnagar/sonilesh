@@ -10,6 +10,7 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { ReportTypeCode } from "@/lib/reporting/types";
 import { REPORT_TYPE_META } from "@/lib/reporting/types";
+import { attachDirectUpload } from "@/lib/storage/direct-upload";
 
 type Option = { id: string; name: string };
 type CustomField = {
@@ -46,6 +47,7 @@ export function DynamicReportForm({
 }) {
   const meta = REPORT_TYPE_META[eventTypeCode];
   const [draftRestored, setDraftRestored] = useState(false);
+  const [photoName, setPhotoName] = useState<string | null>(null);
   const occurredDefault = useMemo(() => {
     const now = new Date();
     return new Date(now.getTime() - now.getTimezoneOffset() * 60_000)
@@ -83,9 +85,29 @@ export function DynamicReportForm({
     localStorage.setItem(DRAFT_KEY(eventTypeCode), JSON.stringify(obj));
   }
 
+  function onPhotoPick(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0] ?? null;
+    setPhotoName(file?.name ?? null);
+    const form = e.currentTarget.form;
+    if (!form) return;
+    const other =
+      e.currentTarget.name === "media_camera"
+        ? form.querySelector<HTMLInputElement>('input[name="media_gallery"]')
+        : form.querySelector<HTMLInputElement>('input[name="media_camera"]');
+    if (other) other.value = "";
+  }
+
   return (
     <ActionForm
       action={async (fd) => {
+        try {
+          await attachDirectUpload(fd, `app/${eventTypeCode}`);
+        } catch (err) {
+          return {
+            ok: false as const,
+            error: err instanceof Error ? err.message : "Photo upload failed",
+          };
+        }
         const result = await createEventAction(fd);
         if (result.ok) localStorage.removeItem(DRAFT_KEY(eventTypeCode));
         return result;
@@ -105,6 +127,15 @@ export function DynamicReportForm({
         <Field label="Title" htmlFor="title">
           <Input id="title" name="title" placeholder={`${meta.label} summary`} />
         </Field>
+        {eventTypeCode === "incident" ? (
+          <Field label="Classification" htmlFor="reportKind">
+            <Select id="reportKind" name="reportKind" defaultValue="incident">
+              <option value="incident">Incident</option>
+              <option value="unsafe_act">Unsafe Act</option>
+              <option value="unsafe_condition">Unsafe Condition</option>
+            </Select>
+          </Field>
+        ) : null}
         {(categories?.length ?? 0) > 0 ? (
           <Field label="Category" htmlFor="categoryId">
             <Select id="categoryId" name="categoryId" defaultValue="">
@@ -138,7 +169,12 @@ export function DynamicReportForm({
 
       <Section title="2. Location">
         <Field label="Site" htmlFor="siteId">
-          <Select id="siteId" name="siteId" defaultValue="">
+          <Select
+            id="siteId"
+            name="siteId"
+            defaultValue=""
+            required={eventTypeCode === "incident" || eventTypeCode === "near_miss"}
+          >
             <option value="">Select site</option>
             {sites.map((s) => (
               <option key={s.id} value={s.id}>
@@ -208,7 +244,41 @@ export function DynamicReportForm({
         </Field>
       </Section>
 
-      <Section title="5. Consequence / controls">
+      <Section title="5. Evidence">
+        <div className="space-y-3 md:col-span-2">
+          <Label>Photos</Label>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="block space-y-1 text-sm">
+              <span className="text-muted-foreground">Take photo</span>
+              <input
+                type="file"
+                name="media_camera"
+                accept="image/*"
+                capture="environment"
+                className="block w-full text-sm"
+                onChange={onPhotoPick}
+              />
+            </label>
+            <label className="block space-y-1 text-sm">
+              <span className="text-muted-foreground">Attach from device</span>
+              <input
+                type="file"
+                name="media_gallery"
+                accept="image/*"
+                className="block w-full text-sm"
+                onChange={onPhotoPick}
+              />
+            </label>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {photoName
+              ? photoName
+              : "On mobile, Take photo opens the camera; Attach from device opens the gallery."}
+          </p>
+        </div>
+      </Section>
+
+      <Section title="6. Consequence / controls">
         {eventTypeCode === "incident" || eventTypeCode === "near_miss" ? (
           <Field label="Equipment / assets" htmlFor="equipmentAssets">
             <Input id="equipmentAssets" name="equipmentAssets" />
@@ -226,15 +296,20 @@ export function DynamicReportForm({
         ) : null}
       </Section>
 
-      <Section title="6. Immediate action">
+      <Section title="7. Immediate action">
         <Field label="Immediate action" htmlFor="immediateAction" className="md:col-span-2">
           <Textarea id="immediateAction" name="immediateAction" rows={3} />
         </Field>
       </Section>
 
-      <Section title="7. Severity">
+      <Section title="8. Severity">
         <Field label="Severity" htmlFor="severityId">
-          <Select id="severityId" name="severityId" defaultValue="">
+          <Select
+            id="severityId"
+            name="severityId"
+            defaultValue=""
+            required={eventTypeCode === "incident"}
+          >
             <option value="">Select</option>
             {severities.map((s) => (
               <option key={s.id} value={s.id}>
@@ -245,7 +320,12 @@ export function DynamicReportForm({
         </Field>
         {eventTypeCode === "near_miss" || eventTypeCode === "incident" ? (
           <Field label="Potential severity" htmlFor="potentialSeverityId">
-            <Select id="potentialSeverityId" name="potentialSeverityId" defaultValue="">
+            <Select
+              id="potentialSeverityId"
+              name="potentialSeverityId"
+              defaultValue=""
+              required={eventTypeCode === "near_miss"}
+            >
               <option value="">Select</option>
               {severities.map((s) => (
                 <option key={s.id} value={s.id}>
@@ -262,7 +342,7 @@ export function DynamicReportForm({
       </Section>
 
       {customFields.length > 0 ? (
-        <Section title="8. Custom fields">
+        <Section title="9. Custom fields">
           {customFields.map((field) => (
             <Field key={field.id} label={field.label} htmlFor={`cf_${field.code}`}>
               <input type="hidden" name={`cf_id_${field.code}`} value={field.id} />

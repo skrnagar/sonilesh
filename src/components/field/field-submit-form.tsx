@@ -8,6 +8,7 @@ import {
   FieldCard,
   FieldError,
 } from "@/components/field/field-ui";
+import { FieldPhotoInputs } from "@/components/field/field-photo-inputs";
 import {
   enqueueFieldUpdate,
   queueToFormData,
@@ -105,7 +106,7 @@ export function CapaCompleteCard({
       <p className="mt-1 text-xs capitalize text-muted-foreground">{meta}</p>
       <FieldSubmitForm action={action} submitLabel="Complete with evidence" className="mt-3 space-y-2">
         <input type="hidden" name="capaId" value={id} />
-        <input type="file" name="media" accept="image/*" capture="environment" className={fieldControlClass} />
+        <FieldPhotoInputs />
         <input name="evidence" placeholder="Evidence note" className={fieldControlClass} />
         <textarea name="comment" placeholder="Comment" rows={2} className={fieldControlClass} />
       </FieldSubmitForm>

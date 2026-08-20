@@ -66,9 +66,18 @@ export async function createEventAction(formData: FormData): Promise<ActionResul
   try {
     const { supabase, user, organization } = await requireOrgContext();
     const intent = String(formData.get("intent") || formData.get("submit") || "");
+    const reportKind = String(formData.get("reportKind") || formData.get("report_kind") || "");
+    let eventTypeCode = String(formData.get("eventTypeCode") || "incident");
+    if (
+      eventTypeCode === "incident" &&
+      (reportKind === "unsafe_act" || reportKind === "unsafe_condition")
+    ) {
+      eventTypeCode = reportKind;
+    }
+
     const parsed = createSchema.safeParse({
       organizationId: organization.id,
-      eventTypeCode: formData.get("eventTypeCode"),
+      eventTypeCode,
       title: String(formData.get("title") || "").trim() || undefined,
       description: formData.get("description"),
       siteId: String(formData.get("siteId") || "") || undefined,
@@ -77,7 +86,12 @@ export async function createEventAction(formData: FormData): Promise<ActionResul
       locationId: String(formData.get("locationId") || "") || undefined,
       severityId: String(formData.get("severityId") || "") || undefined,
       potentialSeverityId: String(formData.get("potentialSeverityId") || "") || undefined,
-      categoryId: String(formData.get("categoryId") || "") || undefined,
+      categoryId:
+        eventTypeCode === "incident" ||
+        eventTypeCode === "near_miss" ||
+        eventTypeCode === "hazard"
+          ? String(formData.get("categoryId") || "") || undefined
+          : undefined,
       occurredAt: parseOccurredAt(String(formData.get("occurredAt") || "") || undefined),
       immediateAction: String(formData.get("immediateAction") || "") || undefined,
       equipmentAssets: String(formData.get("equipmentAssets") || "") || undefined,
@@ -97,6 +111,21 @@ export async function createEventAction(formData: FormData): Promise<ActionResul
 
     if (!parsed.success) {
       return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid event payload" };
+    }
+
+    if (parsed.data.submit) {
+      if (
+        (parsed.data.eventTypeCode === "incident" || parsed.data.eventTypeCode === "near_miss") &&
+        !parsed.data.siteId
+      ) {
+        return { ok: false, error: "Site is required" };
+      }
+      if (parsed.data.eventTypeCode === "incident" && !parsed.data.severityId) {
+        return { ok: false, error: "Severity is required (includes LTI and Fatal)" };
+      }
+      if (parsed.data.eventTypeCode === "near_miss" && !parsed.data.potentialSeverityId) {
+        return { ok: false, error: "Potential severity is required" };
+      }
     }
 
     const customFieldValues: Array<{
@@ -125,6 +154,20 @@ export async function createEventAction(formData: FormData): Promise<ActionResul
       customFieldValues,
       observationPolarity: parsed.data.observationPolarity || null,
     });
+
+    const storagePath = String(formData.get("storage_path") || "").trim();
+    if (storagePath) {
+      const { recordUploadedReportAttachment } = await import("@/lib/services/attachments");
+      await recordUploadedReportAttachment(supabase, {
+        organizationId: organization.id,
+        userId: user.id,
+        eventId: result.event.id,
+        storagePath,
+        fileName: String(formData.get("file_name") || "capture.jpg"),
+        mimeType: String(formData.get("mime_type") || "application/octet-stream"),
+        fileSize: Number(formData.get("file_size") || 0) || 1,
+      });
+    }
 
     const meta = REPORT_TYPE_META[parsed.data.eventTypeCode];
     const path = meta.listPath;
