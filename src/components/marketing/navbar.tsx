@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState, type KeyboardEvent as ReactKeyboardEvent } from "react";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BrandLockup } from "@/components/brand/brand-lockup";
 import { Container } from "@/components/marketing/container";
@@ -360,18 +360,26 @@ export function Navbar() {
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
           <button
             type="button"
-            className="hidden min-h-11 items-center rounded-lg px-2.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground lg:inline-flex"
+            className="hidden min-h-11 items-center gap-2 rounded-lg border border-border bg-card px-2.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground lg:inline-flex"
             onClick={() => openMarketingCommandPalette()}
+            aria-label="Search site"
           >
-            Press ⌘K / Ctrl+K to search
+            <Search className="h-4 w-4" aria-hidden />
+            <span>Search</span>
+            <kbd className="pointer-events-none hidden rounded border border-border bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground xl:inline">
+              ⌘K
+            </kbd>
           </button>
           <Button asChild variant="ghost" className="hidden min-h-11 text-foreground lg:inline-flex">
             <Link href="/login">Sign in</Link>
           </Button>
+          <Button asChild variant="outline" className="hidden h-11 min-h-11 px-3 text-sm lg:inline-flex">
+            <Link href="/signup">Start Free</Link>
+          </Button>
           <Button asChild variant="safety" className="h-11 min-h-11 px-3 text-sm sm:px-4">
-            <Link href="/signup">
-              <span className="sm:hidden">Start</span>
-              <span className="hidden sm:inline">Start Free</span>
+            <Link href="/book-a-demo">
+              <span className="sm:hidden">Demo</span>
+              <span className="hidden sm:inline">Book a Demo</span>
             </Link>
           </Button>
           <button
@@ -500,18 +508,18 @@ export function Navbar() {
           </nav>
           <div className="flex flex-col gap-2 border-t border-border bg-card p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
             <Button asChild variant="safety" className="h-12 min-h-12">
+              <Link href="/book-a-demo" onClick={() => setMobileOpen(false)}>
+                Book a Demo
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="h-12 min-h-12">
               <Link href="/signup" onClick={() => setMobileOpen(false)}>
                 Start Free
               </Link>
             </Button>
-            <Button asChild variant="outline" className="h-12 min-h-12">
+            <Button asChild variant="ghost" className="h-11 min-h-11">
               <Link href="/login" onClick={() => setMobileOpen(false)}>
                 Sign in
-              </Link>
-            </Button>
-            <Button asChild variant="ghost" className="h-11 min-h-11">
-              <Link href="/book-a-demo" onClick={() => setMobileOpen(false)}>
-                Book a Demo
               </Link>
             </Button>
           </div>

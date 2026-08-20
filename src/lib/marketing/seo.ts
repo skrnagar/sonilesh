@@ -18,7 +18,7 @@ export type SeoPage = {
 export const seoPages = seoMap.pages as SeoPage[];
 
 export function siteUrl() {
-  const raw = process.env.NEXT_PUBLIC_APP_URL || "https://ehs360.app";
+  const raw = process.env.NEXT_PUBLIC_APP_URL || "https://sonilesh.vercel.app";
   return raw.replace(/\/$/, "");
 }
 

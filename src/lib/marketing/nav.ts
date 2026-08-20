@@ -94,21 +94,32 @@ export const primaryNav: PrimaryNavItem[] = [
     footer: { label: "All resources", href: "/resources" },
     columns: [
       {
-        title: "Learn",
+        title: "Guides",
         links: [
-          { label: "Guides", href: "/resources", description: "Pillars as they are written", icon: "BookOpen" },
+          { label: "Implementation overview", href: "/resources/implementation-overview", description: "Sites, roles, rollout order", icon: "BookOpen" },
+          { label: "Field adoption", href: "/resources/field-adoption", description: "Crews, LMRA, coaching", icon: "HardHat" },
+          { label: "CAPA playbook", href: "/resources/closed-loop-capa-playbook", description: "Verify before close", icon: "ListChecks" },
+          { label: "HSE analytics", href: "/resources/analytics-for-hse-leadership", description: "Signals leadership can use", icon: "BarChart3" },
+        ],
+      },
+      {
+        title: "Tools & docs",
+        links: [
           { label: "BRSR checker", href: "/resources/brsr-applicability", description: "Same rules as the app", icon: "Scale" },
           { label: "Glossary", href: "/resources#glossary", description: "BRSR, TRIR, CAPA, EPR…", icon: "List" },
+          { label: "Product documentation", href: "/resources#product-documentation", description: "Platform, field, security", icon: "LayoutGrid" },
           { label: "Security", href: "/security", description: "Controls we actually run", icon: "Shield" },
           { label: "Self-hosting", href: "/self-hosting", description: "Cloud or private instance", icon: "Building2" },
         ],
       },
       {
         title: "Company",
+        accent: true,
         links: [
           { label: "About", href: "/about", description: "Who builds EHS360", icon: "Landmark" },
           { label: "Customers", href: "/customers", description: "How organisations use it", icon: "Users" },
           { label: "Contact", href: "/contact", description: "Talk to the team", icon: "Mail" },
+          { label: "Book a Demo", href: "/book-a-demo", description: "Walk the workflows", icon: "Mail" },
         ],
       },
     ],
@@ -154,7 +165,7 @@ export const footerColumns: { title: string; links: NavLink[] }[] = [
       { label: "Start Free", href: "/signup" },
       { label: "Sign in", href: "/login" },
       { label: "BRSR checker", href: "/resources/brsr-applicability" },
-      { label: "Resources", href: "/resources" },
+      { label: "Guides", href: "/resources" },
       { label: "SONIL Buildcon", href: "https://www.sonilbuildcon.com/" },
     ],
   },

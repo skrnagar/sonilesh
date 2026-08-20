@@ -435,7 +435,7 @@ export const lifecycleSteps = [
 
 export const trustIndustries = industries.map((i) => i.name);
 
-export type ResourceCategory = "Guides" | "Tools" | "Checkers";
+export type ResourceCategory = "Guides" | "Tools" | "Glossary" | "Product Documentation";
 
 export type ResourceAvailability = "AVAILABLE" | "COMING_SOON";
 
@@ -451,10 +451,46 @@ export type MarketingResource = {
 
 export const marketingResources: MarketingResource[] = [
   {
+    id: "implementation",
+    title: "Implementation overview",
+    description: "How organisations structure sites, roles, and module rollout.",
+    category: "Guides",
+    availability: "AVAILABLE",
+    href: "/resources/implementation-overview",
+    cta: "Read guide",
+  },
+  {
+    id: "field-adoption",
+    title: "Field adoption guide",
+    description: "Patterns for getting supervisors and crews to report — including LMRA — in the moment.",
+    category: "Guides",
+    availability: "AVAILABLE",
+    href: "/resources/field-adoption",
+    cta: "Read guide",
+  },
+  {
+    id: "capa-playbook",
+    title: "Closed-loop CAPA playbook",
+    description: "From finding to verified effectiveness without spreadsheet drift.",
+    category: "Guides",
+    availability: "AVAILABLE",
+    href: "/resources/closed-loop-capa-playbook",
+    cta: "Read playbook",
+  },
+  {
+    id: "analytics-leadership",
+    title: "Analytics for HSE leadership",
+    description: "Which signals matter from site operations to executive review.",
+    category: "Guides",
+    availability: "AVAILABLE",
+    href: "/resources/analytics-for-hse-leadership",
+    cta: "Read guide",
+  },
+  {
     id: "brsr-applicability",
     title: "BRSR Applicability Checker",
     description: "Same listed-company rules as the in-app engine. Orientation, not legal advice.",
-    category: "Checkers",
+    category: "Tools",
     availability: "AVAILABLE",
     href: "/resources/brsr-applicability",
     cta: "Open checker",
@@ -463,45 +499,56 @@ export const marketingResources: MarketingResource[] = [
     id: "glossary",
     title: "EHS & ESG glossary",
     description: "Short definitions for BRSR, TRIR, CAPA, EPR, and other terms buyers search.",
-    category: "Tools",
+    category: "Glossary",
     availability: "AVAILABLE",
     href: "/resources#glossary",
     cta: "Browse glossary",
   },
   {
-    id: "implementation",
-    title: "Implementation overview",
-    description: "How organizations structure sites, roles, and module rollout.",
-    category: "Guides",
-    availability: "COMING_SOON",
+    id: "product-overview-docs",
+    title: "Platform overview",
+    description: "Identify → Assess → Control → Act → Comply → Report → Analyze on one tenant.",
+    category: "Product Documentation",
+    availability: "AVAILABLE",
+    href: "/product",
+    cta: "Open product hub",
   },
   {
-    id: "field-adoption",
-    title: "Field adoption guide",
-    description: "Patterns for getting supervisors and crews to report — including LMRA — in the moment.",
-    category: "Guides",
-    availability: "COMING_SOON",
+    id: "field-docs",
+    title: "Field experience",
+    description: "How workfront capture is designed for gloves, glare, and time pressure.",
+    category: "Product Documentation",
+    availability: "AVAILABLE",
+    href: "/field-experience",
+    cta: "View field docs",
   },
   {
-    id: "capa-playbook",
-    title: "Closed-loop CAPA playbook",
-    description: "From finding to verified effectiveness without spreadsheet drift.",
-    category: "Guides",
-    availability: "COMING_SOON",
+    id: "security-docs",
+    title: "Security posture",
+    description: "Controls we actually run — no invented SOC 2 / ISO badges.",
+    category: "Product Documentation",
+    availability: "AVAILABLE",
+    href: "/security",
+    cta: "Read security",
   },
   {
-    id: "analytics-leadership",
-    title: "Analytics for HSE leadership",
-    description: "Which signals matter from site operations to executive review.",
-    category: "Guides",
+    id: "enterprise-api-docs",
+    title: "Enterprise API documentation",
+    description: "Public API reference for integrations — sequenced after the website in Phase 16B.",
+    category: "Product Documentation",
     availability: "COMING_SOON",
   },
 ];
 
-/** Homepage and legacy imports — ordered: available first, then planned guides. */
+/** Homepage and hub — available items first within each category order. */
 export const resources = marketingResources;
 
-export const resourceCategories: ResourceCategory[] = ["Checkers", "Tools", "Guides"];
+export const resourceCategories: ResourceCategory[] = [
+  "Guides",
+  "Tools",
+  "Glossary",
+  "Product Documentation",
+];
 
 export function resourcesForCategory(category: ResourceCategory) {
   return marketingResources.filter((item) => item.category === category);

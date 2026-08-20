@@ -421,7 +421,7 @@ export default function HomePage() {
             <SectionHeader
               eyebrow="Resources"
               title="Practical tools and guidance for EHS teams"
-              description="Live checkers and glossary terms today; pillar guides as they are written — no fabricated whitepapers."
+              description="Published guides, live checkers, glossary, and product documentation — Available only when content or function exists."
             />
           </Reveal>
           <div className="mt-10 grid gap-3 md:grid-cols-2">

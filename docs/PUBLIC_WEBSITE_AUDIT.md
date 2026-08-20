@@ -88,30 +88,27 @@ No internal 404s found in nav, footer, or resource cards after this pass.
 
 | Resource | Route | Implemented? | Status |
 |----------|-------|--------------|--------|
+| Implementation overview | `/resources/implementation-overview` | **Yes** (MDX) | **Available** |
+| Field adoption guide | `/resources/field-adoption` | **Yes** (MDX) | **Available** |
+| Closed-loop CAPA playbook | `/resources/closed-loop-capa-playbook` | **Yes** (MDX) | **Available** |
+| Analytics for HSE leadership | `/resources/analytics-for-hse-leadership` | **Yes** (MDX) | **Available** |
 | BRSR Applicability Checker | `/resources/brsr-applicability` | **Yes** | **Available** |
 | EHS & ESG glossary | `/resources#glossary` | **Yes** (16 terms) | **Available** |
-| Implementation overview | — | No MDX/page | Coming soon |
-| Field adoption guide | — | No MDX/page | Coming soon |
-| Closed-loop CAPA playbook | — | No MDX/page | Coming soon |
-| Analytics for HSE leadership | — | No MDX/page | Coming soon |
+| Platform / field / security docs | `/product`, `/field-experience`, `/security` | **Yes** | **Available** |
+| Enterprise API documentation | — | No public API docs yet (Phase 16B) | Coming soon |
 
-**Rule applied:** REAL CONTENT → Available; NO CONTENT → Coming soon. No placeholder whitepapers created.
+**Rule applied:** REAL CONTENT → Available; NO CONTENT → Coming soon. BRSR checker must never show Coming soon while the page ships.
 
 ---
 
 ## Available resources
 
-1. **BRSR Applicability Checker** — `/resources/brsr-applicability`  
-   - Same `@/lib/compliance/applicability` rules as in-app engine  
-   - Multi-step form, validation (market-cap rank when listed), results panel, copy/share, **Start over** reset  
-   - Disclaimer: orientation only, not legal advice  
+1. **Guides (4)** — MDX under `content/resources/`
+2. **BRSR Applicability Checker** — `/resources/brsr-applicability`
+3. **Glossary** — `/resources#glossary` + `/resources/glossary/[term]`
+4. **Product documentation** — `/product`, `/field-experience`, `/security`
 
-2. **EHS & ESG glossary** — `/resources#glossary` + `/resources/glossary/[term]`  
-   - 16 terms: BRSR, BRSR Core, CSR, EPR, CBAM, CCTS, TRIR, LTIFR, JSA, CAPA, MOC, NGRBC, Scope 1/2/3, Materiality  
-
-3. **Product pages** — `/product/*` (9 modules) — marketing product detail, not “guides”  
-
-**Not shown (no content):** Product Documentation category — no separate docs site exists.
+Roadmap: `docs/EHS360_ROADMAP.md`. Phase 18 AI reserved in `docs/PHASE_18_ADVANCED_AI.md` (spec only).
 
 ---
 
@@ -257,6 +254,8 @@ Article JSON-LD on published MDX resource posts when content exists (currently 0
 
 ## Summary
 
-The public website now accurately represents **only implemented functionality**. Resources use a shared card system with honest availability states. Performance on homepage navigation is improved via code-split previews. SEO, sitemap, robots, and 404 are in place. No fabricated guides, customers, certifications, or pricing were added.
+The public website accurately represents **only implemented functionality**. Phase 16A adds four published MDX guides, restructures Resources into Guides / Tools / Glossary / Product Documentation, and reserves Phase 18 AI in docs. Performance on homepage navigation is improved via code-split previews. SEO, sitemap, robots, and 404 are in place. No fabricated customers, certifications, or pricing.
 
 **Deploy and run the production checklist above to close Phase 16A.**
+
+See also: `docs/EHS360_ROADMAP.md`, `docs/PHASE_18_ADVANCED_AI.md`.

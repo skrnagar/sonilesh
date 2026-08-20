@@ -32,8 +32,9 @@ Marketing must not rebuild `/app`, `/admin`, or `/field`.
 | `/pricing` | Packaging; Contact Sales; no fake prices |
 | `/self-hosting` | Cloud vs privately operated instance |
 | `/security` | Controls we run; no fake certs |
-| `/resources` | Guides + glossary + tools |
+| `/resources` | Guides + tools + glossary + product documentation |
 | `/resources/brsr-applicability` | Thin checker on `src/lib/compliance/applicability.ts` |
+| `/resources/[slug]` | Published MDX guides |
 | `/resources/glossary/[term]` | Glossary |
 | `/book-a-demo` | Demo form (front-end placeholder until CRM) |
 | `/contact` | Sales contact + same placeholder form |
@@ -78,9 +79,20 @@ Defined in `src/lib/marketing/product-routes.ts`:
 | **Self-hosting** | Commercial conversation. No public one-click installer. |
 | **AI** | “AI-ready” structured data only — not autonomous EHS. |
 
+## Resources hub
+
+| Category | Rule |
+|---|---|
+| Guides | MDX under `content/resources/` — Available only when published |
+| Tools | Interactive checkers (BRSR applicability) |
+| Glossary | Term index + `/resources/glossary/[term]` |
+| Product Documentation | Links to live product/field/security pages; Enterprise API docs Coming soon until Phase 16B |
+
+Availability badges: **Available** when content or function exists; **Coming soon** otherwise. `/resources/brsr-applicability` must never show Coming soon while the checker ships.
+
 ## IA / nav
 
-Primary nav: Product, Solutions, Resources, Pricing. CTAs: Book a Demo, Sign in. Footer includes Start Free → `/signup`.
+Primary nav: Product, Solutions, Resources, Pricing. CTAs: Book a Demo, Sign in, Start Free. Footer includes Start Free → `/signup`.
 
 ## Content sources
 
@@ -88,3 +100,4 @@ Primary nav: Product, Solutions, Resources, Pricing. CTAs: Book a Demo, Sign in.
 - SEO map: `content/seo-map.json` → `src/lib/marketing/seo.ts`
 - Sitemap: indexed SEO pages + glossary + MDX resources
 - Robots: allow marketing; disallow `/app/`, `/admin/`, `/field/`, `/onboarding/`, `/api/`, `/compare/`
+- Roadmap: `docs/EHS360_ROADMAP.md` (16A → 20)

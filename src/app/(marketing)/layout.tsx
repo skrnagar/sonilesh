@@ -11,7 +11,7 @@ export const revalidate = 300;
 
 export const metadata: Metadata = {
   ...metadataForPath("/"),
-  metadataBase: new URL("https://ehs360.app"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://sonilesh.vercel.app"),
   title: {
     default: `${brand.name} — EHS + ESG + Compliance software`,
     template: `%s | ${brand.name}`,
