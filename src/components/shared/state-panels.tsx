@@ -19,10 +19,10 @@ export function EmptyState({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-[220px] flex-col items-center justify-center gap-2 border border-dashed border-border bg-card px-6 text-center">
-      <p className="text-sm font-semibold text-foreground">{title}</p>
+    <div className="flex min-h-[220px] flex-col items-center justify-center gap-2 rounded-[var(--radius-lg)] border border-dashed border-border bg-card/70 px-6 py-8 text-center">
+      <p className="font-display text-sm font-semibold tracking-tight text-foreground">{title}</p>
       {description ? (
-        <p className="max-w-md text-sm text-muted-foreground">{description}</p>
+        <p className="max-w-md text-sm leading-relaxed text-muted-foreground">{description}</p>
       ) : null}
       {action}
     </div>
@@ -39,10 +39,10 @@ export function ErrorState({
   onRetry?: () => void;
 }) {
   return (
-    <div className="flex min-h-[220px] flex-col items-center justify-center gap-3 border border-border bg-card px-6 text-center">
-      <p className="text-sm font-semibold text-destructive">{title}</p>
+    <div className="flex min-h-[220px] flex-col items-center justify-center gap-3 rounded-[var(--radius-lg)] border border-border bg-card px-6 py-8 text-center shadow-[var(--shadow-sm)]">
+      <p className="font-display text-sm font-semibold tracking-tight text-destructive">{title}</p>
       {description ? (
-        <p className="max-w-md text-sm text-muted-foreground">{description}</p>
+        <p className="max-w-md text-sm leading-relaxed text-muted-foreground">{description}</p>
       ) : null}
       {onRetry ? (
         <Button type="button" variant="outline" onClick={onRetry}>

@@ -61,9 +61,9 @@ export function FieldTabBar() {
   return (
     <nav
       aria-label="Field"
-      className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card/95 pb-[max(0.35rem,env(safe-area-inset-bottom))] backdrop-blur-md"
+      className="fixed inset-x-0 bottom-0 z-20 border-t border-border/80 bg-card/95 pb-[max(0.35rem,env(safe-area-inset-bottom))] shadow-[0_-8px_24px_-16px_rgba(11,58,83,0.18)] backdrop-blur-md"
     >
-      <div className="mx-auto grid max-w-lg grid-cols-5 px-1 pt-1">
+      <div className="mx-auto grid max-w-lg grid-cols-5 gap-0.5 px-1.5 pt-1.5">
         {tabs.map((item) => {
           const active = item.match(pathname);
           const Icon = item.icon;
@@ -74,9 +74,9 @@ export function FieldTabBar() {
               prefetch={item.prefetch}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex min-h-11 flex-col items-center justify-center gap-0.5 rounded-lg px-0.5 text-[10px] font-semibold leading-none",
+                "flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-[var(--radius-sm)] px-0.5 text-[10px] font-semibold leading-none transition-[background-color,color,box-shadow] duration-200",
                 active
-                  ? "bg-primary text-white dark:text-[#071f2d]"
+                  ? "bg-primary text-white shadow-[var(--shadow-sm)] dark:text-[#071f2d]"
                   : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
             >

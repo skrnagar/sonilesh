@@ -22,7 +22,7 @@ export function FieldPageHeader({
       >
         {title}
       </h1>
-      {subtitle ? <p className="text-sm text-muted-foreground">{subtitle}</p> : null}
+      {subtitle ? <p className="text-sm leading-relaxed text-muted-foreground">{subtitle}</p> : null}
     </header>
   );
 }
@@ -52,7 +52,7 @@ export function FieldCard({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-border bg-card p-4 shadow-[var(--shadow-sm)]",
+        "rounded-[var(--radius-lg)] border border-border/90 bg-card p-4 shadow-[var(--shadow-sm)]",
         className,
       )}
     >
@@ -63,7 +63,7 @@ export function FieldCard({
 
 export function FieldEmpty({ text }: { text: string }) {
   return (
-    <p className="rounded-2xl border border-dashed border-border bg-card/60 px-4 py-5 text-sm text-muted-foreground">
+    <p className="rounded-[var(--radius-lg)] border border-dashed border-border bg-card/70 px-4 py-5 text-sm text-muted-foreground">
       {text}
     </p>
   );
@@ -71,7 +71,7 @@ export function FieldEmpty({ text }: { text: string }) {
 
 export function FieldForbidden() {
   return (
-    <p className="rounded-2xl border border-dashed border-border bg-card/60 px-4 py-5 text-sm text-muted-foreground">
+    <p className="rounded-[var(--radius-lg)] border border-dashed border-border bg-card/70 px-4 py-5 text-sm text-muted-foreground">
       You do not have permission for this action.
     </p>
   );
@@ -79,23 +79,23 @@ export function FieldForbidden() {
 
 export function FieldError({ text }: { text: string }) {
   return (
-    <p className="rounded-2xl border border-[var(--danger-soft)] bg-[var(--danger-soft)] px-4 py-3 text-sm text-[var(--danger-ink)]">
+    <p className="rounded-[var(--radius-lg)] border border-[var(--danger-soft)] bg-[var(--danger-soft)] px-4 py-3 text-sm text-[var(--danger-ink)]">
       {text}
     </p>
   );
 }
 
 export const fieldControlClass =
-  "w-full min-h-12 rounded-2xl border border-border bg-background px-3.5 py-3 text-base text-foreground shadow-[var(--shadow-sm)] placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+  "w-full min-h-12 rounded-[var(--radius-md)] border border-border bg-card px-3.5 py-3 text-base text-foreground shadow-[var(--shadow-sm)] placeholder:text-muted-foreground transition-[border-color,box-shadow] duration-200 hover:border-accent/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 export const fieldPrimaryBtnClass =
-  "flex min-h-11 w-full items-center justify-center rounded-2xl bg-[var(--mkt-safety)] px-4 py-3 text-sm font-semibold text-[var(--mkt-safety-ink)] shadow-[var(--shadow-md)] transition-transform active:scale-[0.99] disabled:opacity-60 motion-reduce:transition-none";
+  "flex min-h-12 w-full items-center justify-center rounded-[var(--radius-md)] bg-[var(--mkt-safety)] px-4 py-3 text-sm font-semibold text-[var(--mkt-safety-ink)] shadow-[var(--shadow-md)] transition-[transform,background-color,box-shadow] duration-200 active:scale-[0.99] hover:bg-[var(--mkt-safety-hover)] disabled:opacity-60 motion-reduce:transition-none motion-reduce:active:scale-100";
 
 export const fieldSecondaryBtnClass =
-  "flex min-h-11 w-full items-center justify-center rounded-2xl border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground shadow-[var(--shadow-sm)] transition-colors hover:bg-muted disabled:opacity-60";
+  "flex min-h-12 w-full items-center justify-center rounded-[var(--radius-md)] border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground shadow-[var(--shadow-sm)] transition-colors hover:bg-muted disabled:opacity-60";
 
 export const fieldHeaderBtnClass =
-  "relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-card text-foreground transition-colors hover:bg-muted";
+  "relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--radius-sm)] border border-border/80 bg-card text-foreground shadow-[var(--shadow-sm)] transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 const TONE: Record<string, string> = {
   navy: "bg-[var(--sidebar-active)] text-primary",
@@ -126,13 +126,13 @@ export function FieldActionLink({
       href={href}
       prefetch={prefetch}
       className={cn(
-        "flex min-h-11 items-center gap-3 rounded-2xl border border-border bg-card px-3.5 py-3 shadow-[var(--shadow-sm)] transition-transform active:scale-[0.99] motion-reduce:transition-none",
+        "interactive-lift flex min-h-12 items-center gap-3 rounded-[var(--radius-lg)] border border-border/90 bg-card px-3.5 py-3 shadow-[var(--shadow-sm)] active:scale-[0.99] motion-reduce:active:scale-100",
         wide && "col-span-2",
       )}
     >
       <span
         className={cn(
-          "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
+          "flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-sm)]",
           TONE[tone],
         )}
       >
@@ -162,7 +162,7 @@ export function FieldRow({
     </>
   );
   const className =
-    "block min-h-11 rounded-2xl border border-border bg-card px-3.5 py-3 shadow-[var(--shadow-sm)]";
+    "block min-h-12 rounded-[var(--radius-lg)] border border-border/90 bg-card px-3.5 py-3 shadow-[var(--shadow-sm)] transition-[border-color,box-shadow] duration-200 hover:border-accent/30";
   if (href) {
     return (
       <Link href={href} className={className}>
@@ -201,7 +201,7 @@ export function FieldListSkeleton({ rows = 3 }: { rows?: number }) {
       {Array.from({ length: rows }).map((_, i) => (
         <div
           key={i}
-          className="h-14 animate-pulse rounded-2xl border border-border bg-muted/70"
+          className="h-14 animate-pulse rounded-[var(--radius-lg)] border border-border bg-muted/70"
         />
       ))}
     </div>
@@ -219,12 +219,12 @@ export function FieldSectionSkeleton({ title, rows = 2 }: { title: string; rows?
 export function FieldHomeSkeleton() {
   return (
     <div className="space-y-5" aria-busy="true" aria-label="Loading field home">
-      <div className="h-[5.5rem] animate-pulse rounded-2xl border border-border bg-muted/70" />
+      <div className="h-[5.5rem] animate-pulse rounded-[var(--radius-lg)] border border-border bg-muted/70" />
       <div className="grid grid-cols-2 gap-2.5">
         {Array.from({ length: 6 }).map((_, i) => (
           <div
             key={i}
-            className="h-14 animate-pulse rounded-2xl border border-border bg-muted/70"
+            className="h-14 animate-pulse rounded-[var(--radius-lg)] border border-border bg-muted/70"
           />
         ))}
       </div>
@@ -237,7 +237,7 @@ export function FieldHomeSkeleton() {
 export function FieldPageSkeleton() {
   return (
     <div className="space-y-4" aria-busy="true" aria-label="Loading">
-      <div className="h-12 animate-pulse rounded-xl bg-muted/70" />
+      <div className="h-12 animate-pulse rounded-[var(--radius-md)] bg-muted/70" />
       <FieldListSkeleton rows={4} />
     </div>
   );

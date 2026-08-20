@@ -71,13 +71,15 @@ export default async function AdminDashboardPage() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="app-page-stagger space-y-6">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--mkt-safety)]">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--mkt-safety)]">
           Platform
         </p>
-        <h1 className="mt-1 font-display text-2xl font-semibold">SaaS dashboard</h1>
-        <p className="text-sm text-muted-foreground">
+        <h1 className="mt-1 font-display text-[length:var(--text-app-title)] font-semibold tracking-tight">
+          SaaS dashboard
+        </h1>
+        <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
           Platform-level KPIs. Administrative actions are audited; tenant RLS remains enforced.
         </p>
       </div>
@@ -86,13 +88,13 @@ export default async function AdminDashboardPage() {
           <KpiCard key={card.label} {...card} />
         ))}
       </div>
-      <Card className="rounded-2xl shadow-[var(--shadow-sm)]">
+      <Card>
         <CardHeader>
           <CardTitle>Plan distribution</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <table className="w-full text-left text-sm">
-            <thead className="border-y border-border bg-muted/50 text-xs uppercase tracking-wide text-muted-foreground">
+            <thead className="border-y border-border bg-muted/40 text-[11px] uppercase tracking-wide text-muted-foreground">
               <tr>
                 <th className="px-4 py-2.5 font-medium">Plan</th>
                 <th className="px-4 py-2.5 font-medium">Organizations</th>
@@ -100,9 +102,9 @@ export default async function AdminDashboardPage() {
             </thead>
             <tbody>
               {Object.entries(metrics.planDistribution).map(([plan, count]) => (
-                <tr key={plan} className="border-b border-border last:border-0">
-                  <td className="px-4 py-3">{plan}</td>
-                  <td className="px-4 py-3 font-medium tabular-nums">{count}</td>
+                <tr key={plan} className="border-b border-border/80 last:border-0 hover:bg-muted/25">
+                  <td className="px-4 py-2.5">{plan}</td>
+                  <td className="px-4 py-2.5 font-medium tabular-nums">{count}</td>
                 </tr>
               ))}
             </tbody>
@@ -113,13 +115,13 @@ export default async function AdminDashboardPage() {
         </CardContent>
       </Card>
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="rounded-2xl shadow-[var(--shadow-sm)]">
+        <Card>
           <CardHeader>
             <CardTitle>Feature adoption</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             <table className="w-full text-left text-sm">
-              <thead className="border-y border-border bg-muted/50 text-xs uppercase tracking-wide text-muted-foreground">
+              <thead className="border-y border-border bg-muted/40 text-[11px] uppercase tracking-wide text-muted-foreground">
                 <tr>
                   <th className="px-4 py-2.5 font-medium">Feature</th>
                   <th className="px-4 py-2.5 font-medium">Plans enabled</th>
@@ -129,37 +131,37 @@ export default async function AdminDashboardPage() {
                 {Object.entries(metrics.featureAdoption ?? {})
                   .slice(0, 12)
                   .map(([name, count]) => (
-                    <tr key={name} className="border-b border-border last:border-0">
-                      <td className="px-4 py-2.5">{name}</td>
-                      <td className="px-4 py-2.5 tabular-nums">{count}</td>
+                    <tr key={name} className="border-b border-border/80 last:border-0 hover:bg-muted/25">
+                      <td className="px-4 py-2 font-medium">{name}</td>
+                      <td className="px-4 py-2 tabular-nums">{count}</td>
                     </tr>
                   ))}
               </tbody>
             </table>
           </CardContent>
         </Card>
-        <Card className="rounded-2xl shadow-[var(--shadow-sm)]">
+        <Card>
           <CardHeader>
             <CardTitle>Recent admin activity</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm">
+          <CardContent className="space-y-0 text-sm">
             {(metrics.recentActivity ?? []).map((row) => (
-              <p key={row.id} className="border-b border-border py-1.5 last:border-0">
+              <p key={row.id} className="border-b border-border/80 py-2 last:border-0">
                 <span className="font-medium">{row.action}</span>
                 <span className="ml-2 text-xs text-muted-foreground">{row.entity_type}</span>
               </p>
             ))}
             {!metrics.recentActivity?.length ? (
-              <p className="text-muted-foreground">No audited admin actions yet.</p>
+              <p className="py-2 text-muted-foreground">No audited admin actions yet.</p>
             ) : null}
           </CardContent>
         </Card>
       </div>
-      <Card className="rounded-2xl shadow-[var(--shadow-sm)]">
+      <Card>
         <CardHeader>
           <CardTitle>Usage alerts</CardTitle>
         </CardHeader>
-        <CardContent className="text-sm text-muted-foreground">
+        <CardContent className="text-sm leading-relaxed text-muted-foreground">
           {metrics.suspendedOrganizations || metrics.trialOrganizations ? (
             <p>
               {metrics.trialOrganizations} trial organizations and {metrics.suspendedOrganizations}{" "}

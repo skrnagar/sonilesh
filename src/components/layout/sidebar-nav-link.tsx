@@ -103,16 +103,16 @@ export function SidebarNavLink({
       prefetch={false}
       title={label}
       className={cn(
-        "sidebar-nav-link flex min-h-11 items-center gap-2.5 rounded-xl px-2.5 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "sidebar-nav-link flex min-h-11 items-center gap-2.5 rounded-[var(--radius-sm)] px-2.5 py-2 text-sm transition-[background-color,color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         active
-          ? "bg-primary font-medium text-white dark:text-[#071f2d]"
+          ? "bg-primary font-medium text-white shadow-[var(--shadow-sm)] dark:text-[#071f2d]"
           : "text-sidebar-foreground hover:bg-sidebar-hover hover:text-sidebar-foreground",
       )}
     >
       <span
         className={cn(
-          "sidebar-glyph !flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
-          active ? "bg-white/15 text-white dark:bg-card dark:text-[#071f2d]" : "bg-sidebar-active text-primary",
+          "sidebar-glyph !flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors duration-200",
+          active ? "bg-white/15 text-white dark:bg-card dark:text-[#071f2d]" : "bg-sidebar-active/80 text-primary",
         )}
       >
         {Icon ? <Icon className="h-4 w-4" /> : label.slice(0, 1)}

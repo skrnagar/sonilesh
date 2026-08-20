@@ -46,8 +46,8 @@ export function AuthShell({
               <ThemeToggle compact />
             </div>
           </div>
-          <div className="rounded-xl border border-border bg-card p-7 shadow-[var(--shadow-md)]">
-            <h1 className="text-xl font-semibold tracking-tight text-foreground">{title}</h1>
+          <div className="rounded-[var(--radius-lg)] border border-border/90 bg-card p-7 shadow-[var(--shadow-md)]">
+            <h1 className="font-display text-xl font-semibold tracking-tight text-foreground">{title}</h1>
             <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{subtitle}</p>
             <div className="mt-6">{children}</div>
           </div>

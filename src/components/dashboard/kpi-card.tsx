@@ -78,25 +78,25 @@ export function KpiCard({
   const inner = (
     <>
       <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-2.5">
+        <div className="flex min-w-0 items-center gap-2.5">
           {Icon ? (
             <span
               className={cn(
-                "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
+                "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-sm)]",
                 ACCENT[accent],
               )}
             >
               <Icon className="h-4 w-4" />
             </span>
           ) : null}
-          <p className="text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
             {label}
           </p>
         </div>
         {hint ? (
           <span
             className={cn(
-              "rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
+              "shrink-0 rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
               tone === "good" && "bg-[var(--success-soft)] text-[var(--success-ink)]",
               tone === "watch" && "bg-[var(--warning-soft)] text-[var(--warning-ink)]",
               tone === "critical" && "bg-[var(--danger-soft)] text-[var(--danger-ink)]",
@@ -108,7 +108,7 @@ export function KpiCard({
         ) : null}
       </div>
       <div className="mt-3 flex items-end justify-between gap-3">
-        <p className="font-display text-2xl font-semibold tabular-nums tracking-tight text-foreground sm:text-3xl">
+        <p className="font-display text-[1.65rem] font-semibold tabular-nums tracking-tight text-foreground sm:text-3xl">
           {value}
         </p>
         {spark && spark.length > 1 ? <Sparkline values={spark} /> : null}
@@ -131,7 +131,7 @@ export function KpiCard({
   );
 
   const className =
-    "block min-w-0 rounded-2xl border border-border bg-card p-4 shadow-[var(--shadow-sm)] transition-colors hover:border-accent/40";
+    "interactive-lift block min-w-0 rounded-[var(--radius-lg)] border border-border/90 bg-card p-4 shadow-[var(--shadow-sm)] hover:border-accent/35";
 
   if (href) {
     return (

@@ -23,7 +23,7 @@ export function ThemeToggle({
     <button
       type="button"
       className={cn(
-        "inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-foreground shadow-[var(--shadow-sm)] transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none",
+        "inline-flex h-10 w-10 items-center justify-center rounded-[var(--radius-sm)] border border-border/80 bg-card text-foreground shadow-[var(--shadow-sm)] transition-[background-color,border-color] duration-200 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none",
         compact && "h-11 w-11 min-h-11 min-w-11",
         className,
       )}

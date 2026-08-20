@@ -70,7 +70,7 @@ export function OnboardingShell({
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--mkt-safety)]">
           {step}
         </p>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
+        <h1 className="mt-2 font-display text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
           {title}
         </h1>
         <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
@@ -81,7 +81,7 @@ export function OnboardingShell({
             Progress is saved for this organization. You can leave and resume later.
           </p>
         ) : null}
-        <div className="mt-8 rounded-xl border border-border bg-card p-6 shadow-[var(--shadow-md)] md:p-7">
+        <div className="mt-8 rounded-[var(--radius-lg)] border border-border/90 bg-card p-6 shadow-[var(--shadow-md)] md:p-7">
           {children}
         </div>
       </div>

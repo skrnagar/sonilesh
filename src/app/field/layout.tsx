@@ -34,8 +34,8 @@ export default async function FieldLayout({ children }: { children: React.ReactN
   if (organization.status === "suspended") redirect("/login");
 
   return (
-    <div className="min-h-dvh overflow-x-clip bg-background text-foreground">
-      <header className="sticky top-0 z-20 border-b border-border bg-card/95 pt-[env(safe-area-inset-top)] backdrop-blur-md">
+    <div className="min-h-dvh overflow-x-clip bg-transparent text-foreground">
+      <header className="app-shell-header sticky top-0 z-20 border-b border-border/80 pt-[env(safe-area-inset-top)] shadow-[var(--shadow-header)]">
         <div className="mx-auto flex h-12 max-w-lg items-center justify-between gap-2 px-3">
           <div className="flex min-w-0 items-center gap-2">
             <FieldMark />
@@ -74,7 +74,7 @@ export default async function FieldLayout({ children }: { children: React.ReactN
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-lg px-3 pb-[calc(3.75rem+env(safe-area-inset-bottom))] pt-4">
+      <main className="app-page mx-auto max-w-lg px-3 pb-[calc(4rem+env(safe-area-inset-bottom))] pt-4">
         {children}
       </main>
       <FieldTabBar />

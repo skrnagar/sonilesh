@@ -37,14 +37,16 @@ export default async function DashboardPage({
   );
 
   return (
-    <div className="min-w-0 space-y-6">
+    <div className="app-page-stagger min-w-0 space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--mkt-safety)]">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--mkt-safety)]">
             Operations
           </p>
-          <h1 className="mt-1 font-display text-xl font-semibold text-foreground sm:text-2xl">EHS dashboard</h1>
-          <p className="text-sm text-muted-foreground">
+          <h1 className="mt-1 font-display text-[length:var(--text-app-title)] font-semibold tracking-tight text-foreground">
+            EHS dashboard
+          </h1>
+          <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
             Tenant-scoped control for {organization.name}. Counts respect organization RLS.
           </p>
         </div>
@@ -94,9 +96,9 @@ export default async function DashboardPage({
       />
 
       <div className="grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,0.7fr)]">
-        <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-sm)]">
-          <div className="flex items-center justify-between border-b border-border px-4 py-3">
-            <h3 className="text-sm font-semibold tracking-tight">Recent events</h3>
+        <div className="overflow-hidden rounded-[var(--radius-lg)] border border-border/90 bg-card shadow-[var(--shadow-sm)]">
+          <div className="flex items-center justify-between border-b border-border/80 bg-muted/25 px-4 py-3">
+            <h3 className="font-display text-sm font-semibold tracking-tight">Recent events</h3>
             <Link href="/app/incidents" className="text-xs font-medium text-accent hover:underline">
               View incidents
             </Link>
@@ -140,9 +142,9 @@ export default async function DashboardPage({
           )}
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-sm)]">
-          <div className="flex items-center justify-between border-b border-border px-4 py-3">
-            <h3 className="text-sm font-semibold tracking-tight">Overdue CAPA</h3>
+        <div className="overflow-hidden rounded-[var(--radius-lg)] border border-border/90 bg-card shadow-[var(--shadow-sm)]">
+          <div className="flex items-center justify-between border-b border-border/80 bg-muted/25 px-4 py-3">
+            <h3 className="font-display text-sm font-semibold tracking-tight">Overdue CAPA</h3>
             <Link href="/app/capa" className="text-xs font-medium text-accent hover:underline">
               Open CAPA
             </Link>

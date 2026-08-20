@@ -10,11 +10,11 @@ import {
 
 export function AdminSidebar({ platformRole }: { platformRole: PlatformRole | null }) {
   return (
-    <aside className="flex h-dvh shrink-0 flex-col overflow-hidden border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
+    <aside className="flex h-dvh shrink-0 flex-col overflow-hidden border-r border-sidebar-border bg-sidebar/95 text-sidebar-foreground shadow-[1px_0_0_var(--sidebar-border)] backdrop-blur-sm">
       <div className="sidebar-brand flex items-center border-b border-sidebar-border px-3 py-3.5">
         <BrandLockup chrome size="sm" />
       </div>
-      <p className="sidebar-copy px-4 pb-2 pt-3 text-xs text-sidebar-muted">Admin console</p>
+      <p className="sidebar-copy px-4 pb-2 pt-3 text-xs font-medium text-sidebar-muted">Admin console</p>
       <nav className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-2 py-2" aria-label="Administration">
         {ADMIN_NAV_GROUPS.map((group) => {
           const items = group.items.filter((item) => {

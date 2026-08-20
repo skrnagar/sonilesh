@@ -4,25 +4,25 @@
 
 :root {
   color-scheme: light;
-  --background: #eef2f6;
+  --background: #e8eef4;
   --foreground: #0b3a53;
   --card: #ffffff;
   --card-foreground: #0f172a;
-  --muted: #e4ebf1;
+  --muted: #e2eaf1;
   --muted-foreground: #475569;
-  --border: #d0d9e3;
+  --border: #cfd8e3;
   --primary: #0b3a53;
   --primary-foreground: #ffffff;
   --accent: #0f766e;
   --accent-foreground: #f8fafc;
   --destructive: #b42318;
   --ring: #0f766e;
-  --sidebar: #ffffff;
+  --sidebar: #fbfcfd;
   --sidebar-foreground: #0f172a;
-  --sidebar-muted: #475569;
-  --sidebar-hover: #f1f5f9;
+  --sidebar-muted: #64748b;
+  --sidebar-hover: #f0f5f9;
   --sidebar-active: #e4f0f2;
-  --sidebar-border: #e2e8ef;
+  --sidebar-border: #e4ebf2;
   --success: #0f766e;
   --warning: #b45309;
   --success-soft: #d1fae5;
@@ -44,13 +44,18 @@
   --mkt-surface: #ffffff;
   --mkt-band: #ffffff;
   --mkt-ink-soft: #475569;
-  --radius: 0.75rem;
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.05);
-  --shadow-md: 0 8px 24px -12px rgba(11, 58, 83, 0.18);
-  --shadow-lg: 0 24px 64px -28px rgba(7, 31, 45, 0.45);
-  --shadow-header: 0 1px 0 rgba(215, 222, 231, 0.9), 0 8px 24px -16px rgba(11, 58, 83, 0.18);
-  --sidebar-width: 16rem;
+  --surface-1: #ffffff;
+  --surface-2: #f4f7fa;
+  --surface-3: #e8eef4;
+  --focus-ring: 0 0 0 2px var(--card), 0 0 0 4px color-mix(in srgb, var(--ring) 55%, transparent);
+  --radius: 0.875rem;
+  --shadow-sm: 0 1px 2px rgba(11, 58, 83, 0.04), 0 1px 1px rgba(15, 23, 42, 0.03);
+  --shadow-md: 0 4px 6px -2px rgba(11, 58, 83, 0.04), 0 12px 28px -14px rgba(11, 58, 83, 0.18);
+  --shadow-lg: 0 12px 28px -10px rgba(7, 31, 45, 0.22), 0 32px 64px -28px rgba(7, 31, 45, 0.28);
+  --shadow-header: 0 1px 0 rgba(215, 222, 231, 0.85), 0 10px 28px -18px rgba(11, 58, 83, 0.16);
+  --sidebar-width: 16.5rem;
   --sidebar-collapsed: 4.5rem;
+  --space-page: clamp(0.75rem, 0.5rem + 1vw, 1.5rem);
 }
 
 .dark {
@@ -95,10 +100,14 @@
   --mkt-surface: #15202b;
   --mkt-band: #121c24;
   --mkt-ink-soft: #a8b8c7;
+  --surface-1: #15202b;
+  --surface-2: #1a2832;
+  --surface-3: #0b141c;
+  --focus-ring: 0 0 0 2px var(--card), 0 0 0 4px color-mix(in srgb, var(--ring) 45%, transparent);
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
-  --shadow-md: 0 8px 24px -12px rgba(0, 0, 0, 0.55);
-  --shadow-lg: 0 24px 64px -28px rgba(0, 0, 0, 0.65);
-  --shadow-header: 0 1px 0 rgba(36, 50, 64, 0.9), 0 8px 24px -16px rgba(0, 0, 0, 0.45);
+  --shadow-md: 0 4px 6px -2px rgba(0, 0, 0, 0.35), 0 12px 28px -14px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 12px 28px -10px rgba(0, 0, 0, 0.45), 0 32px 64px -28px rgba(0, 0, 0, 0.6);
+  --shadow-header: 0 1px 0 rgba(36, 50, 64, 0.9), 0 10px 28px -18px rgba(0, 0, 0, 0.45);
 }
 
 @theme inline {
@@ -130,9 +139,12 @@
   --color-chart-5: var(--chart-5);
   --font-sans: var(--font-sans-face), "IBM Plex Sans", "Segoe UI", sans-serif;
   --font-display: var(--font-display-face), "Plus Jakarta Sans", "Segoe UI", sans-serif;
-  --radius-sm: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
   --radius-md: var(--radius);
-  --radius-lg: calc(var(--radius) + 2px);
+  --radius-lg: calc(var(--radius) + 4px);
+  --radius-xl: calc(var(--radius) + 8px);
+  --text-app-title: clamp(1.25rem, 1.1rem + 0.6vw, 1.625rem);
+  --text-app-section: clamp(0.9375rem, 0.9rem + 0.2vw, 1.0625rem);
   --text-mkt-hero: clamp(2.05rem, 1.2rem + 4vw, 3.75rem);
   --text-mkt-page: clamp(2.05rem, 1.4rem + 2vw, 2.9rem);
   --text-mkt-section: clamp(1.75rem, 1.45rem + 1.35vw, 2.35rem);
@@ -154,11 +166,15 @@ html.dark {
 }
 
 body {
-  background: var(--background);
+  background:
+    radial-gradient(ellipse at 0% 0%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 42%),
+    radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--primary) 6%, transparent), transparent 38%),
+    linear-gradient(180deg, var(--surface-2) 0%, var(--background) 28%, var(--background) 100%);
+  background-attachment: fixed;
   color: var(--foreground);
   font-family: var(--font-sans);
-  font-size: 1.0125rem;
-  line-height: 1.6;
+  font-size: 0.9375rem;
+  line-height: 1.55;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -333,16 +349,60 @@ button.bg-primary:hover {
 .surface-elevated {
   background: var(--card);
   box-shadow: var(--shadow-md);
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+}
+
+.surface-panel {
+  background: color-mix(in srgb, var(--card) 92%, var(--muted));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
 }
 
 .app-shell-header {
-  background: color-mix(in srgb, var(--card) 92%, transparent);
-  backdrop-filter: blur(10px);
+  background: color-mix(in srgb, var(--card) 86%, transparent);
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+}
+
+.app-page {
+  animation: app-page-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.app-page-stagger > * {
+  animation: app-page-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.app-page-stagger > *:nth-child(1) { animation-delay: 0ms; }
+.app-page-stagger > *:nth-child(2) { animation-delay: 40ms; }
+.app-page-stagger > *:nth-child(3) { animation-delay: 70ms; }
+.app-page-stagger > *:nth-child(4) { animation-delay: 95ms; }
+.app-page-stagger > *:nth-child(5) { animation-delay: 115ms; }
+.app-page-stagger > *:nth-child(6) { animation-delay: 130ms; }
+
+@keyframes app-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.interactive-lift {
+  transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.interactive-lift:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
 }
 
 .workspace-shell aside {
   width: var(--sidebar-width);
-  transition: width 0.2s ease;
+  transition: width 0.22s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .workspace-shell.is-collapsed aside {
@@ -416,6 +476,15 @@ button.bg-primary:hover {
 @media (prefers-reduced-motion: reduce) {
   .workspace-shell aside {
     transition: none;
+  }
+
+  .app-page,
+  .app-page-stagger > *,
+  .interactive-lift,
+  .interactive-lift:hover {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
   }
 }
 

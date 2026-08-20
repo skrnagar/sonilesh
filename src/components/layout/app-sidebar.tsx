@@ -35,7 +35,7 @@ export function AppSidebar({
   ] as const;
 
   return (
-    <aside className="flex h-dvh shrink-0 flex-col overflow-hidden border-r border-sidebar-border bg-sidebar text-sidebar-foreground">
+    <aside className="flex h-dvh shrink-0 flex-col overflow-hidden border-r border-sidebar-border bg-sidebar/95 text-sidebar-foreground shadow-[1px_0_0_var(--sidebar-border)] backdrop-blur-sm">
       <div className="sidebar-brand flex items-center border-b border-sidebar-border px-3 py-3.5">
         <BrandLockup chrome size="sm" />
       </div>
@@ -47,7 +47,7 @@ export function AppSidebar({
           const items = visible.filter((m) => m.group === group.key);
           if (!items.length) return null;
           return (
-            <div key={group.key} className="mb-3">
+            <div key={group.key} className="mb-3.5">
               <p className="sidebar-copy px-2.5 pb-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-sidebar-muted">
                 {group.label}
               </p>
@@ -66,7 +66,7 @@ export function AppSidebar({
         <Link
           href="/field"
           title="Open Field app"
-          className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-[var(--mkt-safety)] px-3 py-2.5 text-sm font-semibold text-[var(--mkt-safety-ink)] transition-colors hover:bg-[var(--mkt-safety-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="flex min-h-11 items-center justify-center gap-2 rounded-[var(--radius-sm)] bg-[var(--mkt-safety)] px-3 py-2.5 text-sm font-semibold text-[var(--mkt-safety-ink)] shadow-[var(--shadow-sm)] transition-[background-color,box-shadow,transform] duration-200 hover:bg-[var(--mkt-safety-hover)] hover:shadow-[var(--shadow-md)] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none motion-reduce:active:scale-100"
         >
           <Smartphone className="h-4 w-4 shrink-0" />
           <span className="sidebar-copy">Open Field app</span>

@@ -108,10 +108,13 @@ export function WorkspaceShell({
     .map((p) => p[0]?.toUpperCase())
     .join("");
 
+  const headerBtn =
+    "inline-flex items-center justify-center rounded-[var(--radius-sm)] border border-border/80 bg-card/90 text-foreground shadow-[var(--shadow-sm)] transition-[background-color,border-color,box-shadow] duration-200 hover:bg-muted hover:border-border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
   return (
     <div
       className={cn(
-        "workspace-shell flex h-dvh overflow-hidden bg-background text-foreground",
+        "workspace-shell flex h-dvh overflow-hidden bg-transparent text-foreground",
         collapsed && "is-collapsed",
         mobileNavOpen && "is-mobile-nav-open",
       )}
@@ -120,7 +123,7 @@ export function WorkspaceShell({
       {mobileNavOpen ? (
         <button
           type="button"
-          className="fixed inset-0 z-30 bg-black/40 lg:hidden"
+          className="fixed inset-0 z-30 bg-[var(--mkt-hero)]/45 backdrop-blur-[2px] lg:hidden"
           aria-label="Close navigation"
           onClick={() => setMobileNavOpen(false)}
         />
@@ -128,11 +131,11 @@ export function WorkspaceShell({
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <header
           ref={headerRef}
-          className="app-shell-header sticky top-0 z-20 flex h-14 items-center gap-2 border-b border-border px-3 shadow-[var(--shadow-header)] sm:gap-3 sm:px-4 md:h-[4.25rem] md:px-5"
+          className="app-shell-header sticky top-0 z-20 flex h-14 items-center gap-2 border-b border-border/80 px-3 shadow-[var(--shadow-header)] sm:gap-3 sm:px-4 md:h-[4.25rem] md:px-5"
         >
           <button
             type="button"
-            className="inline-flex h-11 w-11 min-h-11 min-w-11 items-center justify-center rounded-xl border border-border bg-card text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:hidden"
+            className={cn(headerBtn, "h-11 w-11 min-h-11 min-w-11 lg:hidden")}
             aria-label={mobileNavOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileNavOpen}
             onClick={() => setMobileNavOpen((v) => !v)}
@@ -141,7 +144,7 @@ export function WorkspaceShell({
           </button>
           <button
             type="button"
-            className="hidden h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-foreground hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring lg:inline-flex"
+            className={cn(headerBtn, "hidden h-10 w-10 lg:inline-flex")}
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             aria-expanded={!collapsed}
             onClick={toggleCollapsed}
@@ -170,9 +173,9 @@ export function WorkspaceShell({
               name="q"
               type="search"
               placeholder="Search records…"
-              className="h-10 w-full rounded-xl border border-border bg-card pl-9 pr-12 text-sm outline-none ring-offset-background placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
+              className="h-10 w-full rounded-[var(--radius-sm)] border border-border/80 bg-card/90 pl-9 pr-12 text-sm shadow-[var(--shadow-sm)] outline-none ring-offset-background placeholder:text-muted-foreground transition-[border-color,box-shadow] duration-200 hover:border-accent/35 focus-visible:border-accent/50 focus-visible:ring-2 focus-visible:ring-ring"
             />
-            <kbd className="pointer-events-none absolute right-2.5 top-1/2 hidden -translate-y-1/2 rounded-md border border-border bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline">
+            <kbd className="pointer-events-none absolute right-2.5 top-1/2 hidden -translate-y-1/2 rounded-md border border-border bg-muted/80 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline">
               ⌘K
             </kbd>
           </form>
@@ -180,7 +183,7 @@ export function WorkspaceShell({
             <div className="relative">
               <button
                 type="button"
-                className="relative inline-flex h-11 w-11 min-h-11 min-w-11 items-center justify-center rounded-xl border border-border bg-card hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className={cn(headerBtn, "relative h-11 w-11 min-h-11 min-w-11")}
                 aria-label={
                   badgeCount > 0
                     ? `Notifications, ${badgeCount} unread`
@@ -194,7 +197,7 @@ export function WorkspaceShell({
               >
                 <Bell className="h-4 w-4" />
                 {badgeCount > 0 ? (
-                  <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-destructive" />
+                  <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-destructive ring-2 ring-card" />
                 ) : null}
               </button>
               {notesOpen ? (
@@ -209,7 +212,7 @@ export function WorkspaceShell({
             <div className="relative">
               <button
                 type="button"
-                className="inline-flex h-11 min-h-11 items-center gap-2 rounded-xl border border-border bg-card pl-1.5 pr-2.5 text-sm hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className={cn(headerBtn, "h-11 min-h-11 gap-2 pl-1.5 pr-2.5 text-sm")}
                 aria-expanded={userOpen}
                 onClick={() => {
                   setUserOpen((v) => !v);
@@ -224,7 +227,7 @@ export function WorkspaceShell({
                 </span>
               </button>
               {userOpen ? (
-                <div className="absolute right-0 top-[calc(100%+8px)] z-30 w-56 max-w-[calc(100vw-1.5rem)] rounded-xl border border-border bg-card p-2 shadow-[var(--shadow-lg)]">
+                <div className="absolute right-0 top-[calc(100%+8px)] z-30 w-56 max-w-[calc(100vw-1.5rem)] rounded-[var(--radius-md)] border border-border bg-card p-2 shadow-[var(--shadow-lg)]">
                   <p className="truncate px-2 py-2 text-xs text-muted-foreground">{userLabel}</p>
                   <div className="px-1 pb-1">{signOut}</div>
                 </div>
@@ -232,8 +235,10 @@ export function WorkspaceShell({
             </div>
           </div>
         </header>
-        <main className="min-h-0 min-w-0 flex-1 overflow-auto p-3 sm:p-4 md:p-6">
-          {children}
+        <main className="min-h-0 min-w-0 flex-1 overflow-auto p-[var(--space-page)] sm:p-4 md:p-6">
+          <div key={pathname} className="app-page min-h-0">
+            {children}
+          </div>
         </main>
       </div>
     </div>
