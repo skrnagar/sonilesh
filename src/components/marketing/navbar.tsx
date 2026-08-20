@@ -26,6 +26,7 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSection, setMobileSection] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
+  const [shortcutLabel, setShortcutLabel] = useState("Ctrl+K");
   const menuId = useId();
   const headerRef = useRef<HTMLElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
@@ -68,6 +69,11 @@ export function Navbar() {
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
+    const apple = /Mac|iPhone|iPad|iPod/i.test(navigator.platform || navigator.userAgent);
+    setShortcutLabel(apple ? "⌘K" : "Ctrl+K");
   }, []);
 
   useEffect(() => {
@@ -367,7 +373,7 @@ export function Navbar() {
             <Search className="h-4 w-4" aria-hidden />
             <span>Search</span>
             <kbd className="pointer-events-none hidden rounded border border-border bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground xl:inline">
-              ⌘K
+              {shortcutLabel}
             </kbd>
           </button>
           <Button asChild variant="ghost" className="hidden min-h-11 text-foreground lg:inline-flex">

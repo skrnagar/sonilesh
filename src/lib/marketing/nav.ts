@@ -72,9 +72,12 @@ export const primaryNav: PrimaryNavItem[] = [
         links: [
           { label: "Manufacturing", href: "/solutions/manufacturing", description: "Plants, shifts, Factories Act discipline", icon: "Factory" },
           { label: "Construction & EPC", href: "/solutions/construction-epc", description: "Packages, contractors, civil risk", icon: "HardHat" },
+          { label: "Power & energy", href: "/solutions/power-energy", description: "Generation, T&D, substations", icon: "Zap" },
           { label: "Renewable energy", href: "/solutions/renewable-energy", description: "Solar, wind, O&M", icon: "Leaf" },
           { label: "Oil, gas & chemicals", href: "/solutions/oil-gas-chemicals", description: "Permits, SIMOPS, turnarounds", icon: "Flame" },
           { label: "Logistics & warehousing", href: "/solutions/logistics-warehousing", description: "Yards, MHE, 3PL gates", icon: "Truck" },
+          { label: "Infrastructure", href: "/solutions/infrastructure", description: "Corridors, campuses, capital programs", icon: "Building2" },
+          { label: "Mining", href: "/solutions/mining", description: "Pit to plant critical risk", icon: "Mountain" },
         ],
       },
       {
@@ -143,8 +146,11 @@ export const footerColumns: { title: string; links: NavLink[] }[] = [
     links: [
       { label: "Manufacturing", href: "/solutions/manufacturing" },
       { label: "Construction & EPC", href: "/solutions/construction-epc" },
+      { label: "Power & energy", href: "/solutions/power-energy" },
       { label: "Renewables", href: "/solutions/renewable-energy" },
       { label: "Oil & gas", href: "/solutions/oil-gas-chemicals" },
+      { label: "Infrastructure", href: "/solutions/infrastructure" },
+      { label: "Mining", href: "/solutions/mining" },
       { label: "All industries", href: "/solutions" },
     ],
   },

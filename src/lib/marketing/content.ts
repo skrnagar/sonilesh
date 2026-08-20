@@ -237,9 +237,12 @@ export type IndustrySlug = (typeof industries)[number]["slug"];
 export const canonicalIndustrySlugs = [
   "manufacturing",
   "construction-epc",
+  "power-energy",
   "renewable-energy",
   "oil-gas-chemicals",
   "logistics-warehousing",
+  "infrastructure",
+  "mining",
 ] as const;
 
 export const modules = [

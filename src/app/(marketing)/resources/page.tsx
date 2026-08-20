@@ -3,7 +3,6 @@ import { PageHero } from "@/components/marketing/page-hero";
 import { Container } from "@/components/marketing/container";
 import { CTASection } from "@/components/marketing/cta-section";
 import { ResourceCard } from "@/components/marketing/resource-card";
-import { listResourcePosts } from "@/lib/marketing/mdx";
 import { glossaryEntries } from "@/lib/marketing/glossary";
 import { resourceCategories, resourcesForCategory } from "@/lib/marketing/content";
 import { getSeoEntry, metadataForPath } from "@/lib/marketing/seo";
@@ -16,7 +15,6 @@ function categoryAnchor(category: string) {
 
 export default function ResourcesPage() {
   const seo = getSeoEntry("/resources");
-  const posts = listResourcePosts();
 
   return (
     <>
@@ -62,31 +60,6 @@ export default function ResourcesPage() {
               </div>
             );
           })}
-
-          {posts.length ? (
-            <div>
-              <h2 className="font-display text-lg font-semibold">Published articles</h2>
-              <ul className="mt-4 grid gap-4 md:grid-cols-2">
-                {posts.map((post) => (
-                  <li key={post.slug} className="rounded-xl border border-border bg-card p-5">
-                    <p className="text-xs font-semibold uppercase tracking-wide text-[var(--mkt-safety)]">
-                      {post.category}
-                    </p>
-                    <Link
-                      href={`/resources/${post.slug}`}
-                      className="mt-2 block font-display text-xl font-semibold text-primary"
-                    >
-                      {post.title}
-                    </Link>
-                    <p className="mt-2 text-sm text-muted-foreground">{post.description}</p>
-                    <p className="mt-3 text-xs text-muted-foreground">
-                      {post.readingMinutes} min · {post.author}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
 
           <div id="glossary-terms" className="scroll-mt-28">
             <h2 className="font-display text-lg font-semibold">Glossary terms</h2>
