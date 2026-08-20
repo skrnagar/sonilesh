@@ -1,7 +1,7 @@
-﻿import { requirePlatformAdmin } from "@/lib/auth/session";
+﻿import { requirePlatformPermission } from "@/lib/auth/session";
 
 export default async function AdminBillingPage() {
-  const { supabase } = await requirePlatformAdmin();
+  const { supabase } = await requirePlatformPermission("saas.billing.view");
   const { data: setting } = await supabase
     .from("platform_settings")
     .select("*")

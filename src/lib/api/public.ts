@@ -94,6 +94,10 @@ export function parseListQuery(url: URL): ListQuery {
     const value = url.searchParams.get(key);
     if (value) filters[key] = value;
   }
+  if (filters.q) {
+    filters.q = escapePostgrestFilter(filters.q);
+    if (!filters.q) delete filters.q;
+  }
   return { page, pageSize, sort, order, filters };
 }
 
@@ -177,4 +181,9 @@ export function crossTenantResponse() {
 
 export function forbiddenResponse() {
   return { error: "forbidden", message: "Insufficient scope or permission" };
+}
+
+/** Strip PostgREST `.or()` metacharacters so search terms cannot inject extra filters. */
+export function escapePostgrestFilter(value: string) {
+  return value.replace(/[,()\\%_*]/g, " ").replace(/\s+/g, " ").trim().slice(0, 100);
 }

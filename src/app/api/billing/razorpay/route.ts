@@ -17,8 +17,9 @@ export async function POST(request: Request) {
   const signature = request.headers.get("x-razorpay-signature") || "";
 
   const { createHmac } = await import("node:crypto");
+  const { timingSafeEqualHex } = await import("@/lib/api/public");
   const expected = createHmac("sha256", secret).update(raw).digest("hex");
-  if (expected !== signature) {
+  if (!timingSafeEqualHex(expected, signature)) {
     return jsonError("AUTH", "Invalid signature", 401, request);
   }
 

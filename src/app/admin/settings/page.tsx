@@ -2,10 +2,10 @@
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { requirePlatformAdmin } from "@/lib/auth/session";
+import { requirePlatformPermission } from "@/lib/auth/session";
 
 export default async function AdminSettingsPage() {
-  const { supabase } = await requirePlatformAdmin();
+  const { supabase } = await requirePlatformPermission("saas.organizations.update");
   const { data: settings } = await supabase.from("platform_settings").select("*").order("key");
   return (
     <div className="space-y-4">

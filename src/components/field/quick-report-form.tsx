@@ -16,10 +16,11 @@ type Mode = "incident" | "near-miss" | "lmra";
 
 type Props = {
   mode: Mode;
+  type?: string;
   action: (formData: FormData) => Promise<{ ok: boolean; error?: string; id?: string }>;
 };
 
-export function QuickCaptureForm({ mode, action }: Props) {
+export function QuickCaptureForm({ mode, type, action }: Props) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -140,10 +141,11 @@ export function QuickCaptureForm({ mode, action }: Props) {
             <span className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               Category
             </span>
-            <select name="category" className={fieldControlClass}>
+            <select name="category" defaultValue={type || "unsafe_condition"} className={fieldControlClass}>
               <option value="unsafe_condition">Unsafe condition</option>
               <option value="unsafe_act">Unsafe act</option>
               <option value="hazard">LMRA / other</option>
+              <option value="safety_observation">Safety observation</option>
             </select>
           </label>
           <label className="block space-y-1.5">
@@ -177,6 +179,13 @@ export function QuickCaptureForm({ mode, action }: Props) {
       ) : null}
 
       <input type="hidden" name="occurred_at" value={new Date().toISOString()} />
+      {type ? <input type="hidden" name="type" value={type} /> : null}
+      {coords.includes(",") ? (
+        <>
+          <input type="hidden" name="latitude" value={coords.split(",")[0]} />
+          <input type="hidden" name="longitude" value={coords.split(",")[1]} />
+        </>
+      ) : null}
 
       {error ? <FieldError text={error} /> : null}
 

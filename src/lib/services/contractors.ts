@@ -784,6 +784,24 @@ export async function acceptContractorInvite(
     .maybeSingle();
   if (!company) throw new Error("Contractor company not found in this organization");
 
+  const { data: existingMember } = await admin
+    .from("organization_members")
+    .select("id, contractor_company_id")
+    .eq("organization_id", invite.organization_id)
+    .eq("user_id", input.userId)
+    .maybeSingle();
+  if (existingMember && !existingMember.contractor_company_id) {
+    throw new Error(
+      "This account is already an internal member. Ask an administrator to link a contractor company.",
+    );
+  }
+  if (
+    existingMember?.contractor_company_id &&
+    existingMember.contractor_company_id !== company.id
+  ) {
+    throw new Error("This account is already linked to a different contractor company.");
+  }
+
   const { data: member, error: memberErr } = await admin
     .from("organization_members")
     .upsert(
@@ -1477,6 +1495,20 @@ export async function uploadContractorDocument(
 ) {
   await requireContractorFeature(supabase, input.organizationId);
   await requirePermission(supabase, input.organizationId, input.userId, "contractor_document.manage");
+  if (!input.file) throw new Error("A file is required");
+
+  const { data: member } = await supabase
+    .from("organization_members")
+    .select("contractor_company_id")
+    .eq("organization_id", input.organizationId)
+    .eq("user_id", input.userId)
+    .eq("status", "active")
+    .is("deleted_at", null)
+    .maybeSingle();
+  if (member?.contractor_company_id && member.contractor_company_id !== input.companyId) {
+    throw new Error("You can only upload documents for your contractor company");
+  }
+
   const company = await getCompanyOrThrow(supabase, input.organizationId, input.companyId);
 
   let storagePath: string | null = null;

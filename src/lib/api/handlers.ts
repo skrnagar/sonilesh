@@ -1,8 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { hasFeature } from "@/lib/services/entitlements";
 import { userHasPermission } from "@/lib/services/rbac";
+import { ORG_COOKIE } from "@/lib/auth/workspace-cookies";
 import {
   checkApiRateLimit,
   forbiddenResponse,
@@ -70,16 +72,29 @@ export async function authenticatePublicApi(request: Request): Promise<
   if (!user) {
     return { ok: false, status: 401, body: { error: "unauthorized", message: "Sign in or provide an API key" } };
   }
-  const { data: membership } = await supabase
+  const { data: memberships } = await supabase
     .from("organization_members")
     .select("organization_id")
     .eq("user_id", user.id)
     .eq("status", "active")
-    .is("deleted_at", null)
-    .limit(1)
-    .maybeSingle();
-  if (!membership) {
+    .is("deleted_at", null);
+  if (!memberships?.length) {
     return { ok: false, status: 403, body: forbiddenResponse() };
+  }
+  const jar = await cookies();
+  const requestedOrg =
+    jar.get(ORG_COOKIE)?.value ||
+    request.headers.get("x-ehs-organization-id") ||
+    null;
+  const membership =
+    memberships.find((row) => row.organization_id === requestedOrg) ??
+    (memberships.length === 1 ? memberships[0] : null);
+  if (!membership) {
+    return {
+      ok: false,
+      status: 400,
+      body: { error: "organization_required", message: "Select an organization for session API access" },
+    };
   }
   const entitled = await hasFeature(supabase, membership.organization_id, "public_api");
   if (!entitled) {
@@ -98,6 +113,25 @@ export async function authenticatePublicApi(request: Request): Promise<
     },
     supabase,
   };
+}
+
+const SESSION_PERM_BY_SCOPE: Record<string, string> = {
+  "incidents.read": "incidents.view",
+  "capa.read": "capa.view",
+  "sites.read": "sites.view",
+  "permits.read": "permits.view",
+};
+
+async function assertSessionResourcePermission(
+  supabase: SupabaseClient,
+  auth: PublicApiAuth,
+  tenantId: string,
+  scope: string,
+) {
+  if (!auth.userId) return true;
+  const perm = SESSION_PERM_BY_SCOPE[scope];
+  if (!perm) return true;
+  return userHasPermission(supabase, tenantId, auth.userId, perm);
 }
 
 export async function handleResourceList(request: Request, resource: string) {
@@ -122,17 +156,13 @@ export async function handleResourceList(request: Request, resource: string) {
   }
 
   if (auth.auth.userId) {
-    const permByScope: Record<string, string> = {
-      "incidents.read": "incidents.view",
-      "capa.read": "capa.view",
-      "sites.read": "sites.view",
-      "permits.read": "permits.view",
-    };
-    const perm = permByScope[spec.scope];
-    if (perm) {
-      const allowed = await userHasPermission(auth.supabase, tenantId, auth.auth.userId, perm);
-      if (!allowed) return Response.json(forbiddenResponse(), { status: 403 });
-    }
+    const allowed = await assertSessionResourcePermission(
+      auth.supabase,
+      auth.auth,
+      tenantId,
+      spec.scope,
+    );
+    if (!allowed) return Response.json(forbiddenResponse(), { status: 403 });
   }
 
   const query = parseListQuery(url);
@@ -147,7 +177,8 @@ export async function handleResourceList(request: Request, resource: string) {
   if (query.filters.status) q = q.eq("status", query.filters.status);
   if (query.filters.site_id && spec.siteColumn) q = q.eq(spec.siteColumn, query.filters.site_id);
   if (query.filters.q && resource === "incidents") {
-    q = q.or(`title.ilike.%${query.filters.q}%,event_number.ilike.%${query.filters.q}%`);
+    const term = query.filters.q;
+    q = q.or(`title.ilike."%${term}%",event_number.ilike."%${term}%"`);
   }
 
   const { data, error, count } = await q;
@@ -169,6 +200,15 @@ export async function handleResourceGet(request: Request, resource: string, id: 
     return Response.json(forbiddenResponse(), { status: 403 });
   }
   const tenantId = resolveTenantId(auth.auth, new URL(request.url).searchParams.get("organization_id"));
+  if (auth.auth.userId) {
+    const allowed = await assertSessionResourcePermission(
+      auth.supabase,
+      auth.auth,
+      tenantId,
+      spec.scope,
+    );
+    if (!allowed) return Response.json(forbiddenResponse(), { status: 403 });
+  }
   const { data, error } = await auth.supabase
     .from(spec.table)
     .select(spec.select)
@@ -195,13 +235,17 @@ export async function handleInboundWebhook(request: Request, connector: string) 
   }
 
   const admin = createAdminClient();
-  const { data: connection } = await admin
+  const { data: connections } = await admin
     .from("integration_connections")
     .select("id, organization_id, integrations:integration_id(code)")
     .eq("organization_id", orgFromHeader)
-    .is("deleted_at", null)
-    .limit(1)
-    .maybeSingle();
+    .is("deleted_at", null);
+  const connection =
+    (connections ?? []).find((row) => {
+      const integ = row.integrations as { code?: string } | { code?: string }[] | null;
+      const code = Array.isArray(integ) ? integ[0]?.code : integ?.code;
+      return code === connector;
+    }) ?? null;
 
   const { data: cred } = connection
     ? await admin

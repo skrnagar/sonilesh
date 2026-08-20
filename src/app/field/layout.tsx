@@ -5,6 +5,8 @@ import { Bell, User } from "lucide-react";
 import { FieldTabBar } from "@/components/field/field-tab-bar";
 import { FieldMark, fieldHeaderBtnClass } from "@/components/field/field-ui";
 import { requireOrgContext } from "@/lib/auth/org-context";
+import { getRoleCodesForUser } from "@/lib/auth/member-roles";
+import { isContractorPortalOnly } from "@/lib/auth/personas";
 import { countFieldUnread } from "@/lib/field/unread";
 
 async function FieldUnreadBell() {
@@ -29,9 +31,14 @@ async function FieldUnreadBell() {
 }
 
 export default async function FieldLayout({ children }: { children: React.ReactNode }) {
-  const { organization } = await requireOrgContext();
+  const { user, profile, organization, supabase } = await requireOrgContext();
+  const { roleCodes } = await getRoleCodesForUser(supabase, user.id, organization.id);
 
-  if (organization.status === "suspended") redirect("/login");
+  if (isContractorPortalOnly(roleCodes) && !profile?.is_platform_admin) {
+    redirect("/contractor");
+  }
+
+  if (organization.status === "suspended") redirect("/field/login");
 
   return (
     <div className="min-h-dvh overflow-x-clip bg-background text-foreground">

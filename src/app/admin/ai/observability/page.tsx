@@ -1,10 +1,10 @@
-import { requirePlatformAdmin } from "@/lib/auth/session";
+import { requirePlatformPermission } from "@/lib/auth/session";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { listProviders } from "@/lib/ai/models/router";
 import { isAiConfigured } from "@/lib/ai/core/config";
 
 export default async function AiObservabilityPage() {
-  await requirePlatformAdmin();
+  await requirePlatformPermission("saas.ai.observability");
   let usage: Array<{ organization_id: string; token_in: number; token_out: number; created_at: string; model_id: string | null }> = [];
   let tools: Array<{ tool_name: string; status: string; created_at: string; organization_id: string }> = [];
   try {

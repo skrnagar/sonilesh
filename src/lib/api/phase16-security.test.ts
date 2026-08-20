@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   crossTenantResponse,
+  escapePostgrestFilter,
   hasScope,
   parseListQuery,
   resolveTenantId,
@@ -41,6 +42,15 @@ describe("API IDOR", () => {
     const q = parseListQuery(new URL("https://example.test/api/v1/incidents?pageSize=999&sort=drop_table"));
     expect(q.pageSize).toBe(100);
     expect(q.sort).toBe("created_at");
+  });
+
+  it("strips PostgREST filter injection from search q", () => {
+    const q = parseListQuery(
+      new URL("https://example.test/api/v1/incidents?q=foo,status.eq.open"),
+    );
+    expect(q.filters.q).toBe("foo status.eq.open");
+    expect(q.filters.q).not.toContain(",");
+    expect(escapePostgrestFilter("a,b(c)%_")).toBe("a b c");
   });
 });
 

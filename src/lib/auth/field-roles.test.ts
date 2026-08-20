@@ -8,6 +8,13 @@ describe("field role gating", () => {
     expect(canFieldAction(role, "my_permits")).toBe(true);
   });
 
+  it("maps contractor_contact to the limited contractor field persona", () => {
+    const role = fieldRoleFromCodes(["contractor_contact"]);
+    expect(role).toBe("contractor");
+    expect(canFieldAction(role, "report_incident")).toBe(false);
+    expect(canFieldAction(role, "report_hazard")).toBe(true);
+  });
+
   it("gives supervisors approve_permit", () => {
     expect(canFieldAction(fieldRoleFromCodes(["supervisor"]), "approve_permit")).toBe(true);
   });

@@ -36,6 +36,7 @@ export function landingPathForSession(input: {
 
   if (input.portal === "field") {
     if (input.isPlatformAdmin && !input.roleCodes.length) return null;
+    if (isContractorPortalOnly(input.roleCodes)) return "/contractor";
     return "/field/home";
   }
 

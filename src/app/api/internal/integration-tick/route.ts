@@ -2,13 +2,11 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { processImportJob } from "@/lib/import/service";
 import { nextRetryAt, shouldRetry } from "@/lib/integrations/webhooks";
+import { authorizeCron } from "@/lib/http/cron-auth";
 
 export async function POST(request: Request) {
-  const secret = process.env.CRON_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const header = request.headers.get("authorization");
-  if (!secret || header !== `Bearer ${secret}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const denied = authorizeCron(request);
+  if (denied) return denied;
 
   const supabase = createAdminClient();
   const { data: imports } = await supabase

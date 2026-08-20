@@ -96,7 +96,7 @@ export function fieldRoleFromCodes(roleCodes: string[]): FieldRole {
   if (set.has("ehs_manager")) return "ehs_manager";
   if (set.has("ehs_officer")) return "ehs_officer";
   if (set.has("supervisor")) return "supervisor";
-  if (set.has("contractor")) return "contractor";
+  if (set.has("contractor") || set.has("contractor_contact")) return "contractor";
   return "employee";
 }
 

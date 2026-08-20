@@ -23,6 +23,7 @@ import {
   fieldControlClass,
 } from "@/components/field/field-ui";
 import { hasFeature } from "@/lib/services/entitlements";
+import { isFieldPermitParty } from "@/lib/field/permits";
 
 export default async function FieldPermitDetailPage({
   params,
@@ -38,7 +39,7 @@ export default async function FieldPermitDetailPage({
     resolveFieldRole(supabase, membershipId),
     supabase
       .from("permits")
-      .select("id")
+      .select("id, requester_id, issuer_id, work_leader_id, status")
       .eq("organization_id", organization.id)
       .eq("permit_number", decoded)
       .is("deleted_at", null)
@@ -51,6 +52,17 @@ export default async function FieldPermitDetailPage({
 
   const row = rowRes.data;
   if (!row) notFound();
+
+  const { data: workerRow } = await supabase
+    .from("permit_workers")
+    .select("id")
+    .eq("permit_id", row.id)
+    .eq("organization_id", organization.id)
+    .eq("user_id", user.id)
+    .maybeSingle();
+  if (!canApprove && !isFieldPermitParty(row, user.id) && !workerRow) {
+    return <FieldForbidden />;
+  }
 
   const bundle = await getPermitBundle(supabase, organization.id, row.id);
   if (!bundle) notFound();
@@ -159,7 +171,8 @@ export default async function FieldPermitDetailPage({
         </FieldSubmitForm>
       ) : null}
 
-      {permit.status === "active" ? (
+      {permit.status === "active" &&
+      (isFieldPermitParty(permit, user.id) || workerRow) ? (
         <FieldSubmitForm action={acknowledgeFieldPermitAction} submitLabel="Acknowledge">
           <input type="hidden" name="permitId" value={permit.id} />
           <input

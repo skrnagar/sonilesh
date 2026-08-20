@@ -348,6 +348,12 @@ export async function assignMemberRoleScope(
   }
 
   const scope = input.scope === "self" ? "own" : input.scope;
+  const { error: clearError } = await supabase
+    .from("member_roles")
+    .delete()
+    .eq("member_id", input.memberId);
+  if (clearError) throw new Error(clearError.message);
+
   const { data, error } = await supabase
     .from("member_roles")
     .insert({

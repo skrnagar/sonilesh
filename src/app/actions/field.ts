@@ -3,6 +3,9 @@
 import { revalidatePath } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireOrgContext } from "@/lib/auth/org-context";
+import { canFieldAction, type FieldAction } from "@/lib/auth/field-roles";
+import { resolveFieldRole } from "@/lib/field/resolve-role";
+import { userCanAccessFieldPermit } from "@/lib/field/permits";
 import { createEhsEvent } from "@/lib/services/events";
 import { transitionCapa, type CapaStatus } from "@/lib/services/capa";
 import { recordResponse } from "@/lib/services/checklists";
@@ -42,12 +45,13 @@ async function persistMedia(
     contentType: file.type || undefined,
     upsert: false,
   });
+  if (error) throw new Error(error.message);
   return {
-    storagePath: error ? `unuploaded/${storagePath}` : storagePath,
+    storagePath,
     fileName: safeName,
     mimeType: file.type || "application/octet-stream",
     fileSize: file.size,
-    uploaded: !error,
+    uploaded: true,
   };
 }
 
@@ -88,9 +92,29 @@ export async function submitFieldReportAction(formData: FormData): Promise<Actio
       return { ok: false, error: `Unsupported report type: ${eventTypeCode}` };
     }
 
+    const role = await resolveFieldRole();
+    const fieldAction: FieldAction =
+      eventTypeCode === "incident"
+        ? "report_incident"
+        : eventTypeCode === "near_miss"
+          ? "report_near_miss"
+          : "report_hazard";
+    if (!canFieldAction(role, fieldAction)) {
+      return { ok: false, error: "You cannot submit this report type from Field" };
+    }
+
     const gps = String(formData.get("gps") || formData.get("location_text") || "");
-    const latRaw = String(formData.get("latitude") || "");
-    const lngRaw = String(formData.get("longitude") || "");
+    let latRaw = String(formData.get("latitude") || "");
+    let lngRaw = String(formData.get("longitude") || "");
+    if (!latRaw || !lngRaw) {
+      const match = gps.match(/(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)/);
+      if (match) {
+        latRaw = match[1];
+        lngRaw = match[2];
+      }
+    }
+    const latitude = latRaw ? Number(latRaw) : null;
+    const longitude = lngRaw ? Number(lngRaw) : null;
     const immediate = String(formData.get("immediate_action") || "");
     const people = String(formData.get("people") || "");
 
@@ -113,8 +137,8 @@ export async function submitFieldReportAction(formData: FormData): Promise<Actio
       siteId: siteId || undefined,
       projectId: projectId || undefined,
       source: "field",
-      latitude: latRaw ? Number(latRaw) : null,
-      longitude: lngRaw ? Number(lngRaw) : null,
+      latitude: latitude != null && Number.isFinite(latitude) ? latitude : null,
+      longitude: longitude != null && Number.isFinite(longitude) ? longitude : null,
       observationPolarity:
         eventTypeCode === "safety_observation"
           ? String(formData.get("observation_polarity") || "positive") === "negative"
@@ -245,11 +269,14 @@ export async function submitFieldInspectionAction(formData: FormData): Promise<A
 
     const { data: assignment } = await supabase
       .from("checklist_assignments")
-      .select("id, template_id, status")
+      .select("id, template_id, status, assignee_id")
       .eq("id", assignmentId)
       .eq("organization_id", organization.id)
       .maybeSingle();
     if (!assignment) return { ok: false, error: "Inspection not found" };
+    if (assignment.assignee_id && assignment.assignee_id !== user.id) {
+      return { ok: false, error: "This inspection is assigned to someone else" };
+    }
 
     const { data: template } = await supabase
       .from("checklist_templates")
@@ -258,11 +285,12 @@ export async function submitFieldInspectionAction(formData: FormData): Promise<A
       .maybeSingle();
 
     const questionIds = Object.keys(answers);
-    for (const questionId of questionIds) {
+    for (const [index, questionId] of questionIds.entries()) {
       const value = answers[questionId];
       const comment = String(formData.get(`comment_${questionId}`) || "");
       const isNa = value === "na";
       const isFailing = value === "fail";
+      const attachPhoto = Boolean(media?.storagePath) && index === 0;
       await recordResponse(supabase, {
         organizationId: organization.id,
         userId: user.id,
@@ -271,8 +299,8 @@ export async function submitFieldInspectionAction(formData: FormData): Promise<A
         valueText: value,
         isNa,
         comment: comment || undefined,
-        photoUrl: media?.storagePath,
-        storagePath: media?.storagePath,
+        photoUrl: attachPhoto ? media?.storagePath : undefined,
+        storagePath: attachPhoto ? media?.storagePath : undefined,
         signatureName: signature || undefined,
         score: isNa ? 0 : isFailing ? 0 : 1,
         isFailing,
@@ -301,6 +329,17 @@ export async function approveFieldPermitAction(formData: FormData): Promise<Acti
     const { supabase, user, organization } = await requireOrgContext();
     const permitId = String(formData.get("permitId") || "");
     if (!permitId) return { ok: false, error: "Missing permit" };
+    const role = await resolveFieldRole();
+    if (!canFieldAction(role, "approve_permit")) {
+      return { ok: false, error: "You cannot approve permits from Field" };
+    }
+    const access = await userCanAccessFieldPermit(supabase, {
+      organizationId: organization.id,
+      permitId,
+      userId: user.id,
+      canApprove: true,
+    });
+    if (!access.ok) return { ok: false, error: "Permit not found" };
     await transitionPermit(supabase, {
       organizationId: organization.id,
       userId: user.id,
@@ -320,6 +359,17 @@ export async function acknowledgeFieldPermitAction(formData: FormData): Promise<
     const { supabase, user, organization } = await requireOrgContext();
     const permitId = String(formData.get("permitId") || "");
     if (!permitId) return { ok: false, error: "Missing permit" };
+    const role = await resolveFieldRole();
+    if (!canFieldAction(role, "my_permits")) {
+      return { ok: false, error: "You cannot acknowledge permits from Field" };
+    }
+    const access = await userCanAccessFieldPermit(supabase, {
+      organizationId: organization.id,
+      permitId,
+      userId: user.id,
+      canApprove: canFieldAction(role, "approve_permit"),
+    });
+    if (!access.ok) return { ok: false, error: "Permit not found" };
     const signature = String(formData.get("signature") || user.email || "");
     const { error } = await supabase.from("permit_approvals").insert({
       organization_id: organization.id,
@@ -373,6 +423,17 @@ export async function requestFieldPermitRenewalAction(formData: FormData): Promi
     const { supabase, user, organization } = await requireOrgContext();
     const permitId = String(formData.get("permitId") || "");
     if (!permitId) return { ok: false, error: "Missing permit" };
+    const role = await resolveFieldRole();
+    if (!canFieldAction(role, "my_permits")) {
+      return { ok: false, error: "You cannot request permit renewal from Field" };
+    }
+    const access = await userCanAccessFieldPermit(supabase, {
+      organizationId: organization.id,
+      permitId,
+      userId: user.id,
+      canApprove: canFieldAction(role, "approve_permit"),
+    });
+    if (!access.ok) return { ok: false, error: "Permit not found" };
     const renewal = await requestPermitRenewal(supabase, {
       organizationId: organization.id,
       userId: user.id,

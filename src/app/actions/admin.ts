@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { requirePlatformAdmin } from "@/lib/auth/session";
+import { requirePlatformPermission } from "@/lib/auth/session";
 import {
   applySubscriptionDiscount,
   archivePlan,
@@ -20,7 +20,7 @@ import {
 import { writeAuditLog } from "@/lib/services/audit";
 
 export async function adminUpdateOrgStatusAction(formData: FormData) {
-  const { supabase, user } = await requirePlatformAdmin();
+  const { supabase, user } = await requirePlatformPermission("saas.organizations.suspend");
   await updateOrganizationStatus(supabase, {
     userId: user.id,
     organizationId: String(formData.get("organizationId") || ""),
@@ -31,7 +31,7 @@ export async function adminUpdateOrgStatusAction(formData: FormData) {
 }
 
 export async function adminChangePlanAction(formData: FormData) {
-  const { supabase, user } = await requirePlatformAdmin();
+  const { supabase, user } = await requirePlatformPermission("saas.subscriptions.manage");
   const customMonthly = formData.get("customPriceMonthlyCents");
   const extendTrial = formData.get("extendTrialDays");
   const organizationId = String(formData.get("organizationId") || "");
@@ -47,7 +47,7 @@ export async function adminChangePlanAction(formData: FormData) {
 }
 
 export async function adminFeatureOverrideAction(formData: FormData) {
-  const { supabase, user } = await requirePlatformAdmin();
+  const { supabase, user } = await requirePlatformPermission("saas.entitlements.override");
   const organizationId = String(formData.get("organizationId") || "");
   await upsertFeatureOverride(supabase, {
     userId: user.id,
@@ -65,7 +65,7 @@ export async function adminFeatureOverrideAction(formData: FormData) {
 }
 
 export async function adminRemoveOverrideAction(formData: FormData) {
-  const { supabase, user } = await requirePlatformAdmin();
+  const { supabase, user } = await requirePlatformPermission("saas.entitlements.override");
   const organizationId = String(formData.get("organizationId") || "");
   await removeFeatureOverride(supabase, {
     userId: user.id,
@@ -77,7 +77,7 @@ export async function adminRemoveOverrideAction(formData: FormData) {
 }
 
 export async function adminCreateOrganizationAction(formData: FormData) {
-  const { supabase, user } = await requirePlatformAdmin();
+  const { supabase, user } = await requirePlatformPermission("saas.organizations.create");
   const extraFeatureIds = formData
     .getAll("extraFeatureIds")
     .map((value) => String(value))
@@ -114,7 +114,7 @@ export async function adminCreateOrganizationAction(formData: FormData) {
 }
 
 export async function adminCreatePlanAction(formData: FormData) {
-  const { supabase, user } = await requirePlatformAdmin();
+  const { supabase, user } = await requirePlatformPermission("saas.plans.manage");
   await createPlan(supabase, {
     userId: user.id,
     name: String(formData.get("name") || ""),
@@ -131,7 +131,7 @@ export async function adminCreatePlanAction(formData: FormData) {
 }
 
 export async function adminDuplicatePlanAction(formData: FormData) {
-  const { supabase, user } = await requirePlatformAdmin();
+  const { supabase, user } = await requirePlatformPermission("saas.plans.manage");
   await duplicatePlan(supabase, {
     userId: user.id,
     planId: String(formData.get("planId") || ""),
@@ -140,7 +140,7 @@ export async function adminDuplicatePlanAction(formData: FormData) {
 }
 
 export async function adminArchivePlanAction(formData: FormData) {
-  const { supabase, user } = await requirePlatformAdmin();
+  const { supabase, user } = await requirePlatformPermission("saas.plans.manage");
   await archivePlan(supabase, {
     userId: user.id,
     planId: String(formData.get("planId") || ""),
@@ -149,7 +149,7 @@ export async function adminArchivePlanAction(formData: FormData) {
 }
 
 export async function adminUpsertPlanFeatureAction(formData: FormData) {
-  const { supabase, user } = await requirePlatformAdmin();
+  const { supabase, user } = await requirePlatformPermission("saas.plans.manage");
   await upsertPlanFeatureCell(supabase, {
     userId: user.id,
     planId: String(formData.get("planId") || ""),
@@ -162,7 +162,7 @@ export async function adminUpsertPlanFeatureAction(formData: FormData) {
 }
 
 export async function adminCreateFeatureAction(formData: FormData) {
-  const { supabase, user } = await requirePlatformAdmin();
+  const { supabase, user } = await requirePlatformPermission("saas.features.manage");
   await createCatalogFeature(supabase, {
     userId: user.id,
     code: String(formData.get("code") || ""),
@@ -176,7 +176,7 @@ export async function adminCreateFeatureAction(formData: FormData) {
 }
 
 export async function adminApplyDiscountAction(formData: FormData) {
-  const { supabase, user } = await requirePlatformAdmin();
+  const { supabase, user } = await requirePlatformPermission("saas.subscriptions.manage");
   await applySubscriptionDiscount(supabase, {
     userId: user.id,
     subscriptionId: String(formData.get("subscriptionId") || ""),
@@ -187,7 +187,7 @@ export async function adminApplyDiscountAction(formData: FormData) {
 }
 
 export async function adminCancelSubscriptionAction(formData: FormData) {
-  const { supabase, user } = await requirePlatformAdmin();
+  const { supabase, user } = await requirePlatformPermission("saas.subscriptions.manage");
   await cancelSubscriptionAdmin(supabase, {
     userId: user.id,
     subscriptionId: String(formData.get("subscriptionId") || ""),
@@ -200,7 +200,7 @@ export async function adminCancelSubscriptionAction(formData: FormData) {
 export async function adminUpdatePlatformSettingAction(
   formData: FormData,
 ): Promise<void> {
-  const { supabase, user } = await requirePlatformAdmin();
+  const { supabase, user } = await requirePlatformPermission("saas.organizations.update");
   const key = String(formData.get("key") || "");
   const valueRaw = String(formData.get("value") || "{}");
   let value: unknown = {};

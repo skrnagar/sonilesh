@@ -1,13 +1,11 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { evaluateApplicability, processComplianceReminders } from "@/lib/services/compliance";
+import { authorizeCron } from "@/lib/http/cron-auth";
 
 export async function POST(request: Request) {
-  const secret = process.env.CRON_SECRET;
-  const header = request.headers.get("authorization");
-  if (!secret || header !== `Bearer ${secret}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const denied = authorizeCron(request);
+  if (denied) return denied;
 
   const supabase = createAdminClient();
   const { data: profiles, error } = await supabase

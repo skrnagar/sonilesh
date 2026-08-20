@@ -16,6 +16,7 @@ import {
   PlanLimitError,
 } from "@/lib/services/hierarchy";
 import { createOrganizationInvitation } from "@/lib/services/invitations";
+import { sanitizeBranding } from "@/lib/branding/validate";
 import {
   advanceOnboardingStep,
   ensureOnboardingProgress,
@@ -343,9 +344,9 @@ export async function saveEhsConfigStepAction(formData: FormData): Promise<void>
             scale: 5,
             notes: String(formData.get("ehsNotes") || ""),
           },
-          branding: {
+          branding: sanitizeBranding({
             primaryColor: String(formData.get("primaryColor") || "") || null,
-          },
+          }),
           updated_at: new Date().toISOString(),
         },
         { onConflict: "organization_id" },

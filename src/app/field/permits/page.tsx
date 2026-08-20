@@ -17,22 +17,34 @@ import {
   fieldControlClass,
 } from "@/components/field/field-ui";
 import { hasFeature } from "@/lib/services/entitlements";
+import { fieldPermitsOrFilter, isFieldPermitParty } from "@/lib/field/permits";
 
 export default async function FieldPermitsPage() {
   const { supabase, user, organization, membershipId } = await requireOrgContext();
 
-  const [entitled, role, permitsRes, acksRes] = await Promise.all([
+  const [entitled, role] = await Promise.all([
     hasFeature(supabase, organization.id, "permit_to_work"),
     resolveFieldRole(supabase, membershipId),
+  ]);
+
+  if (!entitled) return <FieldForbidden />;
+  if (!canFieldAction(role, "my_permits")) return <FieldForbidden />;
+  const canApprove = canFieldAction(role, "approve_permit");
+
+  const { data: workerRows } = await supabase
+    .from("permit_workers")
+    .select("permit_id")
+    .eq("organization_id", organization.id)
+    .eq("user_id", user.id);
+
+  const [permitsRes, acksRes] = await Promise.all([
     supabase
       .from("permits")
       .select(
-        "id, permit_number, title, status, valid_to, requester_id, issuer_id, residual_risk_band, permit_types:permit_type_id(name)",
+        "id, permit_number, title, status, valid_to, requester_id, issuer_id, work_leader_id, residual_risk_band, permit_types:permit_type_id(name)",
       )
       .eq("organization_id", organization.id)
-      .or(
-        `requester_id.eq.${user.id},issuer_id.eq.${user.id},work_leader_id.eq.${user.id},status.eq.approval_required,status.eq.authorization,status.eq.active,status.eq.suspended`,
-      )
+      .or(fieldPermitsOrFilter(user.id, canApprove, (workerRows ?? []).map((row) => row.permit_id)))
       .is("deleted_at", null)
       .order("valid_to", { ascending: true })
       .limit(30),
@@ -43,10 +55,6 @@ export default async function FieldPermitsPage() {
       .eq("approver_id", user.id)
       .eq("approver_role", "field_ack"),
   ]);
-
-  if (!entitled) return <FieldForbidden />;
-  if (!canFieldAction(role, "my_permits")) return <FieldForbidden />;
-  const canApprove = canFieldAction(role, "approve_permit");
 
   const { data: permits, error } = permitsRes;
   const acked = new Set((acksRes.data ?? []).map((a) => a.permit_id));
@@ -99,7 +107,7 @@ export default async function FieldPermitsPage() {
                 />
               </FieldSubmitForm>
             ) : null}
-            {p.status === "active" && !acked.has(p.id) ? (
+            {p.status === "active" && !acked.has(p.id) && isFieldPermitParty(p, user.id) ? (
               <FieldSubmitForm action={acknowledgeFieldPermitAction} submitLabel="Acknowledge">
                 <input type="hidden" name="permitId" value={p.id} />
                 <input
@@ -110,7 +118,7 @@ export default async function FieldPermitsPage() {
                 />
               </FieldSubmitForm>
             ) : null}
-            {p.status === "active" || p.status === "expired" ? (
+            {(p.status === "active" || p.status === "expired") && isFieldPermitParty(p, user.id) ? (
               <FieldSubmitForm
                 action={requestFieldPermitRenewalAction}
                 submitLabel="Request renewal"

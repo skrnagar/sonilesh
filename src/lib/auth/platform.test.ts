@@ -40,6 +40,15 @@ describe("platform RBAC", () => {
     expect(hasPlatformPermission(reader, "saas.organizations.view")).toBe(true);
   });
 
+  it("treats missing platform_role as read_only, not super_admin", () => {
+    const fallback = resolvePlatformRole({
+      isPlatformAdmin: true,
+      platformRole: null,
+    });
+    expect(fallback).toBe("read_only");
+    expect(canManageSubscription(fallback)).toBe(false);
+  });
+
   it("rejects non-platform users", () => {
     expect(isPlatformAdmin(resolvePlatformRole({ isPlatformAdmin: false }))).toBe(false);
   });

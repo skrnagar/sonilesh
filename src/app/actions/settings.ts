@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireModuleAccess } from "@/lib/auth/org-context";
 import { writeAuditLog } from "@/lib/services/audit";
 import { formatSupabaseUserError, isNextRedirect } from "@/lib/supabase/errors";
+import { sanitizeBranding } from "@/lib/branding/validate";
 
 export type SettingsResult = { ok: true } | { ok: false; error: string };
 
@@ -17,12 +18,15 @@ export async function updateOrganizationSettingsAction(
     const name = String(formData.get("name") || "").trim();
     if (name.length < 2) return { ok: false, error: "Company name is required" };
 
-    const branding = {
+    const branding = sanitizeBranding({
       primaryColor: String(formData.get("primaryColor") || "").trim() || null,
       logoUrl: String(formData.get("logoUrl") || "").trim() || null,
-    };
+      terminology: {
+        hazardLabel: String(formData.get("hazardLabel") || "LMRA").trim() || "LMRA",
+      },
+    });
     const terminology = {
-      hazardLabel: String(formData.get("hazardLabel") || "LMRA").trim() || "LMRA",
+      hazardLabel: branding.terminology.hazardLabel || "LMRA",
     };
 
     const { error: orgError } = await access.supabase
@@ -41,7 +45,10 @@ export async function updateOrganizationSettingsAction(
       .upsert(
         {
           organization_id: access.organization.id,
-          branding,
+          branding: {
+            primaryColor: branding.primaryColor,
+            logoUrl: branding.logoUrl,
+          },
           terminology,
           locale: String(formData.get("locale") || "en"),
           date_format: String(formData.get("dateFormat") || "yyyy-MM-dd"),

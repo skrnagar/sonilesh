@@ -1,8 +1,8 @@
-import { requirePlatformAdmin } from "@/lib/auth/session";
+import { requirePlatformPermission } from "@/lib/auth/session";
 import { EmptyState } from "@/components/shared/state-panels";
 
 export default async function AdminUsagePage() {
-  const { supabase } = await requirePlatformAdmin();
+  const { supabase } = await requirePlatformPermission("saas.usage.view");
   const { data, error } = await supabase
     .from("usage_metrics")
     .select(

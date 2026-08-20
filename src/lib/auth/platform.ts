@@ -95,7 +95,7 @@ export function resolvePlatformRole(input: {
   ) {
     return input.platformRole;
   }
-  return "super_admin";
+  return "read_only";
 }
 
 export function platformPermissionsFor(role: PlatformRole | null): PlatformPermission[] {

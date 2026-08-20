@@ -46,6 +46,16 @@ describe("persona routing", () => {
     ).toBe("/contractor");
   });
 
+  it("keeps contractor contacts out of the field login landing", () => {
+    expect(
+      landingPathForSession({
+        portal: "field",
+        isPlatformAdmin: false,
+        roleCodes: ["contractor_contact"],
+      }),
+    ).toBe("/contractor");
+  });
+
   it("rejects non-platform admins at the admin portal", () => {
     expect(
       landingPathForSession({

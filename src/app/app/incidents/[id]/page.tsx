@@ -17,9 +17,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ForbiddenState, UpgradeState } from "@/components/shared/state-panels";
-import { requireModuleAccess } from "@/lib/auth/org-context";
+import { requireModuleAccess, requireOrgContext } from "@/lib/auth/org-context";
 import { getEventBundle } from "@/lib/events/queries";
 import { formatDate } from "@/lib/utils";
+import { REPORT_TYPE_META, type ReportTypeCode } from "@/lib/reporting/types";
 
 export default async function IncidentDetailPage({
   params,
@@ -27,19 +28,23 @@ export default async function IncidentDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const access = await requireModuleAccess({
-    featureCode: "incident_management",
-    permission: "incidents.view",
-  });
-  if (!access.entitled) return <UpgradeState featureName="Incidents" />;
-  if (!access.permitted) return <ForbiddenState />;
-
-  const bundle = await getEventBundle(
-    access.supabase,
-    access.organization.id,
-    id,
-  );
+  const ctx = await requireOrgContext();
+  const bundle = await getEventBundle(ctx.supabase, ctx.organization.id, id);
   if (!bundle) notFound();
+
+  const typeCode =
+    ((bundle.event.event_types as { code?: string } | null)?.code ?? "incident") as string;
+  const meta =
+    typeCode in REPORT_TYPE_META
+      ? REPORT_TYPE_META[typeCode as ReportTypeCode]
+      : REPORT_TYPE_META.incident;
+
+  const access = await requireModuleAccess({
+    featureCode: meta.featureCode,
+    permission: meta.permissionView,
+  });
+  if (!access.entitled) return <UpgradeState featureName={meta.label} />;
+  if (!access.permitted) return <ForbiddenState />;
 
   const { event, activity, capas, investigation, attachments } = bundle;
   const duplicates = (event.metadata as { possible_duplicates?: string[] } | null)
@@ -49,17 +54,19 @@ export default async function IncidentDetailPage({
     <div className="space-y-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <p className="text-xs uppercase tracking-wide text-muted-foreground">Incident</p>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">{meta.label}</p>
           <h1 className="text-xl font-semibold text-primary">{event.event_number}</h1>
-          <p className="text-sm text-muted-foreground">{event.title || "Untitled incident"}</p>
+          <p className="text-sm text-muted-foreground">{event.title || `Untitled ${meta.label.toLowerCase()}`}</p>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="secondary" className="capitalize">
             {event.status}
           </Badge>
-          <Button asChild variant="outline" size="sm">
-            <Link href={`/app/incidents/${event.id}/investigation`}>Investigation</Link>
-          </Button>
+          {typeCode === "incident" ? (
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/app/incidents/${event.id}/investigation`}>Investigation</Link>
+            </Button>
+          ) : null}
         </div>
       </div>
 

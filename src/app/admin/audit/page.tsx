@@ -1,8 +1,8 @@
-﻿import { requirePlatformAdmin } from "@/lib/auth/session";
+﻿import { requirePlatformPermission } from "@/lib/auth/session";
 import { formatDate } from "@/lib/utils";
 
 export default async function AdminAuditPage() {
-  const { supabase } = await requirePlatformAdmin();
+  const { supabase } = await requirePlatformPermission("saas.audit.view");
   const { data: logs } = await supabase
     .from("audit_logs")
     .select("*")
