@@ -2,9 +2,11 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Bell, User } from "lucide-react";
+import { FieldDesktopNav } from "@/components/field/field-desktop-nav";
 import { FieldTabBar } from "@/components/field/field-tab-bar";
 import { FieldMark, FieldPageSkeleton, fieldHeaderBtnClass } from "@/components/field/field-ui";
 import { NavigationProgress } from "@/components/layout/navigation-progress";
+import { FIELD_SHELL_CLASS } from "@/lib/field/nav";
 import { requireOrgContext } from "@/lib/auth/org-context";
 import { countFieldUnread } from "@/lib/field/unread";
 
@@ -52,51 +54,56 @@ export default async function FieldLayout({ children }: { children: React.ReactN
         <NavigationProgress />
       </Suspense>
       <header className="app-shell-header sticky top-0 z-20 border-b border-border/80 pt-[env(safe-area-inset-top)] shadow-[var(--shadow-header)]">
-        <div className="mx-auto flex h-12 max-w-5xl items-center justify-between gap-2 px-3">
-          <div className="flex min-w-0 items-center gap-2">
-            <FieldMark />
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold leading-tight tracking-tight text-foreground">
-                SONIL Field
-              </p>
-              <p className="truncate text-[11px] leading-tight text-muted-foreground">
-                {organization.name}
-              </p>
+        <div className={FIELD_SHELL_CLASS}>
+          <div className="flex h-12 items-center justify-between gap-2">
+            <div className="flex min-w-0 items-center gap-2">
+              <FieldMark />
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold leading-tight tracking-tight text-foreground">
+                  SONIL Field
+                </p>
+                <p className="truncate text-[11px] leading-tight text-muted-foreground">
+                  {organization.name}
+                </p>
+              </div>
+            </div>
+            <div className="flex shrink-0 items-center gap-1.5">
+              <Suspense fallback={null}>
+                <FieldHeaderGreeting />
+              </Suspense>
+              <Suspense
+                fallback={
+                  <Link
+                    href="/field/actions"
+                    prefetch={false}
+                    aria-label="Allocated action list"
+                    className={fieldHeaderBtnClass}
+                  >
+                    <Bell className="h-4 w-4" />
+                  </Link>
+                }
+              >
+                <FieldUnreadBell />
+              </Suspense>
+              <Link
+                href="/field/profile"
+                prefetch
+                aria-label="Profile and settings"
+                className={fieldHeaderBtnClass}
+              >
+                <User className="h-4 w-4" />
+              </Link>
             </div>
           </div>
-          <div className="flex shrink-0 items-center gap-1.5">
-            <Suspense fallback={null}>
-              <FieldHeaderGreeting />
-            </Suspense>
-            <Suspense
-              fallback={
-                <Link
-                  href="/field/actions"
-                  prefetch={false}
-                  aria-label="Allocated action list"
-                  className={fieldHeaderBtnClass}
-                >
-                  <Bell className="h-4 w-4" />
-                </Link>
-              }
-            >
-              <FieldUnreadBell />
-            </Suspense>
-            <Link
-              href="/field/profile"
-              prefetch
-              aria-label="Profile and settings"
-              className={fieldHeaderBtnClass}
-            >
-              <User className="h-4 w-4" />
-            </Link>
-          </div>
+          <FieldDesktopNav />
         </div>
       </header>
-      <main className="app-page mx-auto max-w-5xl px-3 pb-[calc(4.75rem+env(safe-area-inset-bottom))] pt-4 sm:px-4">
+      <main
+        className={`app-page ${FIELD_SHELL_CLASS} pb-[calc(4.75rem+env(safe-area-inset-bottom))] pt-4 lg:pb-8`}
+      >
         <Suspense fallback={<FieldPageSkeleton />}>{children}</Suspense>
       </main>
-      <footer className="border-t border-border/60 bg-card/80 py-2 text-center text-[11px] text-muted-foreground">
+      <footer className="hidden border-t border-border/60 bg-card/80 py-2 text-center text-[11px] text-muted-foreground lg:block">
         Copyright © 2026 SONIL EHS360
       </footer>
       <FieldTabBar />

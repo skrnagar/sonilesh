@@ -2,64 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  ClipboardCheck,
-  ClipboardList,
-  Home,
-  PlusCircle,
-  Shield,
-} from "lucide-react";
+import { FIELD_NAV_ITEMS, FIELD_SHELL_CLASS } from "@/lib/field/nav";
 import { cn } from "@/lib/utils";
-
-const tabs = [
-  {
-    href: "/field",
-    label: "Home",
-    icon: Home,
-    prefetch: true,
-    match: (p: string) => p === "/field" || p === "/field/home",
-  },
-  {
-    href: "/field/report",
-    label: "Report",
-    icon: PlusCircle,
-    prefetch: true,
-    match: (p: string) =>
-      p.startsWith("/field/report") ||
-      p.startsWith("/field/new") ||
-      p.startsWith("/field/incident") ||
-      p.startsWith("/field/near-miss") ||
-      p.startsWith("/field/lmra") ||
-      p.startsWith("/field/hazard") ||
-      p.startsWith("/field/site-visits") ||
-      p.startsWith("/field/bbs") ||
-      p.startsWith("/field/reports"),
-  },
-  {
-    href: "/field/actions",
-    label: "Actions",
-    icon: ClipboardList,
-    prefetch: false,
-    match: (p: string) => p.startsWith("/field/actions") || p.startsWith("/field/action-list"),
-  },
-  {
-    href: "/field/permits",
-    label: "Permits",
-    icon: Shield,
-    prefetch: false,
-    match: (p: string) => p.startsWith("/field/permits"),
-  },
-  {
-    href: "/field/inspection",
-    label: "Inspect",
-    icon: ClipboardCheck,
-    prefetch: false,
-    match: (p: string) =>
-      p.startsWith("/field/inspection") ||
-      p.startsWith("/field/checklist") ||
-      p.startsWith("/field/nc"),
-  },
-];
 
 export function FieldTabBar() {
   const pathname = usePathname();
@@ -67,10 +11,10 @@ export function FieldTabBar() {
   return (
     <nav
       aria-label="Field"
-      className="fixed inset-x-0 bottom-0 z-20 border-t border-border/80 bg-card/95 pb-[max(0.35rem,env(safe-area-inset-bottom))] shadow-[0_-8px_24px_-16px_rgba(11,58,83,0.18)] backdrop-blur-md"
+      className="fixed inset-x-0 bottom-0 z-20 border-t border-border/80 bg-card/95 pb-[max(0.35rem,env(safe-area-inset-bottom))] shadow-[0_-8px_24px_-16px_rgba(11,58,83,0.18)] backdrop-blur-md lg:hidden"
     >
-      <div className="mx-auto grid max-w-5xl grid-cols-5 gap-0.5 px-1.5 pt-1.5">
-        {tabs.map((item) => {
+      <div className={cn(FIELD_SHELL_CLASS, "grid grid-cols-5 gap-0.5 pt-1.5")}>
+        {FIELD_NAV_ITEMS.map((item) => {
           const active = item.match(pathname);
           const Icon = item.icon;
           return (

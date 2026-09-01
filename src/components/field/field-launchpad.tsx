@@ -29,7 +29,7 @@ export function FieldLaunchpad({
         </p>
       </div>
       <RakshaLaunchpadGrid tiles={tiles} />
-      <p className="text-center text-[11px] text-white/70">
+      <p className="text-center text-[11px] text-white/70 lg:hidden">
         Copyright © 2026 SONIL EHS360
       </p>
     </section>

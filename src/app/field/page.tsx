@@ -40,18 +40,20 @@ export default async function FieldHomePage() {
         projectName={projectName}
       />
 
-      <Suspense fallback={<FieldSectionSkeleton title="Pending actions" />}>
-        <HomeActions orgId={orgId} />
-      </Suspense>
-      <Suspense fallback={<FieldSectionSkeleton title="Permits" />}>
-        <HomePermits orgId={orgId} />
-      </Suspense>
-      <Suspense fallback={<FieldSectionSkeleton title="Training" />}>
-        <HomeTraining orgId={orgId} />
-      </Suspense>
-      <Suspense fallback={<FieldSectionSkeleton title="Recent items" />}>
-        <HomeRecent orgId={orgId} />
-      </Suspense>
+      <div className="grid gap-5 lg:grid-cols-2">
+        <Suspense fallback={<FieldSectionSkeleton title="Pending actions" />}>
+          <HomeActions orgId={orgId} />
+        </Suspense>
+        <Suspense fallback={<FieldSectionSkeleton title="Permits" />}>
+          <HomePermits orgId={orgId} />
+        </Suspense>
+        <Suspense fallback={<FieldSectionSkeleton title="Training" />}>
+          <HomeTraining orgId={orgId} />
+        </Suspense>
+        <Suspense fallback={<FieldSectionSkeleton title="Recent items" />}>
+          <HomeRecent orgId={orgId} />
+        </Suspense>
+      </div>
     </div>
   );
 }

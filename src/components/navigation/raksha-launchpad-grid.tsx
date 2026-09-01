@@ -25,7 +25,7 @@ export function RakshaLaunchpadGrid({ tiles }: { tiles: RakshaGridTile[] }) {
   if (!tiles.length) return null;
 
   return (
-    <div className="grid grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-4">
+    <div className="grid grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-4 lg:gap-4 xl:grid-cols-5">
       {tiles.map((tile) => {
         const Icon = tile.icon;
         const pending = pendingKey === tile.key;
