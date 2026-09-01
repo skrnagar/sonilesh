@@ -140,7 +140,9 @@ export async function calculateEhsScore(
 
     .gte("occurred_at", periodStart)
 
-    .is("deleted_at", null);
+    .is("deleted_at", null)
+
+    .limit(200);
 
   eventsQuery = applyEventScope(eventsQuery, scope);
 
@@ -154,7 +156,9 @@ export async function calculateEhsScore(
 
     .eq("organization_id", organizationId)
 
-    .is("deleted_at", null);
+    .is("deleted_at", null)
+
+    .limit(200);
 
   if (scope.siteId) capaQuery = capaQuery.eq("site_id", scope.siteId);
 
@@ -172,7 +176,9 @@ export async function calculateEhsScore(
 
     .is("deleted_at", null)
 
-    .gte("created_at", periodStart);
+    .gte("created_at", periodStart)
+
+    .limit(120);
 
   if (scope.siteId) lmraQuery = lmraQuery.eq("site_id", scope.siteId);
 
@@ -190,7 +196,9 @@ export async function calculateEhsScore(
 
     .is("deleted_at", null)
 
-    .gte("created_at", periodStart);
+    .gte("created_at", periodStart)
+
+    .limit(120);
 
   if (scope.siteId) inspectionQuery = inspectionQuery.eq("site_id", scope.siteId);
 

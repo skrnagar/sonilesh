@@ -143,24 +143,17 @@ export const requireOrgContext = cache(async () => {
   }
 });
 
-export async function requireModuleAccess(opts: {
-  featureCode?: string;
-  permission?: string;
-}) {
+/** Request-scoped: dedupes layout ModuleShell + page access checks. */
+const resolveModuleAccess = cache(async (featureCode: string | null, permission: string | null) => {
   const ctx = await requireOrgContext();
 
   const checks: Promise<boolean>[] = [];
-  if (opts.featureCode) {
-    checks.push(hasFeature(ctx.supabase, ctx.organization.id, opts.featureCode));
+  if (featureCode) {
+    checks.push(hasFeature(ctx.supabase, ctx.organization.id, featureCode));
   }
-  if (opts.permission) {
+  if (permission) {
     checks.push(
-      userHasPermission(
-        ctx.supabase,
-        ctx.organization.id,
-        ctx.user.id,
-        opts.permission,
-      ),
+      userHasPermission(ctx.supabase, ctx.organization.id, ctx.user.id, permission),
     );
   }
 
@@ -170,16 +163,23 @@ export async function requireModuleAccess(opts: {
 
   const results = await Promise.all(checks);
   let i = 0;
-  const entitled = opts.featureCode ? results[i++] : true;
-  const permitted = opts.permission ? results[i++] : true;
+  const entitled = featureCode ? results[i++] : true;
+  const permitted = permission ? results[i++] : true;
 
-  if (opts.featureCode && !entitled) {
+  if (featureCode && !entitled) {
     return { ...ctx, entitled: false as const, permitted: false as const };
   }
-  if (opts.permission && !permitted) {
+  if (permission && !permitted) {
     return { ...ctx, entitled: true as const, permitted: false as const };
   }
   return { ...ctx, entitled: true as const, permitted: true as const };
+});
+
+export async function requireModuleAccess(opts: {
+  featureCode?: string;
+  permission?: string;
+}) {
+  return resolveModuleAccess(opts.featureCode ?? null, opts.permission ?? null);
 }
 
 /** Membership + feature + permission, or throw. Use in mutating server actions. */

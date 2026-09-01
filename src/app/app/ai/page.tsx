@@ -1,10 +1,17 @@
+import dynamic from "next/dynamic";
 import { ModuleShell } from "@/components/modules/module-shell";
-import { CopilotChat } from "@/components/ai/copilot-chat";
 import { requireModuleAccess } from "@/lib/auth/org-context";
 import { isAiConfigured } from "@/lib/ai/core/config";
 import { canUseAgent } from "@/lib/ai/permissions";
 import { getUserPermissions } from "@/lib/services/rbac";
 import { listEnabledFeatures } from "@/lib/services/entitlements";
+
+const CopilotChat = dynamic(
+  () => import("@/components/ai/copilot-chat").then((m) => m.CopilotChat),
+  {
+    loading: () => <div className="h-96 rounded-2xl border border-border bg-card" />,
+  },
+);
 
 export default async function AiCopilotPage() {
   const access = await requireModuleAccess({

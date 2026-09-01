@@ -3,7 +3,7 @@ import { EventList } from "@/components/events/event-list";
 import { Button } from "@/components/ui/button";
 import { ForbiddenState, UpgradeState } from "@/components/shared/state-panels";
 import { requireModuleAccess } from "@/lib/auth/org-context";
-import { listEventsByType } from "@/lib/events/queries";
+import { listEventsByTypes } from "@/lib/events/queries";
 
 export default async function HazardsPage() {
   const access = await requireModuleAccess({
@@ -13,15 +13,13 @@ export default async function HazardsPage() {
   if (!access.entitled) return <UpgradeState featureName="Hazard Reporting" />;
   if (!access.permitted) return <ForbiddenState />;
 
-  const [hazards, acts, conditions] = await Promise.all([
-    listEventsByType(access.supabase, access.organization.id, "hazard"),
-    listEventsByType(access.supabase, access.organization.id, "unsafe_act"),
-    listEventsByType(access.supabase, access.organization.id, "unsafe_condition"),
-  ]);
-
-  const rows = [...hazards, ...acts, ...conditions].sort(
-    (a, b) => +new Date(b.occurred_at) - +new Date(a.occurred_at),
-  );
+  const rows = (
+    await listEventsByTypes(access.supabase, access.organization.id, [
+      "hazard",
+      "unsafe_act",
+      "unsafe_condition",
+    ])
+  ).sort((a, b) => +new Date(b.occurred_at) - +new Date(a.occurred_at));
 
   return (
     <div className="space-y-4">

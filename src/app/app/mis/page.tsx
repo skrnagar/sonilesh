@@ -60,91 +60,57 @@ export default async function MisPage({
 
   const access = await requireModuleAccess({ permission: "mis.view" });
 
-
-
-  const [{ data: bus }, { data: regions }, { data: sites }, { data: projects }, permissions] =
-
-    await Promise.all([
-
-      access.supabase
-
-        .from("business_units")
-
-        .select("id, name")
-
-        .eq("organization_id", access.organization.id)
-
-        .is("deleted_at", null)
-
-        .order("name"),
-
-      access.supabase
-
-        .from("regions")
-
-        .select("id, name")
-
-        .eq("organization_id", access.organization.id)
-
-        .is("deleted_at", null)
-
-        .order("name"),
-
-      access.supabase
-
-        .from("sites")
-
-        .select("id, name")
-
-        .eq("organization_id", access.organization.id)
-
-        .is("deleted_at", null)
-
-        .order("name"),
-
-      access.supabase
-
-        .from("projects")
-
-        .select("id, name")
-
-        .eq("organization_id", access.organization.id)
-
-        .is("deleted_at", null)
-
-        .order("name"),
-
-      getUserPermissions(access.supabase, access.organization.id, access.user.id),
-
-    ]);
-
-
-
-  const period = access.permitted
-
-    ? await ensureMisPeriod(access.supabase, access.organization.id, access.user.id).catch(() => null)
-
-    : null;
-
-
-
-  const rows = access.permitted
-
-    ? await listMisSubmissions(access.supabase, access.organization.id, {
-
-        status: params.status as "draft" | "submitted" | "approved" | "rejected" | undefined,
-
-        businessUnitId: params.businessUnitId,
-
-        regionId: params.regionId,
-
-        siteId: params.siteId,
-
-        projectId: params.projectId,
-
-      })
-
-    : [];
+  const [
+    { data: bus },
+    { data: regions },
+    { data: sites },
+    { data: projects },
+    permissions,
+    period,
+    rows,
+  ] = await Promise.all([
+    access.supabase
+      .from("business_units")
+      .select("id, name")
+      .eq("organization_id", access.organization.id)
+      .is("deleted_at", null)
+      .order("name")
+      .limit(100),
+    access.supabase
+      .from("regions")
+      .select("id, name")
+      .eq("organization_id", access.organization.id)
+      .is("deleted_at", null)
+      .order("name")
+      .limit(100),
+    access.supabase
+      .from("sites")
+      .select("id, name")
+      .eq("organization_id", access.organization.id)
+      .is("deleted_at", null)
+      .order("name")
+      .limit(100),
+    access.supabase
+      .from("projects")
+      .select("id, name")
+      .eq("organization_id", access.organization.id)
+      .is("deleted_at", null)
+      .order("name")
+      .limit(100),
+    getUserPermissions(access.supabase, access.organization.id, access.user.id),
+    access.permitted
+      ? ensureMisPeriod(access.supabase, access.organization.id, access.user.id).catch(() => null)
+      : Promise.resolve(null),
+    access.permitted
+      ? listMisSubmissions(access.supabase, access.organization.id, {
+          status: params.status as "draft" | "submitted" | "approved" | "rejected" | undefined,
+          businessUnitId: params.businessUnitId,
+          regionId: params.regionId,
+          siteId: params.siteId,
+          projectId: params.projectId,
+        })
+      : Promise.resolve([]),
+  ]);
 
 
 
