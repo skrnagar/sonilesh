@@ -20,16 +20,18 @@ export const FIELD_LABELS = {
   permits: { short: "Permits", title: "My permits" },
   training: { short: "Training", title: "My training" },
   toolbox: { short: "Toolbox", title: "Toolbox talk" },
+  siteVisits: {
+    short: "Site visits",
+    title: "Site visits",
+    subtitle: "HSV, RSV, and TSV — create and close from the field",
+  },
 } as const;
 
 export function fieldEventLabel(eventTypeCode: string | null | undefined) {
   if (eventTypeCode === "near_miss") return FIELD_LABELS.nearMiss.short;
-  if (
-    eventTypeCode === "hazard" ||
-    eventTypeCode === "unsafe_act" ||
-    eventTypeCode === "unsafe_condition"
-  ) {
-    return FIELD_LABELS.lmra.short;
-  }
+  if (eventTypeCode === "unsafe_act") return "Unsafe act";
+  if (eventTypeCode === "unsafe_condition") return "Unsafe condition";
+  if (eventTypeCode === "safety_observation") return "Observation";
+  if (eventTypeCode === "hazard") return "Hazard";
   return FIELD_LABELS.incident.short;
 }

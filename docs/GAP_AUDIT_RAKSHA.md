@@ -9,7 +9,7 @@
 | Command | Result |
 |---------|--------|
 | `npm run typecheck` | **PASS** |
-| `npm test` | **PASS** — 46 files, 264 tests |
+| `npm test` | **PASS** — 46 files, 265 tests |
 
 **Git status:** Clean working tree except untracked `.cursor/`. Unpushed commit: `7600568 fix: link site visit list rows to detail workflow page.`
 
@@ -116,7 +116,7 @@ The codebase has moved significantly past the stale rows in `EHS360_MODULE_MAP.m
 6. Analytics: dedicated UA/UC closure-rate and visit completion dashboards.
 7. Action items: link rows to detail; filter by assignee/status.
 8. Training: certificate upload, expiry alerts integration with notifications.
-9. Mobile field tab parity for new enterprise modules (MIS/scorecard admin web-only).
+9. Mobile field tab parity for new enterprise modules — **site visits added**; MIS/scorecard admin web-only.
 10. Update `EHS360_MODULE_MAP.md` to reflect Phase 21+ implementations (doc drift).
 
 ---
@@ -147,6 +147,30 @@ The codebase has moved significantly past the stale rows in `EHS360_MODULE_MAP.m
 
 ---
 
+## Field app parity (mobile / `/field`)
+
+**Audit date:** 2026-09-01 (post site-visit + LMRA fixes)
+
+| Module | Field routes | Status | Notes |
+|--------|--------------|--------|-------|
+| UA / UC / observations | `/field/hazard`, `/field/report` | ✅ Create + submit | Photo, GPS, offline text queue; RBAC via `report_hazard` |
+| Incidents / near miss | `/field/incident`, `/field/near-miss` | ✅ Create + submit | Severity, site, draft/submit; offline queue |
+| LMRA | `/field/lmra` | ✅ Fixed | **Bug fixed:** form now sends `mode=lmra` so `createLmraFromFieldEvent` runs |
+| Work permits | `/field/permits`, `/field/permits/new`, `/field/permits/[permitNumber]` | ✅ View + approve + request | New quick PTW request form; detail approve/ack/photos |
+| Site visits HSV/RSV/TSV | `/field/site-visits`, `/field/site-visits/[id]` | ✅ **Added** | Create, list, allocate/close/final-close workflow on mobile |
+| Inspections / checklists | `/field/inspection` | ✅ Execute | Assigned checklist runner + photo evidence |
+| Actions / CAPA | `/field/actions` | ✅ Complete | Evidence photo + note; action items mark complete |
+| Training / toolbox | `/field/training`, `/field/toolbox` | ✅ Partial | Assignment status; toolbox talk create |
+| BBS / safety observation | `/field/hazard?type=safety_observation` | ✅ Create | Positive/negative polarity on submit |
+| MIS / EHS Scorecard | — | ❌ Web admin only | Intentionally desktop; not field-operational |
+| Offline sync | `src/lib/field/offline-queue.ts` | ⚠️ Partial | Text fields queue; photos require online (documented) |
+
+**Navigation:** Home quick actions + Report tab include site visits and LMRA. `FieldSubmitForm` redirects after successful workflow actions.
+
+**Remaining field gaps (P2):** MIS/scorecard read-only widgets; offline photo queue; UA/UC detail workflow on mobile; permit full create (risk/JSA) — field uses quick request only.
+
+---
+
 ## What's deploy-ready today
 
 Safe to deploy/pilot **without** claiming full RAKSHA parity:
@@ -161,8 +185,8 @@ Safe to deploy/pilot **without** claiming full RAKSHA parity:
 - EHS Scorecard (live calculated score with insufficient-data guard)
 - Analytics hub + safety/CAPA/permits sub-pages with charts
 - Report Hub as module index (not full BI)
-- Field capture for reports, LMRA, permits, inspections, actions
-- CI green: typecheck + 264 unit tests
+- Field capture for reports, LMRA, permits, inspections, actions, **site visits**
+- CI green: typecheck + 265 unit tests
 
 **Not ready for "full RAKSHA replacement"** until P0 items 1–7 are addressed.
 

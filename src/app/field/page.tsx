@@ -4,6 +4,7 @@ import {
   ClipboardCheck,
   GraduationCap,
   ListChecks,
+  MapPin,
   ScanSearch,
   Shield,
   ShieldAlert,
@@ -79,6 +80,14 @@ export default async function FieldHomePage() {
       hint: "Last-minute risk",
       tone: "navy",
       icon: ScanSearch,
+    },
+    {
+      action: "site_visit",
+      href: "/field/site-visits",
+      label: FIELD_LABELS.siteVisits.short,
+      hint: "HSV / RSV / TSV",
+      tone: "green",
+      icon: MapPin,
     },
     {
       action: "inspection",

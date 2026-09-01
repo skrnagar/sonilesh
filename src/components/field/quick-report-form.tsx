@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MapPin } from "lucide-react";
 import {
@@ -12,6 +12,12 @@ import {
 import { FieldPhotoInputs } from "@/components/field/field-photo-inputs";
 import { FIELD_LABELS } from "@/lib/field/labels";
 import { attachDirectUpload } from "@/lib/storage/direct-upload";
+import {
+  enqueueFieldUpdate,
+  queueToFormData,
+  readFieldQueue,
+  removeFieldQueueItem,
+} from "@/lib/field/offline-queue";
 
 type Mode = "incident" | "near-miss" | "lmra" | "observation";
 
@@ -40,7 +46,22 @@ export function QuickCaptureForm({
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [queued, setQueued] = useState(false);
   const [coords, setCoords] = useState("");
+
+  useEffect(() => {
+    async function flush() {
+      if (!navigator.onLine) return;
+      const items = readFieldQueue();
+      for (const item of items) {
+        const result = await action(queueToFormData(item));
+        if (result.ok) removeFieldQueueItem(item.id);
+      }
+      router.refresh();
+    }
+    window.addEventListener("online", flush);
+    return () => window.removeEventListener("online", flush);
+  }, [action, router]);
 
   const copy =
     mode === "lmra"
@@ -86,11 +107,29 @@ export function QuickCaptureForm({
     }
     setPending(true);
     setError(null);
+    setQueued(false);
     formData.set("gps", coords);
-    if (mode === "lmra") formData.set("mode", "hazard");
+    if (mode === "lmra") formData.set("mode", "lmra");
     else if (mode === "observation") formData.set("mode", eventTypeCode || "hazard");
     else formData.set("mode", mode);
     if (eventTypeCode) formData.set("type", eventTypeCode);
+
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      const hasFile = [...formData.values()].some(
+        (v) => v instanceof File && v.size > 0,
+      );
+      if (hasFile) {
+        setError("Photos need a network connection. Stay online to attach evidence, then submit.");
+        setPending(false);
+        return;
+      }
+      enqueueFieldUpdate(`Submit ${copy.short}`, formData);
+      setQueued(true);
+      setPending(false);
+      router.push("/field");
+      return;
+    }
+
     try {
       await attachDirectUpload(formData, `field/${mode}`);
     } catch (err) {
@@ -288,6 +327,11 @@ export function QuickCaptureForm({
       <input type="hidden" name="occurred_at" value={new Date().toISOString()} />
 
       {error ? <FieldError text={error} /> : null}
+      {queued ? (
+        <p className="text-xs font-medium text-[var(--warning-ink)]">
+          Pending sync — will send when you are back online.
+        </p>
+      ) : null}
 
       <div className="grid grid-cols-2 gap-2 pt-1">
         <button

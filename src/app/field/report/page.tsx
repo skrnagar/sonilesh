@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { canFieldAction } from "@/lib/auth/field-roles";
 import { resolveFieldRole } from "@/lib/field/resolve-role";
+import { FIELD_LABELS } from "@/lib/field/labels";
 import { FieldActionLink, FieldForbidden, FieldPageHeader } from "@/components/field/field-ui";
 
 export default async function FieldReportHubPage() {
@@ -31,6 +32,22 @@ export default async function FieldReportHubPage() {
       hint: "Almost happened",
       icon: ShieldAlert,
       tone: "amber" as const,
+    },
+    {
+      action: "report_hazard" as const,
+      href: "/field/lmra",
+      label: FIELD_LABELS.lmra.short,
+      hint: "Last-minute risk assessment",
+      icon: ScanSearch,
+      tone: "navy" as const,
+    },
+    {
+      action: "site_visit" as const,
+      href: "/field/site-visits",
+      label: FIELD_LABELS.siteVisits.short,
+      hint: "HSV / RSV / TSV",
+      icon: Shield,
+      tone: "green" as const,
     },
     {
       action: "report_hazard" as const,

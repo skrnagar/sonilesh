@@ -30,7 +30,8 @@ const tabs = [
       p.startsWith("/field/incident") ||
       p.startsWith("/field/near-miss") ||
       p.startsWith("/field/lmra") ||
-      p.startsWith("/field/hazard"),
+      p.startsWith("/field/hazard") ||
+      p.startsWith("/field/site-visits"),
   },
   {
     href: "/field/actions",

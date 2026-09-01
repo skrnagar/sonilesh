@@ -17,7 +17,7 @@ import {
 } from "@/lib/field/offline-queue";
 import { attachDirectUpload } from "@/lib/storage/direct-upload";
 
-type Result = { ok: boolean; error?: string };
+type Result = { ok: boolean; error?: string; href?: string };
 
 export function FieldSubmitForm({
   action,
@@ -78,6 +78,10 @@ export function FieldSubmitForm({
     setPending(false);
     if (!result.ok) {
       setError(result.error || "Request failed");
+      return;
+    }
+    if (result.href) {
+      router.push(result.href);
       return;
     }
     router.refresh();

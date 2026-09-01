@@ -17,7 +17,8 @@ export type FieldAction =
   | "toolbox"
   | "approve_permit"
   | "team_view"
-  | "site_view";
+  | "site_view"
+  | "site_visit";
 
 const ROLE_ACTIONS: Record<FieldRole, FieldAction[]> = {
   contractor: [
@@ -32,6 +33,7 @@ const ROLE_ACTIONS: Record<FieldRole, FieldAction[]> = {
     "report_incident",
     "report_near_miss",
     "report_hazard",
+    "site_visit",
     "my_actions",
     "my_permits",
     "training",
@@ -41,6 +43,7 @@ const ROLE_ACTIONS: Record<FieldRole, FieldAction[]> = {
     "report_incident",
     "report_near_miss",
     "report_hazard",
+    "site_visit",
     "inspection",
     "my_actions",
     "my_permits",
@@ -53,6 +56,7 @@ const ROLE_ACTIONS: Record<FieldRole, FieldAction[]> = {
     "report_incident",
     "report_near_miss",
     "report_hazard",
+    "site_visit",
     "inspection",
     "my_actions",
     "my_permits",
@@ -66,6 +70,7 @@ const ROLE_ACTIONS: Record<FieldRole, FieldAction[]> = {
     "report_incident",
     "report_near_miss",
     "report_hazard",
+    "site_visit",
     "inspection",
     "my_actions",
     "my_permits",
@@ -79,6 +84,7 @@ const ROLE_ACTIONS: Record<FieldRole, FieldAction[]> = {
     "report_incident",
     "report_near_miss",
     "report_hazard",
+    "site_visit",
     "inspection",
     "my_actions",
     "my_permits",

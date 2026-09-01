@@ -63,6 +63,12 @@ export default async function FieldPermitsPage() {
         title="My permits"
         subtitle="Active site permits and items requiring your action."
       />
+      <Link
+        href="/field/permits/new"
+        className="block rounded-[var(--radius-md)] border border-border bg-card px-4 py-3 text-center text-sm font-semibold text-foreground shadow-[var(--shadow-sm)]"
+      >
+        Request new permit
+      </Link>
 
       {needingAction.length ? (
         <p className="text-sm font-medium text-foreground">

@@ -7,10 +7,11 @@ import { createEhsEvent } from "@/lib/services/events";
 import { createLmraFromFieldEvent } from "@/lib/services/lmra";
 import { transitionCapa, type CapaStatus } from "@/lib/services/capa";
 import { recordResponse } from "@/lib/services/checklists";
-import { transitionPermit, requestPermitRenewal } from "@/lib/services/permits";
+import { transitionPermit, requestPermitRenewal, createPermit } from "@/lib/services/permits";
 import { notifySiteSupervisors } from "@/lib/services/notifications";
 import { requireFeature } from "@/lib/services/entitlements";
 import { createToolboxTalk } from "@/lib/services/supporting";
+import { createSiteVisit, transitionSiteVisit } from "@/lib/services/site-visits";
 import { formatSupabaseUserError } from "@/lib/supabase/errors";
 import { assertOrgScopedStoragePath, sanitizeAttachmentName } from "@/lib/services/attachments";
 
@@ -61,6 +62,15 @@ function revalidateField() {
   revalidatePath("/field");
   revalidatePath("/app/dashboard");
   revalidatePath("/app/incidents");
+}
+
+function revalidateFieldSiteVisits(visitId?: string) {
+  revalidatePath("/field/site-visits");
+  revalidatePath("/app/site-visits");
+  if (visitId) {
+    revalidatePath(`/field/site-visits/${visitId}`);
+    revalidatePath(`/app/site-visits/${visitId}`);
+  }
 }
 
 async function resolveFieldSiteId(
@@ -489,6 +499,80 @@ export async function requestFieldPermitRenewalAction(formData: FormData): Promi
     }
     revalidateField();
     return { ok: true, id: renewal.id };
+  } catch (e) {
+    return { ok: false, error: formatSupabaseUserError(e) };
+  }
+}
+
+export async function createFieldPermitAction(formData: FormData): Promise<ActionResult & { href?: string }> {
+  try {
+    const { supabase, user, organization } = await requireOrgContext();
+    const row = await createPermit(supabase, {
+      organizationId: organization.id,
+      userId: user.id,
+      permitTypeCode: String(formData.get("permitTypeCode") || "general_work"),
+      title: String(formData.get("title") || "").trim(),
+      workDescription: String(formData.get("workDescription") || ""),
+      siteId: String(formData.get("siteId") || "") || undefined,
+      asDraft: false,
+    });
+    revalidatePath("/field/permits");
+    revalidatePath("/app/permits");
+    return { ok: true, id: row.id, href: `/field/permits/${encodeURIComponent(row.permit_number)}` };
+  } catch (e) {
+    return { ok: false, error: formatSupabaseUserError(e) };
+  }
+}
+
+export async function createFieldSiteVisitAction(
+  formData: FormData,
+): Promise<ActionResult & { href?: string }> {
+  try {
+    const { supabase, user, organization, siteId, projectId } = await requireOrgContext();
+    const visitType = String(formData.get("visitType") || "tsv") as "hsv" | "rsv" | "tsv";
+    const summary = String(formData.get("summary") || "").trim();
+    if (summary.length < 8) {
+      return { ok: false, error: "Summary must be at least 8 characters" };
+    }
+    const row = await createSiteVisit(supabase, {
+      organizationId: organization.id,
+      userId: user.id,
+      visitType,
+      summary,
+      siteId: String(formData.get("siteId") || "") || siteId || null,
+      projectId: projectId || null,
+      submit: formData.get("submit") === "true",
+    });
+    revalidateFieldSiteVisits(row.id);
+    return { ok: true, id: row.id, href: `/field/site-visits/${row.id}` };
+  } catch (e) {
+    return { ok: false, error: formatSupabaseUserError(e) };
+  }
+}
+
+export async function transitionFieldSiteVisitAction(
+  formData: FormData,
+): Promise<ActionResult & { href?: string }> {
+  try {
+    const { supabase, user, organization } = await requireOrgContext();
+    const visitId = String(formData.get("visitId") || "");
+    const toStatus = String(formData.get("toStatus") || "") as
+      | "submitted"
+      | "allocated"
+      | "closed"
+      | "final_closed"
+      | "cancelled";
+    if (!visitId) return { ok: false, error: "Missing visit" };
+    await transitionSiteVisit(supabase, {
+      organizationId: organization.id,
+      userId: user.id,
+      visitId,
+      toStatus,
+      assignedTo: String(formData.get("assignedTo") || "") || null,
+      note: String(formData.get("note") || "") || undefined,
+    });
+    revalidateFieldSiteVisits(visitId);
+    return { ok: true, href: `/field/site-visits/${visitId}` };
   } catch (e) {
     return { ok: false, error: formatSupabaseUserError(e) };
   }

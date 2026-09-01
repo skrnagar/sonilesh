@@ -12,6 +12,10 @@ describe("field role gating", () => {
     expect(canFieldAction(fieldRoleFromCodes(["supervisor"]), "approve_permit")).toBe(true);
   });
 
+  it("gives employees site_visit access", () => {
+    expect(canFieldAction(fieldRoleFromCodes(["employee"]), "site_visit")).toBe(true);
+  });
+
   it("returns a greeting", () => {
     expect(greetingForNow(new Date("2026-08-13T09:00:00Z"))).toMatch(/GOOD /);
   });
