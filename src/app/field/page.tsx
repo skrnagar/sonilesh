@@ -1,22 +1,12 @@
 import { Suspense } from "react";
-import {
-  AlertTriangle,
-  ClipboardCheck,
-  GraduationCap,
-  ListChecks,
-  MapPin,
-  ScanSearch,
-  Shield,
-  ShieldAlert,
-  Users,
-} from "lucide-react";
 import { requireOrgContext } from "@/lib/auth/org-context";
-import { canFieldAction, greetingForNow, type FieldAction } from "@/lib/auth/field-roles";
-import { permitCountdown } from "@/lib/field/permit-countdown";
+import { greetingForNow } from "@/lib/auth/field-roles";
 import { resolveFieldRole } from "@/lib/field/resolve-role";
-import { FIELD_LABELS, fieldEventLabel } from "@/lib/field/labels";
+import { permitCountdown } from "@/lib/field/permit-countdown";
+import { fieldEventLabel } from "@/lib/field/labels";
+import { filterRakshaLaunchpadForField } from "@/lib/navigation/raksha-launchpad";
+import { FieldLaunchpad } from "@/components/field/field-launchpad";
 import {
-  FieldActionLink,
   FieldEmpty,
   FieldRow,
   FieldSection,
@@ -37,124 +27,18 @@ export default async function FieldHomePage() {
     projects[0]?.name ??
     "—";
 
-  const quickAll: Array<{
-    action: FieldAction;
-    href: string;
-    label: string;
-    hint?: string;
-    tone: "navy" | "green" | "amber" | "red";
-    icon: typeof AlertTriangle;
-    wide?: boolean;
-    prefetch?: boolean;
-  }> = [
-    {
-      action: "report_incident",
-      href: "/field/incident",
-      label: FIELD_LABELS.incident.short,
-      hint: "Injury, damage, or loss",
-      tone: "red",
-      icon: AlertTriangle,
-      wide: true,
-      prefetch: true,
-    },
-    {
-      action: "report_near_miss",
-      href: "/field/near-miss",
-      label: FIELD_LABELS.nearMiss.short,
-      hint: "Close call",
-      tone: "amber",
-      icon: ShieldAlert,
-    },
-    {
-      action: "report_hazard",
-      href: "/field/hazard?type=unsafe_act",
-      label: "UA / UC",
-      hint: "Unsafe act or condition",
-      tone: "amber",
-      icon: ShieldAlert,
-    },
-    {
-      action: "report_hazard",
-      href: "/field/lmra",
-      label: FIELD_LABELS.lmra.short,
-      hint: "Last-minute risk",
-      tone: "navy",
-      icon: ScanSearch,
-    },
-    {
-      action: "site_visit",
-      href: "/field/site-visits",
-      label: FIELD_LABELS.siteVisits.short,
-      hint: "HSV / RSV / TSV",
-      tone: "green",
-      icon: MapPin,
-    },
-    {
-      action: "inspection",
-      href: "/field/inspection",
-      label: FIELD_LABELS.inspection.short,
-      tone: "navy",
-      icon: ClipboardCheck,
-    },
-    {
-      action: "my_actions",
-      href: "/field/actions",
-      label: FIELD_LABELS.actions.short,
-      tone: "green",
-      icon: ListChecks,
-    },
-    {
-      action: "my_permits",
-      href: "/field/permits",
-      label: FIELD_LABELS.permits.short,
-      tone: "navy",
-      icon: Shield,
-    },
-    {
-      action: "training",
-      href: "/field/training",
-      label: FIELD_LABELS.training.short,
-      tone: "green",
-      icon: GraduationCap,
-    },
-    {
-      action: "toolbox",
-      href: "/field/toolbox",
-      label: FIELD_LABELS.toolbox.short,
-      tone: "amber",
-      icon: Users,
-    },
-  ];
-  const quick = quickAll.filter((q) => canFieldAction(role, q.action));
+  const menuTiles = filterRakshaLaunchpadForField(role);
+  const userName = profile?.full_name?.split(" ")[0] || "Field user";
 
   return (
     <div className="space-y-5">
-      <section className="rounded-2xl border border-border bg-card p-3.5 shadow-[var(--shadow-sm)]">
-        <p className="text-[11px] font-semibold tracking-[0.18em] text-[var(--mkt-safety)]">
-          {greetingForNow()}
-        </p>
-        <h1 className="mt-0.5 text-xl font-semibold tracking-tight text-foreground [font-family:var(--font-sans-face),ui-sans-serif,system-ui,sans-serif]">
-          {profile?.full_name?.split(" ")[0] || "Field user"}
-        </h1>
-        <p className="mt-1 truncate text-sm text-muted-foreground">
-          {siteName} · {projectName}
-        </p>
-      </section>
-
-      <section className="grid grid-cols-2 gap-2.5">
-        {quick.map((q) => (
-          <FieldActionLink
-            key={q.href}
-            href={q.href}
-            label={q.label}
-            hint={q.hint}
-            icon={q.icon}
-            tone={q.tone}
-            wide={q.wide}
-            prefetch={q.prefetch}
-          />
-        ))}
-      </section>
+      <FieldLaunchpad
+        tiles={menuTiles}
+        greeting={greetingForNow()}
+        userName={userName}
+        siteName={siteName}
+        projectName={projectName}
+      />
 
       <Suspense fallback={<FieldSectionSkeleton title="Pending actions" />}>
         <HomeActions orgId={orgId} />

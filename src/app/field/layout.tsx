@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { Bell, User } from "lucide-react";
 import { FieldTabBar } from "@/components/field/field-tab-bar";
 import { FieldMark, FieldPageSkeleton, fieldHeaderBtnClass } from "@/components/field/field-ui";
+import { NavigationProgress } from "@/components/layout/navigation-progress";
 import { requireOrgContext } from "@/lib/auth/org-context";
 import { countFieldUnread } from "@/lib/field/unread";
 
@@ -35,8 +36,11 @@ export default async function FieldLayout({ children }: { children: React.ReactN
 
   return (
     <div className="min-h-dvh overflow-x-clip bg-transparent text-foreground">
+      <Suspense fallback={null}>
+        <NavigationProgress />
+      </Suspense>
       <header className="app-shell-header sticky top-0 z-20 border-b border-border/80 pt-[env(safe-area-inset-top)] shadow-[var(--shadow-header)]">
-        <div className="mx-auto flex h-12 max-w-lg items-center justify-between gap-2 px-3">
+        <div className="mx-auto flex h-12 max-w-5xl items-center justify-between gap-2 px-3">
           <div className="flex min-w-0 items-center gap-2">
             <FieldMark />
             <div className="min-w-0">
@@ -74,7 +78,7 @@ export default async function FieldLayout({ children }: { children: React.ReactN
           </div>
         </div>
       </header>
-      <main className="app-page mx-auto max-w-lg px-3 pb-[calc(4rem+env(safe-area-inset-bottom))] pt-4">
+      <main className="app-page mx-auto max-w-5xl px-3 pb-[calc(4rem+env(safe-area-inset-bottom))] pt-4 sm:px-4">
         <Suspense fallback={<FieldPageSkeleton />}>{children}</Suspense>
       </main>
       <FieldTabBar />

@@ -2,11 +2,13 @@ import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
+import { RakshaLaunchpadGrid } from "@/components/navigation/raksha-launchpad-grid";
 import {
   LAUNCHPAD_SECTION_LABELS,
   type LaunchpadSection,
   type LaunchpadTile,
 } from "@/lib/navigation/launchpad";
+import type { ResolvedRakshaTile } from "@/lib/navigation/raksha-launchpad";
 import { cn } from "@/lib/utils";
 
 export function OpsTileGrid({
@@ -164,11 +166,13 @@ export function HomeLaunchpad({
   sections,
   organizationName,
   userName,
+  rakshaTiles,
 }: {
   persona: string;
   sections: LaunchpadSections;
   organizationName: string;
   userName: string;
+  rakshaTiles?: ResolvedRakshaTile[];
 }) {
   const dashboardTiles = sections.dashboard;
   const operationsTiles = sections.operations;
@@ -213,6 +217,16 @@ export function HomeLaunchpad({
       <div className="px-0.5">
         <Breadcrumbs items={[{ label: "Home", href: "/app/home" }]} className="mb-2" />
       </div>
+
+      {rakshaTiles && rakshaTiles.length > 0 ? (
+        <section className="raksha-module-panel space-y-4">
+          <div className="flex items-baseline justify-between gap-3">
+            <h2 className="raksha-section-tab">RAKSHA Modules</h2>
+            <span className="text-xs text-white/70">{rakshaTiles.length} modules</span>
+          </div>
+          <RakshaLaunchpadGrid tiles={rakshaTiles} />
+        </section>
+      ) : null}
 
       {dashboardTiles.length > 0 ? (
         <section className="raksha-module-panel space-y-4">

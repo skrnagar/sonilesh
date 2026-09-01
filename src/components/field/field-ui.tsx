@@ -219,14 +219,18 @@ export function FieldSectionSkeleton({ title, rows = 2 }: { title: string; rows?
 export function FieldHomeSkeleton() {
   return (
     <div className="space-y-5" aria-busy="true" aria-label="Loading field home">
-      <div className="h-[5.5rem] animate-pulse rounded-[var(--radius-lg)] border border-border bg-muted/70" />
-      <div className="grid grid-cols-2 gap-2.5">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div
-            key={i}
-            className="h-14 animate-pulse rounded-[var(--radius-lg)] border border-border bg-muted/70"
-          />
-        ))}
+      <div className="raksha-module-panel space-y-4">
+        <div className="h-5 w-32 animate-pulse rounded bg-white/20" />
+        <div className="h-7 w-48 animate-pulse rounded bg-white/20" />
+        <div className="h-4 w-56 animate-pulse rounded bg-white/15" />
+        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4 sm:gap-3">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div
+              key={i}
+              className="raksha-module-tile h-[6.75rem] animate-pulse bg-white/90"
+            />
+          ))}
+        </div>
       </div>
       <FieldSectionSkeleton title="Pending actions" />
       <FieldSectionSkeleton title="Permits" />

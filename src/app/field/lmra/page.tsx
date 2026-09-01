@@ -7,7 +7,7 @@ import { resolveFieldRole } from "@/lib/field/resolve-role";
 
 export default async function FieldLmraPage() {
   const role = await resolveFieldRole();
-  if (!canFieldAction(role, "report_hazard")) return <FieldForbidden />;
+  if (!canFieldAction(role, "lmra")) return <FieldForbidden />;
 
   return (
     <div className="space-y-4">

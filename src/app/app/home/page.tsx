@@ -10,6 +10,7 @@ import {
   selectDashboardTiles,
   type LaunchpadSection,
 } from "@/lib/navigation/launchpad";
+import { filterRakshaLaunchpadForWeb } from "@/lib/navigation/raksha-launchpad";
 import { listEnabledFeatures } from "@/lib/services/entitlements";
 import { getUserPermissions } from "@/lib/services/rbac";
 
@@ -35,6 +36,7 @@ export default async function HomePage() {
   ) as Record<LaunchpadSection, typeof visible>;
 
   const userName = profile?.full_name || profile?.email || user.email || "";
+  const rakshaTiles = filterRakshaLaunchpadForWeb(permissions);
 
   return (
     <HomeLaunchpad
@@ -42,6 +44,7 @@ export default async function HomePage() {
       sections={sections}
       organizationName={organization.name}
       userName={userName}
+      rakshaTiles={rakshaTiles}
     />
   );
 }
