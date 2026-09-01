@@ -8,8 +8,8 @@ import {
   FieldCard,
   FieldError,
 } from "@/components/field/field-ui";
-import type { VisitStatus } from "@/lib/services/site-visits";
-import { SITE_VISIT_TRANSITIONS } from "@/lib/services/site-visits";
+import type { VisitStatus } from "@/lib/site-visits/workflow";
+import { SITE_VISIT_TRANSITIONS } from "@/lib/site-visits/workflow";
 import { useState } from "react";
 
 export function FieldSiteVisitWorkflow({

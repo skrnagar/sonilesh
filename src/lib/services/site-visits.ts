@@ -2,29 +2,20 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { writeAuditLog } from "@/lib/services/audit";
 import { DOCUMENT_NUMBER_KEYS, nextDocumentNumber } from "@/lib/services/document-numbers";
 import { requirePermission } from "@/lib/services/rbac";
+import {
+  canTransitionSiteVisit,
+  type VisitStatus,
+  type VisitType,
+} from "@/lib/site-visits/workflow";
 
-export type VisitType = "hsv" | "rsv" | "tsv";
-export type VisitStatus = "draft" | "submitted" | "allocated" | "closed" | "final_closed" | "cancelled";
+export type { VisitStatus, VisitType } from "@/lib/site-visits/workflow";
+export { canTransitionSiteVisit, SITE_VISIT_TRANSITIONS } from "@/lib/site-visits/workflow";
 
 const VISIT_CREATE_PERMISSION: Record<VisitType, string> = {
   hsv: "visits.hsv.create",
   rsv: "visits.rsv.create",
   tsv: "visits.tsv.create",
 };
-
-/** Valid forward transitions enforced in service + DB trigger. */
-export const SITE_VISIT_TRANSITIONS: Record<VisitStatus, VisitStatus[]> = {
-  draft: ["submitted", "cancelled"],
-  submitted: ["allocated", "cancelled"],
-  allocated: ["closed", "cancelled"],
-  closed: ["final_closed"],
-  final_closed: [],
-  cancelled: [],
-};
-
-export function canTransitionSiteVisit(from: VisitStatus, to: VisitStatus) {
-  return SITE_VISIT_TRANSITIONS[from]?.includes(to) ?? false;
-}
 
 export async function listSiteVisits(
   supabase: SupabaseClient,

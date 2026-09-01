@@ -5,8 +5,8 @@ import { ActionForm } from "@/components/shared/action-form";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import type { VisitStatus } from "@/lib/services/site-visits";
-import { SITE_VISIT_TRANSITIONS } from "@/lib/services/site-visits";
+import type { VisitStatus } from "@/lib/site-visits/workflow";
+import { SITE_VISIT_TRANSITIONS } from "@/lib/site-visits/workflow";
 
 export function SiteVisitWorkflowBar({
   visitId,

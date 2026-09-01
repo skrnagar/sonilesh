@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   SITE_VISIT_TRANSITIONS,
   canTransitionSiteVisit,
-} from "@/lib/services/site-visits";
+} from "@/lib/site-visits/workflow";
 
 describe("site visit workflow", () => {
   it("allows draft to submitted", () => {
