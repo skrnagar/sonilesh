@@ -2,7 +2,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 const LINKS = [
-  { href: "/app/settings/organization", label: "Organization" },
+  { href: "/org-admin", label: "Organization admin" },
   { href: "/app/settings/organization/structure", label: "Structure" },
   { href: "/app/settings/business-units", label: "Business units" },
   { href: "/app/settings/regions", label: "Regions" },

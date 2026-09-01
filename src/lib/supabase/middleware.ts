@@ -22,6 +22,7 @@ function loginPathFor(pathname: string) {
   if (pathname.startsWith("/admin")) return "/admin/login";
   if (pathname.startsWith("/field")) return "/field/login";
   if (pathname.startsWith("/contractor")) return "/contractor/login";
+  if (pathname.startsWith("/org-admin")) return "/login";
   return "/login";
 }
 
@@ -90,6 +91,7 @@ export async function updateSession(request: NextRequest) {
   const isProtected =
     (pathname.startsWith("/app") ||
       pathname.startsWith("/admin") ||
+      pathname.startsWith("/org-admin") ||
       pathname.startsWith("/onboarding") ||
       pathname.startsWith("/field") ||
       pathname.startsWith("/contractor")) &&

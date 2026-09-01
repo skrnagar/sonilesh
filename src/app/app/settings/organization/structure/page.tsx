@@ -1,4 +1,4 @@
-import { SettingsNav } from "@/components/organization/settings-nav";
+import Link from "next/link";
 import { StructureTree } from "@/components/organization/structure-tree";
 import { ForbiddenState } from "@/components/shared/state-panels";
 import { requireModuleAccess } from "@/lib/auth/org-context";
@@ -23,10 +23,13 @@ export default async function OrganizationStructurePage() {
         <h1 className="text-xl font-semibold">Organization structure</h1>
         <p className="text-sm text-muted-foreground">
           Expand nodes to explore business units, sites, projects, departments, and locations.
-          Levels are optional — configure what your tenant uses.
+        </p>
+        <p className="mt-2 text-sm">
+        <Link className="underline" href="/org-admin/general">
+          ← Organization admin
+        </Link>
         </p>
       </div>
-      <SettingsNav current="/app/settings/organization/structure" />
       <div className="rounded-2xl border border-border bg-card p-4 md:p-6">
         {tree.children.length === 0 ? (
           <p className="text-sm text-muted-foreground">

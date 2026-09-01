@@ -257,6 +257,7 @@ export async function inviteUserAction(formData: FormData): Promise<ActionResult
       projectId: String(formData.get("projectId") || "") || null,
     });
     revalidatePath("/app/settings/users");
+    revalidatePath("/org-admin/team");
     revalidatePath("/app/admin");
     return {
       ok: true,
@@ -282,6 +283,7 @@ export async function updateMemberStatusAction(formData: FormData): Promise<Acti
         | "removed",
     });
     revalidatePath("/app/settings/users");
+    revalidatePath("/org-admin/team");
     return { ok: true };
   } catch (err) {
     if (isNextRedirect(err)) throw err;
@@ -305,6 +307,7 @@ export async function assignMemberScopeAction(formData: FormData): Promise<Actio
       departmentId: String(formData.get("departmentId") || "") || null,
     });
     revalidatePath("/app/settings/users");
+    revalidatePath("/org-admin/team");
     return { ok: true };
   } catch (err) {
     if (isNextRedirect(err)) throw err;

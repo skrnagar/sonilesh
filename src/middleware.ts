@@ -10,6 +10,7 @@ export const config = {
     // Protected app surfaces — session refresh + auth gating only where needed.
     "/app/:path*",
     "/admin/:path*",
+    "/org-admin/:path*",
     "/field/:path*",
     "/contractor/:path*",
     "/onboarding/:path*",

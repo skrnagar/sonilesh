@@ -58,6 +58,8 @@ export const LOCATION_TYPES = [
 ] as const;
 
 export const INVITE_ROLE_CODES = [
+  "tenant_admin",
+  "ehs_admin",
   "ehs_manager",
   "ehs_officer",
   "site_manager",
@@ -66,6 +68,16 @@ export const INVITE_ROLE_CODES = [
   "contractor",
   "auditor",
   "viewer",
+] as const;
+
+export const FILE_UPLOAD_ROLE_OPTIONS = [
+  "tenant_admin",
+  "ehs_admin",
+  "ehs_manager",
+  "ehs_officer",
+  "site_manager",
+  "supervisor",
+  "employee",
 ] as const;
 
 export const ONBOARDING_STEPS = [

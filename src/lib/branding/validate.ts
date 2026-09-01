@@ -91,3 +91,13 @@ export function sanitizeTimezone(value: string | null | undefined) {
   const raw = (value ?? "").trim();
   return TIMEZONE_SAFE.test(raw) ? raw : null;
 }
+
+const CUSTOM_DOMAIN =
+  /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$/;
+
+export function sanitizeCustomDomain(value: string | null | undefined) {
+  const raw = (value ?? "").trim().toLowerCase();
+  if (!raw) return null;
+  if (!CUSTOM_DOMAIN.test(raw)) return null;
+  return raw;
+}
