@@ -9,6 +9,10 @@ import {
 import { canFieldAction } from "@/lib/auth/field-roles";
 import { requireOrgContext } from "@/lib/auth/org-context";
 import { resolveFieldRole } from "@/lib/field/resolve-role";
+import {
+  formatQualityObservationDate,
+  getQualityObservationById,
+} from "@/lib/services/quality-observations";
 import { getUaucEventDetail } from "@/lib/services/uauc-list";
 import { formatDateTime } from "@/lib/utils";
 
@@ -41,11 +45,69 @@ export default async function FieldUaucDetailPage({
 }) {
   const { id } = await params;
   const role = await resolveFieldRole();
-  if (!canFieldAction(role, "report_hazard")) return <FieldForbidden />;
+  const canView =
+    canFieldAction(role, "report_hazard") || canFieldAction(role, "raksha_reports");
+  if (!canView) return <FieldForbidden />;
 
   const access = await requireOrgContext();
   const detail = await getUaucEventDetail(access.supabase, access.organization.id, id);
-  if (!detail) notFound();
+  if (!detail) {
+    const qualityDetail = await getQualityObservationById(
+      access.supabase,
+      access.organization.id,
+      id,
+    );
+    if (!qualityDetail) notFound();
+
+    return (
+      <div className="space-y-4">
+        <FieldPageHeader title={qualityDetail.eventNumber} />
+
+        <FieldCard>
+          <dl className="grid gap-4 sm:grid-cols-3">
+            <DetailField label="SBU" value={qualityDetail.businessUnitName ?? "—"} />
+            <DetailField label="Region" value={qualityDetail.regionName ?? "—"} />
+            <DetailField label="Project" value={qualityDetail.projectName ?? "—"} />
+            <DetailField label="Category" value={qualityDetail.categoryName ?? "—"} />
+            <DetailField label="Subcategory" value={qualityDetail.subcategoryName ?? "—"} />
+            <DetailField label="Location No" value={qualityDetail.locationNo ?? "—"} />
+          </dl>
+
+          <div className="mt-4">
+            <DetailField label="Description" value={qualityDetail.description} />
+          </div>
+
+          <dl className="mt-4 grid gap-4 sm:grid-cols-3">
+            <DetailField label="Reported By" value={qualityDetail.reportedByName} />
+            <DetailField
+              label="Created On"
+              value={formatQualityObservationDate(qualityDetail.createdOn) || "—"}
+            />
+            <div>
+              <dt className="text-xs font-semibold text-[var(--raksha-blue)]">Status</dt>
+              <dd className="mt-1">
+                <UaucStatusPill label={qualityDetail.statusLabel} />
+              </dd>
+            </div>
+            <DetailField label="Closed By" value={qualityDetail.closedByName ?? "—"} />
+            <DetailField
+              label="Closed On"
+              value={formatQualityObservationDate(qualityDetail.closedOn) || "—"}
+            />
+          </dl>
+        </FieldCard>
+
+        <div className="flex justify-end">
+          <Link
+            href="/field/reports/quality-observations"
+            className={`${fieldSecondaryBtnClass} w-auto px-8`}
+          >
+            Back
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">

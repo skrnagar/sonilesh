@@ -14,7 +14,6 @@ import { resolveFieldRole } from "@/lib/field/resolve-role";
 
 const REPORT_KEYS = new Set<string>([
   "covid-startup-checklist",
-  "quality-observations",
   "observation-ageing",
   "quality-score",
   "quality-mis",
