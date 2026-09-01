@@ -223,7 +223,7 @@ export function FieldHomeSkeleton() {
         <div className="h-5 w-32 animate-pulse rounded bg-white/20" />
         <div className="h-7 w-48 animate-pulse rounded bg-white/20" />
         <div className="h-4 w-56 animate-pulse rounded bg-white/15" />
-        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4 sm:gap-3">
+        <div className="grid grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}

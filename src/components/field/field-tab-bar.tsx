@@ -40,7 +40,7 @@ const tabs = [
     label: "Actions",
     icon: ClipboardList,
     prefetch: false,
-    match: (p: string) => p.startsWith("/field/actions"),
+    match: (p: string) => p.startsWith("/field/actions") || p.startsWith("/field/action-list"),
   },
   {
     href: "/field/permits",

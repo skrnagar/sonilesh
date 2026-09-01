@@ -25,7 +25,7 @@ export function RakshaLaunchpadGrid({ tiles }: { tiles: RakshaGridTile[] }) {
   if (!tiles.length) return null;
 
   return (
-    <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4 sm:gap-3">
+    <div className="grid grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-4">
       {tiles.map((tile) => {
         const Icon = tile.icon;
         const pending = pendingKey === tile.key;
@@ -37,20 +37,22 @@ export function RakshaLaunchpadGrid({ tiles }: { tiles: RakshaGridTile[] }) {
             aria-busy={pending || undefined}
             onClick={() => setPendingKey(tile.key)}
             className={cn(
-              "raksha-module-tile group flex min-h-[6.75rem] flex-col items-center justify-center gap-2 p-3 text-center motion-reduce:transition-none",
+              "raksha-module-tile group flex min-h-[6.75rem] flex-col items-center justify-center gap-2.5 p-3 text-center motion-reduce:transition-none",
               pending && "pointer-events-none opacity-70",
             )}
           >
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--raksha-blue-light)]">
+            <span
+              className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-[var(--raksha-blue)] bg-white"
+            >
               <Icon
                 className={cn(
-                  "h-5 w-5 text-[var(--raksha-blue-dark)]",
+                  "h-5 w-5 text-[var(--raksha-blue)]",
                   pending && "animate-pulse",
                 )}
                 aria-hidden
               />
             </span>
-            <span className="font-display text-[11px] font-semibold leading-tight text-[var(--raksha-blue-dark)] group-hover:text-[var(--raksha-blue)] sm:text-xs">
+            <span className="font-display text-[10px] font-bold uppercase leading-tight tracking-wide text-[var(--raksha-blue-dark)] group-hover:text-[var(--raksha-blue)] sm:text-[11px]">
               {tile.label}
             </span>
           </Link>

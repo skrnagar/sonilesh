@@ -426,10 +426,10 @@ button.bg-primary:hover {
 
 .raksha-module-tile {
   background: #ffffff;
-  border: 1px solid color-mix(in srgb, #ffffff 85%, var(--border));
+  border: 1px solid color-mix(in srgb, var(--raksha-blue) 42%, #ffffff);
   border-radius: var(--radius-md);
   box-shadow: 0 2px 8px rgba(7, 31, 45, 0.12);
-  transition: transform 180ms ease, box-shadow 180ms ease;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 
 .raksha-module-tile:hover {
