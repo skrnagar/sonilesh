@@ -1,0 +1,165 @@
+--- PAGE 1 ---
+KEC International Limited
+User Guide for Permit to Work in KEC MyZone - Raksha
+Power T & D CablesCivilSolar Smart Infra
+Railways
+
+--- PAGE 2 ---
+Points To Remember before filling the Work Permit
+1.User of Permit : Site Engineer/Supervisor/Foreman (KEC)
+2.Issuer of Permit: Section In-Charge (Area In-Charge/HOD/Construction Manager)
+or in case of absence of Section In-Charge, Project Manager (PM)
+will be issuer
+3. Reviewer/Assessor of Permit: Safety Officer (KEC)
+4. Closure of Permit: User- Site Engineer/Supervisor/Foreman (KEC)
+5. Important Notes: • Permit duration should not exceed 12 hrs., in case work
+extension required- User has access to request for extension
+for work permit max. 12 hours before closing of work permit
+with proper approval.
+• Once the permit got rejected/cancelled, again same has to re-
+issue after rectification of remarks.
+• It is important to close work permit before validity time as it
+will expire immediately after validity time.
+• Any uncheck points in permit checklist will be considered as
+“Not done”.
+
+--- PAGE 3 ---
+KEC MyZone (LoginPage)
+• Open URL :-https://digital.kecrpg.com/myzone/login or KEC MY ZONE APP
+• Enter your Mail ID & Password then click on login.
+• NOTE: If any password related Issues contact IT Support.
+3
+
+--- PAGE 4 ---
+KEC MyZone (Homepage)
+• Click on Raksha to access Work Permit.
+4
+Click on Work 
+Permit
+• Click on Work permit to access permits.
+
+--- PAGE 5 ---
+User’s flow
+• By clicking on the ADD Work 
+Permit, select the Work Permit 
+document as required and duly 
+fill the checklist.
+• No field should be left blank.
+User has to fill the required permit:-
+• In the “Issued to” column fill sub-
+contractor’s Representative or
+Supervisor of Sub-contractor’s name
+with their company’s name (to be filled
+manually).
+• Select the Work Permit based on 
+the required activity.
+• Please fill the checklist of the 
+permit as mentioned.
+
+--- PAGE 6 ---
+• The User has to attach the picture in
+the File Attachments of the working
+location. (Only Jpg,Jpeg format).
+• The User has to click Submit for the
+further approval from the Issuer
+(refer slide 2).
+• After submission automatically mail
+communication and pdf will be sent
+as, To “Issuer” and CC “User”.
+• The status of the Permit will be
+shown as PENDING in the
+Work Permit List before
+Issuer’s approval.
+User’s flow
+• After filling the work permit the
+User should assign the work
+permit from to concern Issuer
+(Refer Slide 2) for their approval
+of the work Permit in the
+“Assigned for Approval of
+Permit” field
+• Issuer could be selected from
+dropdown option.
+Submit
+
+--- PAGE 7 ---
+Issuer’s flow
+• The issuer shall Approve the permit, if there
+is no deviation or Reject if there is any.
+• After reviewing, the Permit Issuer should
+forward the Permit to ESHO in “Review by
+EHSO” field.
+• The issuer could write the Remarks regarding
+the permit.
+• In the Work Permit List, the status of the permit will
+be shown as APPROVED after approval and Rejected
+if rejected by Issuer.
+• Mail communication with pdf will be sent accordingly
+as To “Safety Officer”, “User” , and CC “Issuer” and (If
+approved)
+• Mail communication with pdf will be sent accordingly
+as To “User” and CC “Issuer” and “Safety Officer”. (If
+Rejected)
+
+
+--- PAGE 8 ---
+Safety Officer’s flow
+• The ESHO will verify the Permit
+and shall click OKAY, if there is
+no deviation and Cancel if there
+is any.
+• The ESHO shall write the remarks
+regarding the PERMIT and shall
+click on Verify Permit
+• In the Work Permit List, the
+status of the permit will be
+shown as Verified by EHS &
+Cancelled by EHS accordingly.
+
+
+--- PAGE 9 ---
+Extension Flow (If- Needed)
+User Flow
+• The User can extend the Permit
+if the activity will go beyond the
+validity time by clicking on
+Extend Permit.
+ESHO Flow
+• The ESHO can verify the Permit
+extension by clicking on Verify
+Permit Extension and can cancel
+the extension if any deviation
+found.
+Issuer Flow
+• The Issuer can approve the
+extension of the Permit if the
+activity will go beyond the
+stipulated time by clicking on
+“Approve Extension”.
+
+
+--- PAGE 10 ---
+User’s Flow – Closure of permit
+• Closure of the Permit shall be
+done by user by clicking on Close
+Permit
+• The User shall select the
+appropriate action from the box,
+and write the Closure Remarks
+and then click on Close Permit
+after completion of the work.
+• The status of the permit will be
+displayed as CLOSED
+Close Permit
+
+--- PAGE 11 ---
+www.kecrpg.com
+Registered Office 
+RPG House, 463, Dr. Annie Besant Road, Worli, Mumbai - 400 030. 
+Phone: +91-22-6667 0200 Email: kecindia@kecrpg.com
+Global Footprint in  
+100 countries*
+*Includes EPC and Supply
+Follow us on:
+“Safety starts with me and I am responsible for it”
+Thanks

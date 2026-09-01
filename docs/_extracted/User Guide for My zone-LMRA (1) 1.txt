@@ -1,0 +1,92 @@
+--- PAGE 1 ---
+KEC International Limited
+User Guide for LMRA in KEC MyZone - Raksha
+Power T & D CablesCivilSolar Smart Infra
+Railways
+
+--- PAGE 2 ---
+KEC MyZone (Login Page)
+• Open URL :-https://digital.kecrpg.com/myzone/login or KEC MY ZONE APP
+• Enter your Mail ID & Password then click on login.
+• NOTE: If any password related Issues contact IT Support.
+2
+
+
+--- PAGE 3 ---
+LMRA Reporting
+Important Note:
+• LMRA stands for Last Minute Risk Assessment.
+• This is applicable for all the activities at site.
+There are Two steps in reporting LMRA and Closure:
+Step1 LMRA Entry The User (Site Engineer/Supervisor/Foreman) 
+must fill the details of the site, Risks identified 
+while performing the activity and their 
+controls taken, in the LMRA Entry and must 
+submit for the ESHO approval.
+Step 2 LMRA Approval The ESHO then Approve/Reject the LMRA after 
+detailed verification.
+
+
+--- PAGE 4 ---
+KEC MyZone (Homepage)
+• Click on Raksha to access LMRA.
+4
+Click on LMRA
+• Click on LMRA to access LMRA entry
+page.
+
+
+--- PAGE 5 ---
+LMRA reporting –User’s flow
+• The User (Refer slide 3) must
+click on ADD LMRA to access
+LMRA Data sheet.
+• In LMRA Entry, all the fields 
+should be duly field by the 
+User
+• The user shall assign the LMRA 
+to ESHO by clicking on drop 
+down option ASSIGNED To
+field
+
+
+--- PAGE 6 ---
+Cont.
+The User shall fill all the details in the entry page relevant to the activity at site.
+
+
+--- PAGE 7 ---
+Cont.
+• The status of the LMRA will be
+shown as pending.
+• Mail communication will be done
+“To” EHSO with “CC” to User.
+• The user shall attach the Photo of
+the site in the File Attachments
+option.
+• The User shall submit the LMRA to
+get approval from the ESHO.
+
+
+--- PAGE 8 ---
+LMRA Approval- EHSO Flow
+• The status of the LMRA will be
+shown as Approved/Rejected.
+• Mail communication will be done
+“To” User with “CC” to ESHO
+accordingly.
+• The ESHO then Approve/Reject 
+the LMRA after verification.
+
+
+--- PAGE 9 ---
+www.kecrpg.com
+Registered Office 
+RPG House, 463, Dr. Annie Besant Road, Worli, Mumbai - 400 030. 
+Phone: +91-22-6667 0200 Email: kecindia@kecrpg.com
+Global Footprint in  
+100 countries*
+*Includes EPC and Supply
+Follow us on:
+“Safety starts with me and I am responsible for it”
+Thanks

@@ -1,0 +1,279 @@
+--- PAGE 1 ---
+KEC International Limited
+Power T & D CablesCivilSolar Smart
+Infra
+Railways
+May 7, 2020
+User Guideline For Online Team Safety Visit
+
+--- PAGE 2 ---
+RAKSHA (Landing Page)
+2
+Click on “KEC EMPLOYEE” for login .
+Click here
+
+--- PAGE 3 ---
+RAKSHA (Login Page)
+3
+Enter your Mail ID & Password then click on Sign in for login.
+Enter Here
+
+--- PAGE 4 ---
+RAKSHA (Launchpad)
+4
+Click 
+Here
+‘Who is able to Fill TSV?: “PROJECT MANAGER”
+Click on “TSV” to open the TSV Format. PROJECT MANAGER
+
+--- PAGE 5 ---
+TSV (Home Page)
+5
+After click on TSV option this page will open in which all the TSV is 
+mentioned which is reported with all their details.
+-Click on “CREATE TSV” option to report “New TSV”.
+Click here to CREATE “NEW TSV”
+
+--- PAGE 6 ---
+TSV (Fill up Page)
+6
+Steps to Fill the HSV/RSV:-
+(1) Select your Business Unit , Region & Project.
+(2) Enter Location & Mention Date.
+
+--- PAGE 7 ---
+How to Upload Pictures in TSV
+Click on UA/UC No.
+7
+Steps to Fill the TSV:-
+(3) Click on “BROWSE Option” for attach the Pictures of TSV.(From 
+your data).
+“Note: Attachments of Proper and Relevant Pictures is Mandatory.”
+Click Here to Select 
+the Pictures
+
+--- PAGE 8 ---
+9
+How to Upload Pictures in TSV
+Click on AllocationAction
+Steps to Fill the TSV:-
+(4) After click on BROWSE Option a Pop-up will open, then Select your 
+Relevant Pictures of TSV(from your data),then click on OPEN option to 
+upload the selected Pictures.
+Click here for upload 
+the selected Pictures
+Pop-Up
+
+--- PAGE 9 ---
+Pictures Uploaded 
+10
+After Click on OPEN Option , Pictures will upload.
+Pictures will upload 
+like this.
+
+--- PAGE 10 ---
+How to fill Parameters & Comment in TSV 
+Click on UA/UC No.
+11
+Steps to Fill the TSV-
+(5) Fill all the Parameters of “CHECKLIST ITEMS” in “Checklist 
+Options” one by one. 
+(6) Also mention “Comments” in Comment box. 
+Fill Options 
+like this .
+Mention 
+Comment 
+here.
+
+--- PAGE 11 ---
+How to Submit TSV
+Click Here
+Click Here
+12
+Steps to Fill the TSV-
+(7) After fill all the Parameters & Write Comments, Click on “SUBMIT” Option to 
+Submit the TSV.
+“After Submission of TSV, it’s goes to “Defined Safety Officer” of the Project ( 
+for further process).
+Click Here to Submit TSV.
+
+--- PAGE 12 ---
+13
+How Safety Officer Open TSV & Allocate to Execution Team
+Select the incident type
+Click on submit
+Then Safety officer open will his/her Raksha Portal , Click on TSV option(Refer page-5) then , This 
+page will open.
+Steps to Allocate the action -
+(1) Click on TSV No. to open the TSV.(Example- Click on TSV000062)
+Note:- Safety Officer will able to allocate only “STATUS-OPEN” TSV to their “Execution Team” for 
+further process(for appropriate action against TSV points ).
+Click here to Open the 
+TSV which you want
+“Status-
+Open” 
+TSV
+Example: Safety Officer
+
+--- PAGE 13 ---
+How Safety Officer Open TSV & Allocate to Execution team (User) 
+14
+After click on TSV No.(Example- TSV000062) this page will open in which all details is 
+mentioned about TSV :- Business unit, Region, Project, Who Prepared it , Date & Time, 
+Location , Status & Attached Pictures (Observations).
+
+
+--- PAGE 14 ---
+15
+How to fill Allocate Action Pop-up & Allocate Action to User 
+Give remarks
+Steps to Allocate the action -
+(2) Scroll down same page-(example -14) , then you got a option of “ALLOCATE ACTION” Click on it 
+then a pop-up will generate by which ,
+(3) Safety Officer can Allocate the action to his/her Execution team member (which is suitable to close 
+the observation point) , Select the right one, “Click on “ALLOCATE ACTION” Option”. Then its 
+Notification goes to Selected person “USER” (Example:- Sarthak Alya).
+“Note:- In Pop-up option Safety Officer have to write Action item, Choose Action type , Select Allocated 
+To Person & Expected Due Date.”
+2. Write here about what necessary 
+action have to be taken against 
+observation
+3. Click here after fill all 
+options to Allocate the 
+Action Pop-up
+1. Click here 
+to open the 
+pop-up
+
+--- PAGE 15 ---
+Raksha (Launchpad)-User “How to open Allocated Action List”
+16
+Notification shows on the Raksha Launchpad page of “Selected or Allocated 
+person(USER)”.
+Steps to Close the Observation –
+(1) Click on “Notification Bell Icon” to open the “Allocated Action list”.
+Click here for open the Allocated 
+Action List
+User
+
+--- PAGE 16 ---
+How to open Action Item- USER
+17
+Steps to Close the Observation -
+(2) After Click on Notification Bell Icon “Allocated Action List” will open in 
+which all the allocated action items is mentioned with all details, Click on 
+“EDIT icon in Update Status” option to open the Action item which you want. 
+Click here to 
+open the 
+Action Item 
+
+--- PAGE 17 ---
+How to Close Observation- USER
+18
+Steps to Close the Observation -
+(3)After Click on Edit icon , a Pop-up(Change Action Status) will open ,in which 
+3 options are there in Status Box. 
+Choose “CLOSED” option for Closed the Open Action Item of TSV then click on 
+“SUBMIT”.
+1.Choose “Closed” option for 
+close the open Action point of 
+TSV
+2.Then Click on 
+Submit
+
+--- PAGE 18 ---
+How to Close Observation- USER
+19
+After click on Submit option again a Pop-up(Close Action) will open in which :-
+(a) Action Taken remark option- User have to write the remark , what action His/Her taken regarding 
+Observation.
+(a) Then click on “BROWSE” option for attaching the relevant Picture regarding closure of 
+observation , after select the Pictures ,
+(b) Click on “CLOSE ACTION” option to close the observation.
+1.Click here for select the 
+Pictures
+2.After uploading, Click on 
+“Close Action”
+
+--- PAGE 19 ---
+Observation Closed- USER
+20
+After click on Close Action option the Observation is “CLOSED” from the 
+USER end or “Allocated Person” end (example-Sarthak Alya.)
+“Then its notification goes to “Safety Officer” & “Project Manager”.”
+
+--- PAGE 20 ---
+TSV Closed Cases
+21
+Then Safety officer & Project Manager will review the Observation Closure 
+points and Pictures which is attached by User. Then-
+Case 1:-
+If Observation Closure points & attached picture is “RELEVANT” against the 
+observation point then Project Manager will close the TSV.(If Both are satisfied 
+with closure points).
+“That’s means TSV is CLOSED” .
+Case 2:-
+If Observation Closure points & attached picture is “NOT RELEVANT “against 
+the observation (If Both are not satisfied with closure points), then Safety 
+Officer will again Allocate the Action item( Observation point) to the User. 
+“That’s means Observation is NOT CLOSED (TSV is still open)”.
+
+--- PAGE 21 ---
+How to open TSV- PM
+22
+Case 1:- Observation Closure points is ‘RELEVANT’.
+Steps to CLOSE the TSV by Project Manager:-
+(1)Project Manager will open Raksha-app portal then click on TSV option (Refer page-5), then this 
+page will appear. Click on “TSV No.“ TSV (Example-TSV000062) for “CLOSE” the TSV.
+Click here 
+
+--- PAGE 22 ---
+How to Close TSV - PM
+23
+1. Click here to 
+Close the TSV
+2. Then Click here
+Steps to CLOSE the TSV by PM:-
+(2)After click on TSV No. (Example – TSV000062), click on CLOSE TSV option , 
+then a Pop-up will open in which click on YES CLOSE option will appear. 
+
+--- PAGE 23 ---
+How to Close TSV- Project Manager
+24
+1.Click here to 
+upload the 
+relevant photos 
+from your data 
+2.Click here for Close the TSV
+Steps to CLOSE the TSV by Project Manager:-
+(3)After click on Yes Close option again a Pop-up will open , in which PM have 
+to write Action Taken Remark , Upload Pictures then click on Close TSV 
+option.
+
+--- PAGE 24 ---
+TSV Closed- Project Manager
+25
+Click here to 
+Close the TSV
+TSV Closed
+After click on Close TSV option again a Pop-up will appear. In that  click on 
+YES CLOSE option. 
+“Finally TSV is Closed from Project Manager’s end.”
+
+--- PAGE 25 ---
+FLOWCHART for COURSE OF ACTIONS
+TSV Created by PM
+Safety Officer Notified
+Safety Officer allocates respective 
+person for closure of observations
+Selected/Allocated User Closes the 
+Observation
+Action goes to PM & Safety Officer 
+for approval
+TSV Closed by PM
+Evidence is 
+satisfactory 
+& relevant
+IF YES
+IF NO
+26

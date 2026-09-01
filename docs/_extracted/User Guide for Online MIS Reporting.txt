@@ -1,0 +1,164 @@
+--- PAGE 1 ---
+KEC International Limited
+User Guide for Online MIS
+Power T & D CablesCivilSolar Smart
+Infra
+Railways
+05th May 2020
+
+--- PAGE 2 ---
+RAKSHA (Landing Page)
+2
+Click on “KEC EMPLOYEE” for login .
+Click here
+
+--- PAGE 3 ---
+RAKSHA (Launchpad)
+3
+Click on “EHS MIS REPORT” to open the MIS Format.
+Click 
+Here
+
+--- PAGE 4 ---
+MIS REPORT(Home Page)
+4
+Steps to Fill the MIS:-
+(1) Select your Business Unit , Region & Project.
+(2) Click on Month, which you want to fill- MIS .(example- April)
+
+--- PAGE 5 ---
+How to fill MIS Report of Month (Example-April)
+Click on UA/UC No.
+5
+Steps to Fill the MIS:- (3) Select Regional EHS Manager , Project Manager & fill Location by 
+clicking on it.
+
+--- PAGE 6 ---
+8
+How to fill Parameters
+Click on AllocationAction
+In this page all the points of MIS is mentioned, which you want to fill.
+Steps to Fill the MIS:-
+(4)  Click on Parameters which you want to fill one by one ( Example:- BASIC DATA)
+Click Here
+
+--- PAGE 7 ---
+How to fill Parameters
+9
+After Click on BASIC DATA , A table is open in which Parameter Code, Parameter 1,
+Parameter 2 and option to fill the value is mentioned. ( Default value is ZERO.)
+Steps to Fill the MIS:-
+(5) Put the Values in all points one by one by clicking on points( Example-HS01)
+Click here
+
+--- PAGE 8 ---
+How to fill Parameters
+Click on UA/UC No.
+10
+Fill 
+the 
+value 
+one 
+by 
+one 
+like 
+this 
+Steps to Fill the MIS:- (6) Fill values one by one 
+
+--- PAGE 9 ---
+How to Save one Parameter inputs “ SAVE AS DRAFT”
+Click Here
+Click Here
+11
+After fill the all Values of any point (example:- Basic data), the option of “SAVE AS DRAFT” is 
+available , Click on it for “Save your data as draft” and then fill all the parameters one by one
+Note:- Please SAVE your data as Draft after fill every parameter values .
+(Example:-Firstly you fill all the parameters of BASIC DATA then Click on SAVE AS DRAFT, then 
+fill INCIDENT RECORD ( Leading Parameters ) then Click on SAVE AS DRAFT
+Click Here for Save as draft
+
+--- PAGE 10 ---
+12
+How to Submit the MIS
+Select the incident type
+Click on submit
+Steps to Fill the MIS:-
+(7) After fill all the Parameters Click on Submit button to Submit the MIS, Which is shown 
+to your RM-EHS.
+Click here for 
+Submit the MIS
+
+--- PAGE 11 ---
+13
+SBU-EHS & RM-EHS (Review & Approve/Reject)
+Select the incident type
+Click on submit
+SBU-EHS & RM-EHS open there Raksha portal , Click on ‘EHS MIS Report’ on Homepage then this page 
+will open .
+Step to open the MIS of Particular Project:-
+Firstly select  Business Unit, Region , Project ( which you wants to review the MIS of particular Region 
+& Project.) (Example- Auric-Aurangabad Smart City).
+Then Click on Month (Example-April) to open the MIS of Selected Project for Review & Approve/Reject.
+
+
+--- PAGE 12 ---
+14
+SBU-EHS & RM-EHS (Review & Approve/Reject)
+Select the incident type
+Click on submit
+After Click on Month(Example-April) , this page will open where all the details is 
+mentioned about particular project .
+Review all parameters by scroll down the same page .
+
+
+--- PAGE 13 ---
+SBU-EHS & RM-EHS (Review & Approve/Reject)
+15
+“RM-EHS have rights to Approve the MIS or Reject the MIS after viewing the MIS”.
+Case:- (1) If RM-EHS wants to Approve the MIS click on Approve option then MIS goes to 
+SBU-EHS Head , then SBU-EHS Head Approve it, it’s goes to Central-EHS Team.
+Case:- (2) If RM-EHS Reject the MIS ,then again it’s goes to Safety officer(by which SO will 
+change the inputs). 
+Two Options avl here (Approve & 
+Reject)
+
+--- PAGE 14 ---
+16
+SBU-EHS & RM-EHS (Review & Approve/Reject)
+Give remarks
+Case:- (2) RM-EHS wants to reject the MIS , Reject it by clicking on Reject option, then pop-
+up will open , then click on “YES CLOSE” option for further process. 
+Click here for Reject 
+After Click on reject option this pop-up 
+will open , then Click on “YES CLOSE” for 
+further process
+
+--- PAGE 15 ---
+SBU-EHS & RM-EHS (Review & Approve/Reject)
+17
+After click on “YES CLOSE” option , REJECT MIS Comment box will open . RM-EHS  “HAVE” to 
+write here the “Reason of rejection of MIS in Comment Box” then click on Reject MIS option 
+.
+“Note:- RM-EHS have to write the reason for REJECTION on MIS , by which SO will 
+understand what to do (On which parameter SO will workout)”
+Reject MIS 
+Comment Box Click for 
+Reject 
+MIS
+
+--- PAGE 16 ---
+18
+SBU-EHS & RM-EHS (Review & Approve/Reject)
+After Clicking on REJECT MIS option, pop-up will open , in this pop-up click on YES CLOSE 
+option.  
+
+--- PAGE 17 ---
+SBU-EHS & RM-EHS (Review & Approve/Reject)
+19
+MIS Rejection Done 
+Again it’s goes to SO for further changes.
+
+--- PAGE 18 ---
+SBU-EHS & RM-EHS (Review & Approve/Reject)
+20
+If MIS Approve than it goes to Central EHS team.

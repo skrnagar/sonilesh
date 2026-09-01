@@ -1,0 +1,195 @@
+--- PAGE 1 ---
+KEC International Limited
+Power T & D CablesCivilSolar Smart Infra
+Railways
+06th August 2020
+User Guide for Raksha Reports
+
+--- PAGE 2 ---
+2
+RAKSHA is a digital platform for EHS management and compliance. Starting  
+from reporting of Unsafe act/condition & Incidents to Safety MIS, HSV, RSV  
+& trainings. RAKSHA facilitates faster communication and better  
+collaboration within the organization in order achieve “Zero Injury” and “Zero  
+Accident” goal.
+Now you can access RAKSHA web portal and download the app  
+on Android and IOS https://digital.kecrpg.com
+How to register RAKSHA on your Mobile or Web Portal:
+• Click on the link https://digital.kecrpg.com
+• Choose your device by clicking on
+• Download and Open the app
+• Click on ‘Sign in’button
+• Choose your user type
+• Enter your company mail ID and password
+• Register with your necessary details
+WELCOME to RAKSHA! Y ou are good to go.
+Safety App now availableon:
+RAKSHA
+
+--- PAGE 3 ---
+RAKSHA (Landing Page)
+3
+Click on “KEC EMPLOYEE” for login .
+Click here
+
+--- PAGE 4 ---
+RAKSHA (Login Page)
+4
+Enter your Mail ID & Password then click on Sign in for login.
+Enter Here
+
+--- PAGE 5 ---
+RAKSHA (Launchpad)
+5
+Click on “MY ZONE” to open the My Zone Homepage. 
+Click Here 
+
+--- PAGE 6 ---
+MY ZONE (Home Page)
+6
+After click on MY ZONE option, this page will open, where 4 options is 
+available .
+Click on “Raksha Reports” for view the reports/status (of UA/UC, Incident and 
+more) 
+Note:- All have access of “Raksha Reports” expect user.
+Here example – RM-EHS
+Click Here 
+RM-EHS
+
+--- PAGE 7 ---
+MY ZONE 
+10
+Click here
+Your all details is 
+shown here
+RM-EHS
+After Click on Raksha Reports this page will open.
+Click on given options , whose status you wants to see.
+- Example click on UA/UC  
+Just for information 
+(a) Refresh option (b) Back option 
+
+--- PAGE 8 ---
+Click on UA/UC No.
+11
+MY ZONE- UA/UC 
+After Click on UA/UC, this page will open , where all reported UA/UC is shown with their 
+status(Open/Close).
+-You can select SBU/Region/Project & Date range by clicking on Calendar option then click on View 
+reports , which you wants to view. (in example all 5 project are selected of Tardeo region) You can 
+select one/two/three and all as well .   
+-You can click on Serial No. for view the detailed UA/UC.
+- You can download also from save option.
+Click on serial no. of view 
+the detailed UA/UC
+Here you can 
+see UA/UC 
+details
+Status of UA/UC
+Select date range 
+from here
+You can select any 
+or all of project 
+which status you 
+wants to view 
+Click here for download
+Click here after select 
+SBU/Region/Project
+
+--- PAGE 9 ---
+MY ZONE-INCIDENTS
+Click Here
+Click Here
+12
+After Click on Incidents option in My Zone page , this page will open , where all reported Incidents are 
+shown.(Major/Minor)
+-For select SBU/Region/Project & Date range (Refer page 8)
+-For Download (Refer page 8)
+-You can click on Incident No. for view the detailed Incident report.
+-You can click on ‘+’ option to maximize the Major/Minor Incidents
+Click here for explore the 
+Major Incidents & same as 
+for Minor 
+Click here for open the Incident 
+
+--- PAGE 10 ---
+13
+MY ZONE- HSV/RSV
+Select the incident type
+Click on submit
+After Click on HSV/RSV in My Zone page , this page will open , where all reported HSV/TSV are shown.
+-For select SBU/Region/Project & Date range (Refer Page 8)
+-For Download (Refer page 8)
+-You can click on Serial No. for view the detailed HSV/RSV.
+-You can click on ‘+’ option to Explore the region wise HSV/RSV.
+Click here for open the HSV/RSV 
+Click here for 
+explore the Region 
+wise HSV/RSV
+
+--- PAGE 11 ---
+MY ZONE- ACTION ITEMS
+14
+After Click on Action Items in My Zone page , this page will open , where all Action items of 
+UAUC/IR/SV are shown.
+-For select SBU/Region/Project & Status (Open/ In progress/Closed) then click on view reports.
+-For Download (Refer page 8)
+-You can click on ‘+’ option to Explore the region wise Action items.
+-In Status column you can see Status (Open/Close)
+Click 
+here for 
+explore 
+the 
+Region 
+wise 
+Action 
+points
+Here you 
+can see 
+the 
+status of 
+Action 
+items
+
+--- PAGE 12 ---
+15
+MY ZONE- EHS MIS STATUS
+Give remarks
+After Click on EHS MIS STATUS in My Zone page , this page will open , where status of MIS is shown 
+-For select SBU/Region/Project & Month and Year by dropdown option then click on view reports.
+-You can click on ‘+’ option to Explore the region wise MIS 
+-Click on Project name which MIS you wants to view
+-Example – Click on Auric-Aurangabad Samrt City
+Click 
+here for 
+explore 
+the 
+Region 
+wise MIS
+Click 
+here for 
+explore 
+the 
+Project  
+wise MIS
+Click here for open the particular Project MIS 
+
+--- PAGE 13 ---
+EHS MIS STATUS- PARTICULAR PROJECT
+16
+After Click on Auric-Aurangabad Smart City 
+- For select SBU / Region / Project & Status (Submitted /Approvedby RM-EHS /Approved by SBU Head) & 
+Month & Year then click on view reports 
+-For Download (Refer page 8)
+-Note:-You can view separate month wise MIS or of Two/Three/Four or all in one sheet
+Select Month/Status/Year
+Scroll down from here
+Compile Three month data
+
+--- PAGE 14 ---
+After Click on Installation Status (Site Wise) in My Zone page , this page will open
+-For select SBU/Region/Location & Status (Pending/Installed) by dropdown option then 
+click on view reports
+-For Download (Refer page 8)
+-You will get the status of all with Employee name , User ID , Mail ID .
+MY ZONE- INSTALLATION STATUS (SITE WISE) 

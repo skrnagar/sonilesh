@@ -1,0 +1,392 @@
+--- PAGE 1 ---
+KEC International Limited
+Power T & D CablesCivilSolar Smart
+Infra
+Railways
+July, 17 2020
+Online EHS Score Sheet-Guide
+
+--- PAGE 2 ---
+2
+RAKSHA is a digital platform for EHS management and compliance. Starting  
+from reporting of Unsafe act/condition & Incidents to Safety MIS, HSV, RSV  
+& trainings. RAKSHA facilitates faster communication and better  
+collaboration within the organization in order achieve “Zero Injury” and “Zero  
+Accident” goal.
+Now you can access RAKSHA web portal and download the app  on 
+Android and IOS https://digital.kecrpg.com
+How to register RAKSHA on your Mobile or Web Portal:
+• Click on the link https://digital.kecrpg.com
+• Choose your device by clicking on
+• Download and Open the app
+• Click on ‘Sign in’button
+• Choose your user type
+• Enter your company mail ID and password
+• Register with your necessary details
+WELCOME to RAKSHA! Y ou are good to go.
+Safety App now availableon:
+RAKSHA
+
+--- PAGE 3 ---
+RAKSHA (Landing Page)
+3
+Click on “KEC EMPLOYEE” for login .
+Click here
+
+--- PAGE 4 ---
+RAKSHA (Login Page)
+4
+Enter your Mail ID & Password then click on Sign in for login.
+Enter Here
+
+--- PAGE 5 ---
+RAKSHA (Launchpad)
+5
+Click on “EHS SCORE CARD”.
+Click Here 
+Safety Officer/EHSO
+
+
+--- PAGE 6 ---
+ Who can fill the checklist
+- Self Assessment EHS Score Card
+- RM-EHS Can do Cross Audit EHS Score Card
+- Central EHS team can do assessment of any SBU’s.
+Access of EHS Score Card 
+
+--- PAGE 7 ---
+EHS SCORE CARD (Home Page)
+7
+After click on EHS SCORE CARD option, this page will open, where 
+your respective SBU ‘EHS Assessment Score Sheet’ will 
+available(Example – If you are in Transmission so, only transmission 
+sheet will show not any other same as with other SBU).
+Click on “EHS Assessment  Sheet Transmission”. (Example)
+Click Here 
+
+--- PAGE 8 ---
+EHS SCORE CARD (Home Page)
+8
+After Click on EHS Assessment Sheet (Example-Transmission) this 
+page will open, where an option available to ADD new EHS 
+Assessment Score and will also shows all previously filled Score. 
+Steps to Fill the Score Sheet :-
+(1) Click on Add EHS Assessment Score option.
+Click Here 
+
+--- PAGE 9 ---
+HOW TO FILL THE SCORE SHEET- BY SAFETY OFFICER 
+Click on UA/UC No.
+9
+After Click on Add EHS Assessment Score, this page will open.
+Steps to Fill the Score Sheet:-
+(2) Select Region, Project , Regional Manager , Project Manager , PCH from 
+dropdown option, Enter Location, No. of Workmen , Mention Assessment 
+Date, After that Scroll down the same page for fill the Score sheet.
+Dropdown option
+
+--- PAGE 10 ---
+9
+HOW TO FILL THE SCORE SHEET(MMR)- BY SAFETY OFFICER 
+Click on AllocationAction
+Steps to Fill the Score Sheet:-
+(3) Choose Applicable/ Not  Applicable , Select  Percentage 
+compliance by dropdown option .
+Fill all sub points of MMR one by one by scroll down the same page. 
+MMR
+Select Percentage Compliance 
+from given range & also give 
+remark if any 
+Choose Applicable/ 
+Not Applicable 
+SAME PAGE 
+
+--- PAGE 11 ---
+HOW TO SAVE( Save as draft/ Save as Next)- MMR
+10
+After fill all the points of MMR, Two options are available (a) Save as draft (b) Save as next
+When select SAVE AS DRAFT so, this page will save and you can proceed further this later also.
+Steps to Fill the Score Sheet:-
+(4) When select SAVE AS NEXT, a pop up will come click on Yes close option in this popup then you 
+will go for next Parameter (OER).
+When you select Percentage compliance 
+Compliance value will automatically come
+Click on YES CLOSE Option 
+Popup
+Click on SAVE AS NEXT 
+
+--- PAGE 12 ---
+Click on UA/UC No.
+11
+Steps to Fill the Score Sheet:-
+(5) Now fill all the parameters of OER one by one by scroll down the same page , then 
+you will get Three options (a) Pervious (b) Save as Draft (c) Save as next.
+If you select Pervious , then you will go back to MMR.
+(6) Click on Save as Next then you will go for next Parameter (EPP).
+HOW TO FILL THE SCORE SHEET (OER) & HOW TO SAVE ( Save as 
+draft/ Save as Next) - BY SAFETY OFFICER 
+OER
+If you select Pervious , then you 
+will go back to MMR
+Click on Save as Next
+Scroll Down
+
+--- PAGE 13 ---
+13
+HOW TO FILL THE SCORE SHEET (EPP) & HOW TO SAVE ( Save as 
+draft/ Save as Next) - BY SAFETY OFFICER 
+Select the incident type
+Click on submit
+Steps to Fill the Score Sheet:-
+(7) Now fill all the parameters of EPP one by one by scroll down the same page , then 
+you will get Three options (a) Pervious (b) Save as Draft (c) Save as next.
+If you select Pervious , then you will go back to OER.
+(8) Click on Save as Next then you will go for next Parameter (L&MC).
+EPP
+If you select Pervious , then you 
+will go back to OER.
+Click on Save as Next
+Scroll Down
+
+--- PAGE 14 ---
+HOW TO FILL THE SCORE SHEET (L&MC) & HOW TO SAVE ( Save as 
+draft/ Save as Next) - BY SAFETY OFFICER 
+14
+Steps to Fill the Score Sheet:-
+(9) Now fill all the parameters of L&MC one by one by scroll down the same page , then 
+you will get Three options (a) Pervious (b) Save as Draft (c) Save as next.
+If you select Pervious , then you will go back to EPP.
+(10) Click on Save as Next then you will go for next Parameter (Negative Score Criteria).
+L&MC
+If you select Pervious , then you 
+will go back to EPP.
+Click on Save as Next
+Scroll Down
+
+--- PAGE 15 ---
+15
+HOW TO SUBMIT THE SCORE SHEET- BY SAFETY OFFICER 
+Give remarks
+Steps to Fill the Score Sheet:-
+(11) Now fill the parameters of Negative Score Criteria one by one by scroll down the 
+same page ( IF ANY ) then you will get Three options (a) Pervious (b) Save as Draft (c) 
+Submit.
+If you select Pervious , then you will go back to L&MC.
+(12) Click on SUBMIT for submit the Score Sheet.
+Negative Score Criteria
+If you select Pervious , then you 
+will go back to L&MC.
+Click on SUBMIT
+Scroll Down
+
+--- PAGE 16 ---
+HOW TO OPEN THE SUBMITTED SCORE SHEET 
+16
+After Click on Submit option this page will open , Where all the filled 
+Score sheet is available.
+If you wants to SEE/VIEW any of these click on View Option below 
+which comes under SO Assessment column.
+Click here for open 
+the filled Score sheet 
+
+--- PAGE 17 ---
+After click on View option filled score sheet will open, where all details is mentioned 
+which you filled 
+-Self Assessment Score is shown in Self Assessment Column which is 41 here.
+-Prepared By- Ritesh Kumar malviya (here name will show who fill the score sheet 
+“SO”)
+-Separate Percentage Compliance of MMR/OER/EPP/L&MC is shown in Remark column.  
+All details is mentioned here SBU, 
+Project/Location, No. of Employees and 
+Contractor worker men, PM, RM, PCH
+Here Self Assessment Score , 
+Prepared/Audit by , Date is shown
+Here You can see the separate 
+Percentage compliance of  all 4 
+parameters 
+SUBMITTED SCORE SHEET DETAILS
+
+--- PAGE 18 ---
+If You wants to see Sub parameters of any of parameter(MMR/OER/EPP/L&MC).
+Click on the “+” option which is available before parameter name , then you can see all 
+Sub – Parameters points.
+(Example- MMR , Click on “+” option then all 8 Sub parameters points is shown (1.01, 
+1.02 and so on ). Here you can see the separate compliance score of all sub 
+parameters.  
+Click here 
+for open 
+the Sub 
+Paramete
+rs points 
+of MMR
+All 8 Sub 
+Paramet
+ers of 
+MMR 
+Separate 
+Compliance of 
+all 8 sub 
+Parameters.
+HOW TO OPEN THE SUB PARAMETERS OF MMR/OER/EPP/L&MC
+
+--- PAGE 19 ---
+If You wants to see Sub parameters points in details of any of Sub parameter.
+Click on the “+” option which is available before Sub parameter name , then you can 
+see all Sub – Parameters points in Details
+(Example- EHS Induction/Training & TBT , Click on “+” option then all 5 Sub points of 
+that parameter is shown.  Here you can see the separate compliance score of all points.
+Click here 
+for open 
+the Sub  
+Points of 
+EHS 
+Induction/
+Training & 
+TBT  
+Parameter
+All 5 Sub 
+Points of 
+EHS 
+Inductio
+n/Trainin
+g & TBT  
+Paramet
+er
+Separate 
+Percentage 
+Compliance / 
+Compliance of 
+all 5 Sub Points 
+of  . EHS 
+Induction/Trai
+ning & TBT  
+Parameter 
+HOW TO VIEW THE SUB PARAMETERS POINTS IN DETAILS  
+
+--- PAGE 20 ---
+You can DOWNLOAD it also by clicking on save option 
+Download it on Word, Excel, PDF and more
+Click here for 
+download
+Download it on 
+any of the 
+format
+HOW TO DOWNLOAD THE SCORE SHEET- BY SAFETY OFFICER 
+
+--- PAGE 21 ---
+DOWNLOADED EXCEL SHEET SAMPLE
+Here you can view Score sheet and understand well
+If wants to know separate compliance of Sub Parameters & Points under sub 
+parameters just click on “+” option for more details.  
+Click 
+here 
+for 
+explor
+e the 
+MMR 
+param
+eters
+
+--- PAGE 22 ---
+Regional Manager –EHS (ASSESSMENT / AUDIT )
+Steps to open the Score Sheet – RM-EHS:-
+(1) Login
+(2) Click on “EHS SCORE CARD”.
+(3) Click on “EHS Assessment  Sheet Transmission”. (Example)
+Click Here 
+Click Here RM-EHS Sarthak Alya
+
+--- PAGE 23 ---
+Regional Manager –EHS (ASSESSMENT / AUDIT )
+Here you can see all the Self Assessment Score sheets filled by SO.
+Steps to open the Score Sheet – RM-EHS:-
+(4) Click on view option for open the Score sheet (By which you can 
+see & do Assessment also).
+- Example open last sheet of dated 15.07.2020
+Click Here for open the Score 
+sheet which is filled by SO.
+
+--- PAGE 24 ---
+Regional Manager –EHS (ASSESSMENT / AUDIT )
+Here RM-EHS can SEE or Download the score sheet filled by SO/Self 
+Assessment Sheet 
+Steps to do Assessment – RM-EHS:-
+(1) Click on ADD RM EHS SCORE.
+Click Here
+
+--- PAGE 25 ---
+Regional Manager –EHS (ASSESSMENT / AUDIT )
+Here you can see the details & all percentage compliance , Compliance score, Remark
+in Score sheet which is filled by Safety Officer.
+Steps to do Assessment – RM-EHS:-
+(1) Do assessment of all parameters by one by (refer page 9 ).
+Here you can 
+see what is 
+done by SO. 
+What he did? 
+like in this 
+point He did 
+Applicable & 
+give 31-40%  
+which 
+compliance 
+0.18(comes 
+automatically
+) Same you 
+can see in all 
+points what 
+percentage 
+compliance 
+he given 
+Here RM-EHS 
+can do 
+His/Her
+assessment 
+same as SO 
+and also give 
+remark if any 
+
+--- PAGE 26 ---
+HOW TO SAVE( Save as draft/ Save as Next)- MMR
+10
+After fill all the points of MMR, Two options are available (a) Save as draft (b) Save as next
+When select SAVE AS DRAFT so, this page will save and you can proceed further this later also.
+Steps to do Assessment – RM-EHS:-
+(2) When select SAVE AS NEXT, a pop up will come click on Yes close option in this popup then you 
+will go for next Parameter (OER).
+“Same as OER/EPP/L&MC & Submit process”(refer page 10-14
+When you select Percentage compliance 
+Compliance value will automatically come
+Click on YES CLOSE Option 
+Popup
+Click on SAVE AS NEXT 
+
+--- PAGE 27 ---
+HOW TO OPEN THE SUBMITTED SCORE SHEET- RM-EHS 
+16
+After Click on Submit option this page will open , Where all the filled 
+Score sheet is available.
+If you wants to SEE/VIEW any of these click on View Option below
+Click here for open 
+the filled Score sheet 
+
+--- PAGE 28 ---
+All details is mentioned here SBU, 
+Project/Location, No. of Employees and 
+Contractor worker men, PM, RM, PCH Here Self Assessment 
+Score , RM –EHS 
+Assessment score  
+Prepared/Audit by , Date 
+is shown
+Here You can see the separate 
+Percentage compliance of  all 4 
+parameters 
+After click on View option filled score sheet will open, where all details is mentioned which you filled 
+-Self Assessment Score is shown in Self Assessment Column which is 41 here & RM-EHS 
+assessment score is shown in RM –EHS Assessment column which is 47 here
+-Self Assessment done by Ritesh Kumar malviya (here name will show who fill the score sheet “SO”) 
+& RM –EHS Assessment done by Sarthak Alya (here name will show who do RM-EHS Assessment)
+-Separate Percentage Compliance of MMR/OER/EPP/L&MC is shown in Remark column.
+-And Please Refer page 16-19 for wants to know more details like (how to download the Score sheet , 
+How can see the Sub parameters compliance and more)  
+SUBMITTED SCORE SHEET DETAILS - RM-EHS

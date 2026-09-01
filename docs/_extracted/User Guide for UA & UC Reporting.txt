@@ -1,0 +1,241 @@
+--- PAGE 1 ---
+KEC International Limited
+Power T & D CablesCivilSolar Smart
+Infra
+Railways
+05th May 2020
+Guideline for Unsafe Act & Unsafe 
+
+--- PAGE 2 ---
+Unsafe Act & Unsafe Condition Reporting
+2
+STEP Report/Closure Authorized
+1. UA/UC report through 
+Raksha App
+Any one can report UA/UC 
+whether KEC employees or Non 
+KEC employees 
+2. Allocation of UA/UC
+Only Safety officer Authorized for 
+allocate the UA/UC to concern 
+person 
+3. Close UA/UC Concern Person Close the UA/UC
+4. Final Closure  after 
+checking compliances 
+Safety officer to authorized to 
+check compliance and closure the 
+UA/UC
+There are Four steps of reporting UA/UC and closure. 
+
+--- PAGE 3 ---
+RAKSHA (Landing Page)
+3
+Click on “KEC EMPLOYEE” for login .
+Click here
+
+--- PAGE 4 ---
+RAKSHA (Login Page)
+4
+Enter your Mail ID & Password then click on Sign in for login.
+Enter Here
+
+--- PAGE 5 ---
+STEP# 1 RAKSHA (Launchpad)
+5
+Click 
+Here
+Click on “UA/UC” to open the UA/UC Format.
+Note:-
+Who can report UA/UC :- All [Execution Team (User), Safety officer, 
+PM, RM-EHS, RM-Execution and anyone]
+Click 
+Here
+
+--- PAGE 6 ---
+STEP# 1 UA/UC (Home Page)
+6
+After click on UA/UC option, this page will open where all options is available which have to fill:
+Steps to fill the UA/UC:-
+(1) Select-Business Unit, Region, Project, UA or UC, Category of UA/UC , Subcategory , Write Incident 
+Description in detail, Incident Date & Time, Fill Location. 
+(Example:- Category is Height Work and Subcategory is Safety Net.)
+Choose 
+UA/UC
+Write Description here
+
+--- PAGE 7 ---
+STEP# 1 How to Upload Pictures(Observations) in UA/UC
+7
+Steps to Fill the UA/UC:-
+(2) Click on “BROWSE Option” for attach the Pictures of UA/UC.(From your data).
+“Note:- Attachments of Proper Pictures is Mandatory by which others can properly 
+understand it .”
+(3) After click on BROWSE Option a Pop-up will open, then Select your Relevant Pictures of 
+UA/UC(from your data),then click on OPEN option for upload the selected Pictures.
+Click Here 
+Pop-Up
+Click here for upload 
+the selected Pictures
+
+--- PAGE 8 ---
+STEP# 1 How to Upload Pictures(Observations) and Submission
+Click on UA/UC No.
+8
+After Click on OPEN Option , Pictures will upload.
+Steps to Fill the UA/UC:-
+(4) Then ,Click on “SUBMIT” Option for Submit the UA/UC.
+“After Submission of UA/UC, it will update in UA/UC list & notification goes to “Defined 
+Safety Officer” of the Project for further process ( Allocate or Close).
+Pictures will upload 
+like this.
+Click Here for Submit 
+the UA/UC.
+
+--- PAGE 9 ---
+9
+STEP# 2 How to open the Allocate UA/UC by Safety officer
+Click on AllocationAction
+When Submission is done of UA/UC , it will update in Safety Officer Raksha app/Portal 
+UA/UC Parameter (Reported UA/UC) list, by which Safety Officer can open and see it. 
+Click on UA/UC No. to open it(example- UC007589)
+Safety Officer
+Click here for 
+open the UA/UC
+
+--- PAGE 10 ---
+10
+After click on UA/UC No., this page will open where all the details of Reported UA/UC is 
+mentioned. Where TWO Options is available (a) “Allocate Action” & (b) “Close UA/UC”.
+Note:- Safety Officer have rights to “ALLOCATE” the observation point of UA/UC to 
+Execution Team. Select “Allocate Action” 
+Scroll Down 
+the Page 
+Click here for Allocate 
+the Action to other 
+‘User’ for further 
+process.
+STEP# 2 How Safety Officer Allocate the Action items to Execution team (User)
+
+--- PAGE 11 ---
+Click on UA/UC No.
+11
+After click on Allocate Action this page will open where, Safety Officer can Allocate the action to 
+his/her Execution team member(which is suitable to close the observation point of UA/UC) , Select 
+the right one then , “Click on “ALLOCATE ACTION” Option”. Then it’s Notification goes to Selected 
+person “USER” (Example:- Sarthak Alya)
+“Note:- In Pop-up option Safety Officer have to write Action item, Choose Action type , Select 
+Allocated To Person & Expected Due Date.” and Submit
+Write here about what necessary action 
+have to be taken against observation
+Click here after fill all options 
+to Allocate the Action 
+Pop-up
+STEP# 2 How to fill Allocate Action Pop-up & Allocate Action to User
+Target date for 
+close
+
+--- PAGE 12 ---
+STEP# 3 Raksha (Launchpad)-User “How to open Allocated Action List”
+Click Here
+Click Here
+12
+Notification shows on the Raksha Launchpad page of “Selected or Allocated 
+person (USER)”.
+Steps to Close the Observation of UA/UC:-
+(1) Click on “Notification Bell Icon” to open the “Allocated Action list”.
+Click here for open the 
+Allocated Action List
+User
+
+--- PAGE 13 ---
+13
+STEP# 3 How to open Action Item
+Select the incident type
+Click on submit
+Click 
+here for 
+open the 
+Action 
+Item 
+Steps to Close the Observation -
+(2) After Click on Notification Bell Icon “Allocated Action List” will open in which 
+all the allocated action items is mentioned with all details, Click on “EDIT icon in 
+Update Status” option to open the Action item which you wants. 
+
+--- PAGE 14 ---
+STEP# 3 How to Close Observation- User
+14
+Steps to Close the Observation -
+(3)After Click on Edit icon , a Pop-up(Change Action Status) will open ,in which 3 options in 
+Status Box. 
+Choose “CLOSED” option for Closed the Open Action Item of UA/UC then click on 
+“SUBMIT”.
+Choose “Closed” option for close 
+the open Action point of UA/UC
+Then Click on Submit
+
+--- PAGE 15 ---
+15
+Give remarks
+After click on Submit option again a Pop-up(Close Action) will open in which :-
+(a) Action Taken remark option- User have to write the remark , what action His/Her taken regarding 
+Observation.
+(b) Then click on “BROWSE” option for attachment the relevant Picture regarding closure of 
+observation , after select the Pictures ,
+(c) Click on “CLOSE ACTION” option to close the observation.
+Once Observation of UA/UC is closed from USER end it’s notification goes to “Safety officer”
+Click here for select 
+the Pictures
+Then click here
+Write remark here
+STEP# 3 How to Close Observation-User
+
+--- PAGE 16 ---
+UA/UC Closed Cases
+16
+Then Safety officer will review the Observation Closure points and Pictures which 
+is attached by User. Then-
+Case A:-
+If Observation Closure points & attached picture is “RELEVANT” against the 
+observation point then Safety Officer will Close the UA/UC.
+“That’s means “UA/UC” is CLOSED” .
+-Refer page-17 “How to close UA/UC from Safety Officer Ends”.
+Case B:-
+If Observation Closure points & attached picture is “NOT RELEVANT “against the 
+observation, then Safety Officer will again Allocate the Action item( Observation 
+point) to the User. 
+“That’s means Observation is NOT CLOSED “UA/UC” is still open”.
+
+--- PAGE 17 ---
+STEP# 4 How to Close the UA/UC- Safety Officer  
+17
+Steps to close the UA/UC:-
+(1) Click on Close UA/UC option, then a Pop-up will open .
+(2) Click on Yes Close Option in the Pop-up.
+First Click here 
+Then Click here 
+
+--- PAGE 18 ---
+STEP# 4 How to Close UA/UC – Safety officer
+18
+After click on Yes Close option again a Pop-up(Close Action) will open in which :-
+(a) Action Taken remark option- User have to write the remark , what action His/Her taken regarding 
+Observation.
+(b) Then click on “BROWSE” option for attachment the relevant Picture regarding closure of 
+observation , after select the Pictures. Optional- When Safety officer is satisfied with picture 
+attached by user for closure the observation, so Do Not need to Upload it ).
+(c) Click on “CLOSE ACTION” option to close the observation 
+Write remark here
+Click here for select 
+the Pictures
+Then click here
+
+--- PAGE 19 ---
+STEP# 4 UA/UC Closed- Safety Officer 
+25
+After click on Close UA/UC option again a Pop-up will open then click on YES 
+CLOSE option. 
+“Finally UA/UC Closed properly from SAFETY OFFICER end.”
+Click here for  
+Close the UA/UC
+UA/UC Closed
