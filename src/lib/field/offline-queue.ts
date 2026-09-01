@@ -19,6 +19,8 @@ export function readFieldQueue(): QueuedFieldUpdate[] {
 export function enqueueFieldUpdate(label: string, formData: FormData) {
   const entries: Array<[string, string]> = [];
   formData.forEach((value, key) => {
+    // LIMITATION (P2): File/Blob inputs are skipped — offline queue preserves text fields only.
+    // Photos must be submitted online or re-attached after sync.
     if (typeof value === "string") entries.push([key, value]);
   });
   const item: QueuedFieldUpdate = {

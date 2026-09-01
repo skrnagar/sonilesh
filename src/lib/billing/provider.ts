@@ -101,6 +101,13 @@ export class ManualBillingProvider implements BillingProvider {
   }
 }
 
+/** Manual billing only — not production Stripe/Razorpay. Set BILLING_PROVIDER=manual (default). */
 export function getBillingProvider(): BillingProvider {
+  const provider = process.env.BILLING_PROVIDER ?? "manual";
+  if (provider !== "manual") {
+    console.warn(
+      `[billing] BILLING_PROVIDER=${provider} is not implemented; falling back to ManualBillingProvider.`,
+    );
+  }
   return new ManualBillingProvider();
 }

@@ -58,38 +58,62 @@ export default async function EhsScorePage({
             actionPath="/app/ehs-score"
           />
         </Suspense>
-        {score.isDemo ? (
-          <Badge variant="secondary">DEMO — limited tenant data for {score.periodLabel}</Badge>
+        {score.status === "insufficient_data" ? (
+          <Badge variant="secondary">
+            INSUFFICIENT DATA — {score.dataCoverage.dataPoints}/{score.dataCoverage.minimumRequired} records · {score.periodLabel}
+          </Badge>
         ) : (
-          <Badge variant="outline">Calculated · {score.periodLabel}</Badge>
+          <Badge variant="outline">
+            Calculated · {score.dataCoverage.dataPoints} records · {score.periodLabel}
+          </Badge>
         )}
       </div>
       <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
         <KpiCard
           label="Overall EHS score"
-          value={score.overall}
-          hint={`Weighted average · ${score.periodLabel}`}
-          tone={score.overall >= 75 ? "good" : score.overall >= 60 ? "watch" : "critical"}
+          value={score.overall ?? "N/A"}
+          hint={
+            score.status === "insufficient_data"
+              ? `Need ${score.dataCoverage.minimumRequired}+ operational records (have ${score.dataCoverage.dataPoints})`
+              : `Weighted average · ${score.periodLabel}`
+          }
+          tone={
+            score.overall === null
+              ? "neutral"
+              : score.overall >= 75
+                ? "good"
+                : score.overall >= 60
+                  ? "watch"
+                  : "critical"
+          }
           href="/app/ehs-score"
           icon="Gauge"
           accent="green"
           trend={null}
           polarity="higher-is-better"
-          spark={score.dimensions.map((d) => d.score)}
+          spark={score.dimensions.map((d) => d.score ?? 0)}
         />
         {score.dimensions.map((dim) => (
           <KpiCard
             key={dim.key}
             label={dim.label}
-            value={dim.score}
+            value={dim.score ?? "N/A"}
             hint={dim.hint}
-            tone={dim.score >= 75 ? "good" : dim.score >= 60 ? "watch" : "neutral"}
+            tone={
+              dim.score === null
+                ? "neutral"
+                : dim.score >= 75
+                  ? "good"
+                  : dim.score >= 60
+                    ? "watch"
+                    : "neutral"
+            }
             href="/app/ehs-score"
             icon="BarChart3"
             accent="navy"
             trend={null}
             polarity="higher-is-better"
-            spark={[Math.max(0, dim.score - 10), dim.score]}
+            spark={dim.score !== null ? [Math.max(0, dim.score - 10), dim.score] : [0, 0]}
           />
         ))}
       </div>

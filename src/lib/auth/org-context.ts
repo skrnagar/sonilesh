@@ -1,3 +1,4 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { cache } from "react";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -17,6 +18,50 @@ const ORG_COLUMNS =
   "id, name, slug, status, onboarding_completed_at, industry, timezone, trial_ends_at";
 
 export type OrgOption = { id: string; name: string; membershipId: string };
+
+/** Request-scoped BU/region/site/project lists for context switcher and scope filters. */
+export const loadWorkspaceHierarchy = cache(
+  async (supabase: SupabaseClient, organizationId: string) => {
+    const [{ data: businessUnits }, { data: regions }, { data: sites }, { data: projects }] =
+      await Promise.all([
+        supabase
+          .from("business_units")
+          .select("id, name")
+          .eq("organization_id", organizationId)
+          .is("deleted_at", null)
+          .order("name")
+          .limit(100),
+        supabase
+          .from("regions")
+          .select("id, name, business_unit_id")
+          .eq("organization_id", organizationId)
+          .is("deleted_at", null)
+          .order("name")
+          .limit(100),
+        supabase
+          .from("sites")
+          .select("id, name, region_id, business_unit_id")
+          .eq("organization_id", organizationId)
+          .is("deleted_at", null)
+          .order("name")
+          .limit(100),
+        supabase
+          .from("projects")
+          .select("id, name, site_id, business_unit_id")
+          .eq("organization_id", organizationId)
+          .is("deleted_at", null)
+          .order("name")
+          .limit(100),
+      ]);
+
+    return {
+      businessUnits: businessUnits ?? [],
+      regions: regions ?? [],
+      sites: sites ?? [],
+      projects: projects ?? [],
+    };
+  },
+);
 
 /** Request-scoped: shares membership/org with layout + pages. */
 export const requireOrgContext = cache(async () => {
@@ -59,44 +104,11 @@ export const requireOrgContext = cache(async () => {
       pathname.startsWith("/admin") ||
       pathname.startsWith("/field");
 
-    const [{ data: businessUnits }, { data: regions }, { data: sites }, { data: projects }] =
-      needWorkspaceLists
-        ? await Promise.all([
-            supabase
-              .from("business_units")
-              .select("id, name")
-              .eq("organization_id", organization.id)
-              .is("deleted_at", null)
-              .order("name")
-              .limit(100),
-            supabase
-              .from("regions")
-              .select("id, name, business_unit_id")
-              .eq("organization_id", organization.id)
-              .is("deleted_at", null)
-              .order("name")
-              .limit(100),
-            supabase
-              .from("sites")
-              .select("id, name, region_id, business_unit_id")
-              .eq("organization_id", organization.id)
-              .is("deleted_at", null)
-              .order("name")
-              .limit(100),
-            supabase
-              .from("projects")
-              .select("id, name, site_id, business_unit_id")
-              .eq("organization_id", organization.id)
-              .is("deleted_at", null)
-              .order("name")
-              .limit(100),
-          ])
-        : [
-            { data: [] as Array<{ id: string; name: string }> },
-            { data: [] as Array<{ id: string; name: string; business_unit_id: string | null }> },
-            { data: [] as Array<{ id: string; name: string; region_id: string | null; business_unit_id: string | null }> },
-            { data: [] as Array<{ id: string; name: string; site_id: string | null; business_unit_id: string | null }> },
-          ];
+    const hierarchy = needWorkspaceLists
+      ? await loadWorkspaceHierarchy(supabase, organization.id)
+      : { businessUnits: [], regions: [], sites: [], projects: [] };
+
+    const { businessUnits, regions, sites, projects } = hierarchy;
 
     // Always org-validate workspace cookies — stale site/project ids caused field incident create to fail.
     const businessUnitId =

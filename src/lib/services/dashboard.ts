@@ -189,6 +189,20 @@ export async function getDashboardSnapshot(
   if (params.status) eventsQuery = eventsQuery.eq("status", params.status);
   if (params.ownerId) eventsQuery = eventsQuery.eq("assigned_to", params.ownerId);
 
+  // Headline incident KPIs use exact counts — the 200-row sample below is for charts/trends only.
+  const scopedEventCountBase = () =>
+    applyScope(
+      supabase
+        .from("ehs_events")
+        .select("id", { count: "exact", head: true })
+        .eq("organization_id", organizationId)
+        .is("deleted_at", null)
+        .gte("occurred_at", start.toISOString())
+        .lte("occurred_at", end.toISOString()),
+      params,
+      regionSiteIds,
+    );
+
   const [
     eventsRes,
     capaRes,
@@ -198,7 +212,9 @@ export async function getDashboardSnapshot(
     trainingRes,
     contractorsRes,
     hazardsRes,
+    incidentCountRes,
   ] = await Promise.all([
+    // Sample window for sparklines/trends — NOT used for headline totals when count query exists.
     eventsQuery.order("occurred_at", { ascending: false }).limit(200),
     supabase
       .from("capa_items")
@@ -244,7 +260,12 @@ export async function getDashboardSnapshot(
       .eq("organization_id", organizationId)
       .is("deleted_at", null)
       .limit(120),
+    incidentType
+      ? scopedEventCountBase().eq("event_type_id", incidentType)
+      : Promise.resolve({ count: null as number | null }),
   ]);
+
+  const exactIncidentCount = incidentCountRes.count;
 
   const events = (eventsRes.data ?? []) as EventRow[];
   const inCurrent = events.filter((e) => {
@@ -260,6 +281,8 @@ export async function getDashboardSnapshot(
     type ? rows.filter((e) => e.event_type_id === type) : [];
 
   const incidents = ofType(inCurrent, incidentType);
+  const incidentTotal =
+    typeof exactIncidentCount === "number" ? exactIncidentCount : incidents.length;
   const prevIncidents = ofType(inPrev, incidentType);
   const openIncidents = incidents.filter((e) => isOpenEventStatus(e.status));
   const prevOpen = prevIncidents.filter((e) => isOpenEventStatus(e.status));
@@ -365,13 +388,13 @@ export async function getDashboardSnapshot(
     {
       key: "total-incidents",
       label: "Total incidents",
-      value: incidents.length,
-      hint: incidents.length === 0 ? "Clear" : "Recorded",
-      tone: incidents.length === 0 ? "good" : "neutral",
+      value: incidentTotal,
+      hint: incidentTotal === 0 ? "Clear" : "Recorded",
+      tone: incidentTotal === 0 ? "good" : "neutral",
       href: "/app/incidents",
       icon: "AlertTriangle",
       accent: "navy",
-      trend: percentChange(incidents.length, prevIncidents.length),
+      trend: percentChange(incidentTotal, prevIncidents.length),
       polarity: "higher-is-worse",
       spark: incidentSpark,
     },

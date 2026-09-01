@@ -7,9 +7,10 @@ import { isContractorPortalOnly, isFieldOnlyRoles } from "@/lib/auth/personas";
 import { listEnabledFeatures } from "@/lib/services/entitlements";
 import { countUnreadNotifications } from "@/lib/services/notifications";
 import { getUserPermissions } from "@/lib/services/rbac";
-import { signOutAction } from "@/app/actions/auth";
 import { WorkspaceContextSwitchers } from "@/components/layout/workspace-context";
-import { Button } from "@/components/ui/button";
+import { SignOutButton } from "@/components/layout/sign-out-button";
+import { NavigationProgress } from "@/components/layout/navigation-progress";
+import { Suspense } from "react";
 import { brandingCssVars } from "@/lib/branding/validate";
 
 export default async function AppLayout({
@@ -79,6 +80,9 @@ export default async function AppLayout({
 
   return (
     <div style={tenantStyle}>
+      <Suspense fallback={null}>
+        <NavigationProgress />
+      </Suspense>
       <WorkspaceShell
         title="EHS Workspace"
         userLabel={userLabel}
@@ -104,13 +108,7 @@ export default async function AppLayout({
             projectId={projectId}
           />
         }
-        signOut={
-          <form action={signOutAction}>
-            <Button type="submit" variant="outline" size="sm" className="w-full rounded-xl">
-              Sign out
-            </Button>
-          </form>
-        }
+        signOut={<SignOutButton />}
       >
         {children}
       </WorkspaceShell>

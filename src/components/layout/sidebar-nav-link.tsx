@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   AlertTriangle,
   BarChart3,
@@ -30,6 +31,7 @@ import {
   LifeBuoy,
   ListChecks,
   ListTree,
+  MapPin,
   MessagesSquare,
   Puzzle,
   Recycle,
@@ -38,7 +40,6 @@ import {
   Settings,
   Shield,
   ShieldAlert,
-  MapPin,
   Sparkles,
   Users,
   type LucideIcon,
@@ -96,30 +97,43 @@ export function SidebarNavLink({
   icon?: string;
 }) {
   const pathname = usePathname();
-  const active = href === "/admin" ? pathname === "/admin" : pathname === href || pathname.startsWith(`${href}/`);
+  const [pendingHref, setPendingHref] = useState<string | null>(null);
+  const active =
+    href === "/admin"
+      ? pathname === "/admin"
+      : pathname === href || pathname.startsWith(`${href}/`);
+  const pending = pendingHref === href;
   const Icon = icon ? ICONS[icon] : null;
+
+  useEffect(() => {
+    setPendingHref(null);
+  }, [pathname]);
 
   return (
     <Link
       href={href}
-      prefetch={false}
+      prefetch
       title={label}
+      onClick={() => setPendingHref(href)}
       className={cn(
-        "sidebar-nav-link flex min-h-11 items-center gap-2.5 rounded-[var(--radius-sm)] px-2.5 py-2 text-sm transition-[background-color,color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-        active
+        "sidebar-nav-link flex min-h-11 items-center gap-2.5 rounded-[var(--radius-sm)] px-2.5 py-2 text-sm transition-[background-color,color,box-shadow,opacity] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        active || pending
           ? "bg-[var(--raksha-blue)] font-medium text-white shadow-[var(--shadow-sm)] dark:text-white"
           : "text-sidebar-foreground hover:bg-sidebar-hover hover:text-sidebar-foreground",
+        pending && !active && "opacity-90",
       )}
     >
       <span
         className={cn(
-          "sidebar-glyph !flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors duration-200",
-          active ? "bg-white/15 text-white dark:bg-card dark:text-[#071f2d]" : "bg-sidebar-active/80 text-primary",
+          "sidebar-glyph !flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors duration-150",
+          active || pending
+            ? "bg-white/15 text-white dark:bg-card dark:text-[#071f2d]"
+            : "bg-sidebar-active/80 text-primary",
         )}
       >
         {Icon ? <Icon className="h-4 w-4" /> : label.slice(0, 1)}
       </span>
-      <span className="sidebar-copy min-w-0 truncate">{label}</span>
+      <span className="sidebar-copy min-w-0 truncate">{pending && !active ? `${label}…` : label}</span>
     </Link>
   );
 }

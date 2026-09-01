@@ -1,20 +1,10 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { writeAuditLog } from "@/lib/services/audit";
+import { DOCUMENT_NUMBER_KEYS, nextDocumentNumber } from "@/lib/services/document-numbers";
 import { requirePermission } from "@/lib/services/rbac";
 import { notifyUsers } from "@/lib/services/notifications";
 
 export type LmraStatus = "draft" | "submitted" | "approved" | "rejected";
-
-async function nextLmraNumber(supabase: SupabaseClient, organizationId: string) {
-  const { count } = await supabase
-    .from("lmra_assessments")
-    .select("id", { count: "exact", head: true })
-    .eq("organization_id", organizationId)
-    .is("deleted_at", null);
-  const next = (count ?? 0) + 1;
-  const year = new Date().getUTCFullYear();
-  return `LMRA-${year}-${String(next).padStart(5, "0")}`;
-}
 
 export async function listLmraAssessments(
   supabase: SupabaseClient,
@@ -50,7 +40,8 @@ export async function createLmraAssessment(
   },
 ) {
   await requirePermission(supabase, input.organizationId, input.userId, "lmra.create");
-  const assessmentNumber = await nextLmraNumber(supabase, input.organizationId);
+  const { key, prefix } = DOCUMENT_NUMBER_KEYS.lmra(input.organizationId);
+  const assessmentNumber = await nextDocumentNumber(supabase, input.organizationId, key, prefix);
   const status: LmraStatus = input.submit ? "submitted" : "draft";
   const { data, error } = await supabase
     .from("lmra_assessments")
@@ -103,6 +94,9 @@ export async function reviewLmraAssessment(
   if (!existing) throw new Error("LMRA not found");
   if (existing.status !== "submitted") {
     throw new Error("Only submitted LMRAs can be reviewed");
+  }
+  if (existing.created_by === input.userId) {
+    throw new Error("Creator cannot approve their own LMRA");
   }
   const { data, error } = await supabase
     .from("lmra_assessments")
