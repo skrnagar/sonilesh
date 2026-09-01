@@ -84,7 +84,6 @@ export function NotificationDropdown({
       const now = new Date().toISOString();
       const updated = loaded.map((row) => ({ ...row, read_at: row.read_at ?? now }));
       updateLoaded(updated);
-      router.refresh();
     });
   }
 
@@ -99,7 +98,6 @@ export function NotificationDropdown({
           row.id === item.id ? { ...row, read_at: now } : row,
         );
         updateLoaded(updated);
-        router.refresh();
       }
       if (item.link) {
         router.push(item.link);
@@ -177,9 +175,14 @@ export function NotificationDropdown({
   );
 }
 
-export function NotificationList({ items }: { items: NotificationRow[] }) {
+export function NotificationList({ items: initialItems }: { items: NotificationRow[] }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const [items, setItems] = useState(initialItems);
+
+  useEffect(() => {
+    setItems(initialItems);
+  }, [initialItems]);
 
   function openItem(item: NotificationRow) {
     startTransition(async () => {
@@ -187,9 +190,12 @@ export function NotificationList({ items }: { items: NotificationRow[] }) {
         const fd = new FormData();
         fd.set("notificationId", item.id);
         await markNotificationReadAction(fd);
+        const now = new Date().toISOString();
+        setItems((prev) =>
+          prev.map((row) => (row.id === item.id ? { ...row, read_at: now } : row)),
+        );
       }
       if (item.link) router.push(item.link);
-      else router.refresh();
     });
   }
 

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Bell, User } from "lucide-react";
 import { FieldTabBar } from "@/components/field/field-tab-bar";
-import { FieldMark, fieldHeaderBtnClass } from "@/components/field/field-ui";
+import { FieldMark, FieldPageSkeleton, fieldHeaderBtnClass } from "@/components/field/field-ui";
 import { requireOrgContext } from "@/lib/auth/org-context";
 import { countFieldUnread } from "@/lib/field/unread";
 
@@ -75,7 +75,7 @@ export default async function FieldLayout({ children }: { children: React.ReactN
         </div>
       </header>
       <main className="app-page mx-auto max-w-lg px-3 pb-[calc(4rem+env(safe-area-inset-bottom))] pt-4">
-        {children}
+        <Suspense fallback={<FieldPageSkeleton />}>{children}</Suspense>
       </main>
       <FieldTabBar />
     </div>

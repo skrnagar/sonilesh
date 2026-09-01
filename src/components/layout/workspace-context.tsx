@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import {
   setBusinessUnitContextAction,
   setProjectContextAction,
@@ -78,7 +77,6 @@ export function WorkspaceContextSwitchers({
   projects: Project[];
   projectId: string | null;
 }) {
-  const router = useRouter();
   const [pending, startTransition] = useTransition();
 
   const [org, setOrg] = useState(organizationId);
@@ -123,7 +121,6 @@ export function WorkspaceContextSwitchers({
               const fd = new FormData();
               fd.set("organizationId", next);
               await switchOrganizationAction(fd);
-              router.refresh();
             });
           }}
         >
@@ -151,7 +148,6 @@ export function WorkspaceContextSwitchers({
               fd.set("organizationId", organizationId);
               fd.set("businessUnitId", next);
               await setBusinessUnitContextAction(fd);
-              router.refresh();
             });
           }}
         >
@@ -179,7 +175,6 @@ export function WorkspaceContextSwitchers({
               fd.set("organizationId", organizationId);
               fd.set("regionId", next);
               await setRegionContextAction(fd);
-              router.refresh();
             });
           }}
         >
@@ -205,7 +200,6 @@ export function WorkspaceContextSwitchers({
             fd.set("organizationId", organizationId);
             fd.set("siteId", next);
             await setSiteContextAction(fd);
-            router.refresh();
           });
         }}
       >
@@ -229,7 +223,6 @@ export function WorkspaceContextSwitchers({
             fd.set("organizationId", organizationId);
             fd.set("projectId", next);
             await setProjectContextAction(fd);
-            router.refresh();
           });
         }}
       >
