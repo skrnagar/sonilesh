@@ -154,6 +154,31 @@ export function ContractorScoreChart({
   );
 }
 
+export function EhsScoreYearChart({
+  data,
+}: {
+  data: Array<{ year: string; count: number }>;
+}) {
+  const hasData = data.some((d) => d.count > 0);
+  return (
+    <ChartFrame
+      title="EHS Score Per Year"
+      empty="No EHS score submissions recorded for this scope yet."
+      hasData={hasData || data.length > 0}
+    >
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data} layout="vertical" margin={{ left: 8, right: 16 }}>
+          <CartesianGrid {...GRID} />
+          <XAxis type="number" allowDecimals={false} tick={AXIS} label={{ value: "Count", position: "insideBottom", offset: -2, fontSize: 11 }} />
+          <YAxis type="category" dataKey="year" width={56} tick={AXIS} label={{ value: "Year", angle: -90, position: "insideLeft", fontSize: 11 }} />
+          <Tooltip {...TOOLTIP} />
+          <Bar dataKey="count" fill="var(--chart-1)" radius={[0, 6, 6, 0]} />
+        </BarChart>
+      </ResponsiveContainer>
+    </ChartFrame>
+  );
+}
+
 export function RiskHeatMap({
   cells,
 }: {
