@@ -28,12 +28,12 @@ Marketplace moves to **Admin → Integrations & templates** (not top-level).
 
 | Module | Status | Routes | Services | Tables |
 |--------|--------|--------|----------|--------|
-| Persona home (tile launchpad) | ❌ | — (new `/app/home`) | — | `dashboard_definitions` (Phase 13, when applied) |
+| Persona home (tile launchpad) | ✅ | `/app/home` | `launchpad.ts`, RBAC filter | `dashboard_definitions` (Phase 13, when applied) |
 | Operations dashboard | ⚠️ | `/app/dashboard` | `dashboard.ts`, `analytics/*` | `ehs_events`, `capa_items`, aggregates |
 | Executive control tower | ⚠️ | `/app/executive`, `/app/executive/*` | `dashboard.ts` | Phase 13 analytics tables |
 | Notifications | ✅ | `/app/notifications` | `notifications.ts` | `notifications` |
 
-**Current issue:** No tile-based home; dashboard is generic chart page, not role launchpad.
+**Current state:** Phase 20 launchpad live with My Dashboard, EHS Operations grid, Reports, and AI Copilot sections.
 
 ---
 

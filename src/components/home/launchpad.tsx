@@ -1,33 +1,14 @@
 import Link from "next/link";
-import {
-  AlertTriangle,
-  BarChart3,
-  CheckSquare,
-  ClipboardCheck,
-  Eye,
-  FileSpreadsheet,
-  FileText,
-  Gauge,
-  HardHat,
-  Inbox,
-  LayoutDashboard,
-  MapPin,
-  PlusCircle,
-  ShieldAlert,
-  Sparkles,
-} from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
+import {
+  LAUNCHPAD_SECTION_LABELS,
+  LAUNCHPAD_SECTION_ORDER,
+  type LaunchpadSection,
+  type LaunchpadTile,
+} from "@/lib/navigation/launchpad";
 import { cn } from "@/lib/utils";
-
-export type LaunchTile = {
-  key: string;
-  label: string;
-  description: string;
-  href: string;
-  icon: LucideIcon;
-  accent?: "navy" | "teal" | "amber" | "red" | "slate";
-};
 
 const ACCENT: Record<string, string> = {
   navy: "border-[var(--mkt-navy)]/20 bg-[var(--mkt-navy)]/5 hover:border-[var(--mkt-navy)]/40",
@@ -37,121 +18,139 @@ const ACCENT: Record<string, string> = {
   slate: "border-border bg-muted/30 hover:border-border/80",
 };
 
-export const WORKER_TILES: LaunchTile[] = [
-  { key: "ua-uc", label: "Report UA / UC", description: "Unsafe act or condition", href: "/app/reports/new?type=unsafe_act", icon: Eye, accent: "teal" },
-  { key: "incident", label: "Report incident", description: "Injury or property damage", href: "/app/incidents/new", icon: AlertTriangle, accent: "red" },
-  { key: "near-miss", label: "Near miss", description: "Potential incident", href: "/app/near-misses/new", icon: ShieldAlert, accent: "amber" },
-  { key: "lmra", label: "LMRA", description: "Last minute risk assessment", href: "/field/lmra", icon: ClipboardCheck, accent: "navy" },
-  { key: "actions", label: "My actions", description: "Assigned CAPA items", href: "/app/action-items", icon: CheckSquare, accent: "slate" },
-];
+export function OpsTileGrid({
+  tiles,
+  columns = "default",
+}: {
+  tiles: LaunchpadTile[];
+  columns?: "default" | "compact" | "wide";
+}) {
+  if (!tiles.length) return null;
 
-export const SAFETY_OFFICER_TILES: LaunchTile[] = [
-  { key: "uauc-queue", label: "UA / UC queue", description: "Allocate and close observations", href: "/app/observations", icon: Eye, accent: "teal" },
-  { key: "lmra-approvals", label: "LMRA approvals", description: "Review submitted LMRAs", href: "/app/lmra?status=submitted", icon: ClipboardCheck, accent: "navy" },
-  { key: "reporting-queue", label: "Reporting queue", description: "Pending submissions", href: "/app/reporting/queue", icon: Inbox, accent: "amber" },
-  { key: "incidents", label: "Incidents", description: "Investigate and close", href: "/app/incidents", icon: AlertTriangle, accent: "red" },
-  { key: "capa", label: "CAPA overdue", description: "Corrective actions", href: "/app/capa", icon: CheckSquare, accent: "slate" },
-  { key: "new-report", label: "New report", description: "Create any report type", href: "/app/reports/new", icon: PlusCircle, accent: "teal" },
-];
+  const gridClass =
+    columns === "compact"
+      ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"
+      : columns === "wide"
+        ? "grid-cols-1 sm:grid-cols-2"
+        : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
 
-export const PM_TILES: LaunchTile[] = [
-  { key: "incidents", label: "Incidents", description: "Project incidents", href: "/app/incidents", icon: AlertTriangle, accent: "red" },
-  { key: "permits", label: "Permits", description: "Active PTW", href: "/app/permits/active", icon: FileText, accent: "navy" },
-  { key: "visits", label: "Site visits", description: "HSV / RSV / TSV", href: "/app/site-visits", icon: MapPin, accent: "teal" },
-  { key: "capa", label: "Project CAPA", description: "Open actions", href: "/app/capa", icon: CheckSquare, accent: "slate" },
-  { key: "dashboard", label: "Dashboard", description: "Operational KPIs", href: "/app/dashboard", icon: LayoutDashboard, accent: "navy" },
-];
-
-export const CORPORATE_EHS_TILES: LaunchTile[] = [
-  { key: "executive", label: "Control Tower", description: "Executive overview", href: "/app/executive", icon: LayoutDashboard, accent: "navy" },
-  { key: "mis", label: "EHS MIS", description: "Management information", href: "/app/mis", icon: FileSpreadsheet, accent: "teal" },
-  { key: "scorecard", label: "EHS Scorecard", description: "Dimensional scoring", href: "/app/ehs-score", icon: Gauge, accent: "amber" },
-  { key: "analytics", label: "Analytics", description: "Trends and drill-down", href: "/app/analytics", icon: BarChart3, accent: "slate" },
-  { key: "report-hub", label: "Report Hub", description: "Registers and exports", href: "/app/reports/hub", icon: FileText, accent: "navy" },
-  { key: "ai", label: "EHS Copilot", description: "Assistive intelligence", href: "/app/ai", icon: Sparkles, accent: "teal" },
-];
-
-export const AUDITOR_TILES: LaunchTile[] = [
-  { key: "audits", label: "Audits", description: "Audit programs", href: "/app/audits", icon: ClipboardCheck, accent: "navy" },
-  { key: "findings", label: "Findings", description: "Open findings", href: "/app/findings", icon: Eye, accent: "amber" },
-  { key: "search", label: "Evidence search", description: "Cross-module search", href: "/app/search", icon: FileText, accent: "slate" },
-  { key: "reports", label: "Reports", description: "Audit registers", href: "/app/reports", icon: FileText, accent: "navy" },
-];
-
-export function resolvePersonaTiles(roleCodes: string[]): {
-  persona: string;
-  tiles: LaunchTile[];
-} {
-  if (roleCodes.includes("auditor")) {
-    return { persona: "Auditor", tiles: AUDITOR_TILES };
-  }
-  if (
-    roleCodes.some((c) =>
-      ["ehs_admin", "ehs_manager", "tenant_admin", "super_admin"].includes(c),
-    )
-  ) {
-    return { persona: "Corporate EHS", tiles: CORPORATE_EHS_TILES };
-  }
-  if (roleCodes.some((c) => ["ehs_officer", "investigator"].includes(c))) {
-    return { persona: "Safety Officer", tiles: SAFETY_OFFICER_TILES };
-  }
-  if (roleCodes.some((c) => ["site_manager", "department_head", "supervisor"].includes(c))) {
-    return { persona: "Site / Project Manager", tiles: PM_TILES };
-  }
-  if (roleCodes.includes("contractor")) {
-    return {
-      persona: "Contractor",
-      tiles: WORKER_TILES.filter((t) => t.key !== "lmra").concat([
-        { key: "contractor", label: "Contractor portal", description: "Induction and docs", href: "/contractor", icon: HardHat, accent: "navy" },
-      ]),
-    };
-  }
-  return { persona: "Worker", tiles: WORKER_TILES };
-}
-
-export function OpsTileGrid({ tiles }: { tiles: LaunchTile[] }) {
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {tiles.map((tile) => {
-        const Icon = tile.icon;
-        return (
-          <Link
-            key={tile.key}
-            href={tile.href}
-            className={cn(
-              "group flex min-h-[7.5rem] flex-col rounded-[var(--radius-lg)] border p-4 shadow-[var(--shadow-sm)] transition-[border-color,box-shadow,transform] duration-200 hover:shadow-[var(--shadow-md)] active:scale-[0.99] motion-reduce:transition-none motion-reduce:active:scale-100",
-              ACCENT[tile.accent ?? "slate"],
-            )}
-          >
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-card shadow-[var(--shadow-sm)]">
-              <Icon className="h-4.5 w-4.5 text-foreground" />
-            </span>
-            <span className="mt-3 font-display text-sm font-semibold tracking-tight text-foreground group-hover:text-primary">
-              {tile.label}
-            </span>
-            <span className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
-              {tile.description}
-            </span>
-          </Link>
-        );
-      })}
+    <div className={cn("grid gap-3", gridClass)}>
+      {tiles.map((tile) => (
+        <LaunchTileCard key={tile.key} tile={tile} />
+      ))}
     </div>
   );
 }
 
+function LaunchTileCard({ tile, size = "default" }: { tile: LaunchpadTile; size?: "default" | "hero" }) {
+  const Icon = tile.icon;
+  return (
+    <Link
+      href={tile.href}
+      className={cn(
+        "group flex flex-col rounded-[var(--radius-lg)] border p-4 shadow-[var(--shadow-sm)] transition-[border-color,box-shadow,transform] duration-200 hover:shadow-[var(--shadow-md)] active:scale-[0.99] motion-reduce:transition-none motion-reduce:active:scale-100",
+        size === "hero" ? "min-h-[8.5rem]" : "min-h-[7.5rem]",
+        ACCENT[tile.accent ?? "slate"],
+      )}
+    >
+      <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-card shadow-[var(--shadow-sm)]">
+        <Icon className="h-4.5 w-4.5 text-foreground" />
+      </span>
+      <span className="mt-3 font-display text-sm font-semibold tracking-tight text-foreground group-hover:text-primary">
+        {tile.label}
+      </span>
+      <span className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+        {tile.description}
+      </span>
+    </Link>
+  );
+}
+
+function SectionHeader({
+  section,
+  count,
+}: {
+  section: LaunchpadSection;
+  count?: number;
+}) {
+  return (
+    <div className="flex items-baseline justify-between gap-3">
+      <h2 className="font-display text-base font-semibold tracking-tight text-foreground">
+        {LAUNCHPAD_SECTION_LABELS[section]}
+      </h2>
+      {count !== undefined && count > 0 ? (
+        <span className="text-xs text-muted-foreground">{count} modules</span>
+      ) : null}
+    </div>
+  );
+}
+
+function AiCopilotBanner({ tiles }: { tiles: LaunchpadTile[] }) {
+  const copilot = tiles.find((t) => t.key === "ai-copilot");
+  const search = tiles.find((t) => t.key === "search");
+  if (!copilot) return null;
+
+  const Icon = copilot.icon;
+  return (
+    <section className="space-y-3">
+      <SectionHeader section="ai" />
+      <div className="grid gap-3 lg:grid-cols-[1fr_auto]">
+        <Link
+          href={copilot.href}
+          className="group flex items-start gap-4 rounded-[var(--radius-lg)] border border-[var(--mkt-safety)]/30 bg-gradient-to-br from-[var(--mkt-safety)]/10 to-card p-5 shadow-[var(--shadow-sm)] transition-[border-color,box-shadow] hover:border-[var(--mkt-safety)]/50 hover:shadow-[var(--shadow-md)]"
+        >
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-card shadow-[var(--shadow-sm)]">
+            <Icon className="h-5 w-5 text-[var(--mkt-safety)]" />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="font-display text-base font-semibold tracking-tight text-foreground group-hover:text-primary">
+              {copilot.label}
+            </p>
+            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+              {copilot.description}. Ask questions over your tenant data — drafts require human approval.
+            </p>
+            <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary">
+              Open Copilot
+              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+            </span>
+          </div>
+        </Link>
+        {search ? (
+          <Link
+            href={search.href}
+            className="flex min-h-[7rem] flex-col justify-center rounded-[var(--radius-lg)] border border-border bg-card p-4 shadow-[var(--shadow-sm)] transition-[border-color,box-shadow] hover:border-border/80 hover:shadow-[var(--shadow-md)] lg:min-w-[12rem]"
+          >
+            <Sparkles className="h-4 w-4 text-muted-foreground" />
+            <span className="mt-2 font-display text-sm font-semibold">{search.label}</span>
+            <span className="mt-0.5 text-xs text-muted-foreground">{search.description}</span>
+          </Link>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
+export type LaunchpadSections = Record<LaunchpadSection, LaunchpadTile[]>;
+
 export function HomeLaunchpad({
   persona,
-  tiles,
+  sections,
   organizationName,
   userName,
 }: {
   persona: string;
-  tiles: LaunchTile[];
+  sections: LaunchpadSections;
   organizationName: string;
   userName: string;
 }) {
+  const dashboardTiles = sections.dashboard;
+  const operationsTiles = sections.operations;
+  const reportsTiles = sections.reports;
+  const aiTiles = sections.ai;
+
   return (
-    <div className="app-page-stagger min-w-0 space-y-6">
+    <div className="app-page-stagger min-w-0 space-y-8">
       <div>
         <Breadcrumbs items={[{ label: "Home", href: "/app/home" }]} className="mb-2" />
         <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--mkt-safety)]">
@@ -161,10 +160,42 @@ export function HomeLaunchpad({
           Welcome back{userName ? `, ${userName.split(/\s+/)[0]}` : ""}
         </h1>
         <p className="mt-1 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          {persona} workspace for {organizationName}. Launch daily safety operations — not a marketplace.
+          {persona} workspace for {organizationName}. Launch safety operations, reports, and analytics — not a marketplace.
         </p>
       </div>
-      <OpsTileGrid tiles={tiles} />
+
+      {dashboardTiles.length > 0 ? (
+        <section className="space-y-3">
+          <SectionHeader section="dashboard" />
+          <OpsTileGrid tiles={dashboardTiles} columns="wide" />
+        </section>
+      ) : null}
+
+      {operationsTiles.length > 0 ? (
+        <section className="space-y-3">
+          <SectionHeader section="operations" count={operationsTiles.length} />
+          <OpsTileGrid tiles={operationsTiles} />
+        </section>
+      ) : null}
+
+      {reportsTiles.length > 0 ? (
+        <section className="space-y-3">
+          <SectionHeader section="reports" />
+          <OpsTileGrid tiles={reportsTiles} columns="compact" />
+        </section>
+      ) : null}
+
+      {aiTiles.length > 0 ? <AiCopilotBanner tiles={aiTiles} /> : null}
     </div>
   );
 }
+
+/** @deprecated Use LAUNCHPAD_TILES from lib/navigation/launchpad */
+export type LaunchTile = {
+  key: string;
+  label: string;
+  description: string;
+  href: string;
+  icon: LucideIcon;
+  accent?: "navy" | "teal" | "amber" | "red" | "slate";
+};

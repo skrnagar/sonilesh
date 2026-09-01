@@ -31,10 +31,10 @@ export default async function MarketplacePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold">Marketplace</h1>
+        <h1 className="text-xl font-semibold">Templates</h1>
         <p className="text-sm text-muted-foreground">
-          Templates, connectors, and apps as metadata. Install attaches an entitlement or template —
-          there is no payment flow.
+          Admin-only template and connector catalog. Install attaches an entitlement or workflow template —
+          not a primary app entry point.
         </p>
       </div>
       <div className="grid gap-3 md:grid-cols-2">

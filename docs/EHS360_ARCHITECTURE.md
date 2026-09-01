@@ -1,11 +1,9 @@
 # EHS360 Enterprise Architecture Assessment
 
 **Date:** 1 September 2026  
-**Branch assessed:** `main` @ `aafb99e` (UI modernization)  
+**Branch assessed:** `main` @ `f8f266d` (enterprise phases 1–24)  
 **Production:** https://sonilesh.vercel.app  
-**Purpose:** Reorient SONIL EHS360 from marketplace-oriented SaaS toward an **enterprise EHS operating system** — inspired by large EPC safety platform patterns (UA/UC, incidents, LMRA, permits, visits, MIS, scorecards) without copying proprietary branding.
-
-This document is an **assessment and target architecture**. It does not change production code.
+**Purpose:** Enterprise EHS operating system — inspired by large EPC safety platform **operating models** (UA/UC, incidents, LMRA, permits, visits, MIS, scorecards) without copying proprietary branding or marketplace-first navigation.
 
 ---
 
@@ -20,21 +18,43 @@ EHS360 is a mature **multi-tenant Supabase + Next.js** platform with:
 - Field shell at `/field` (incident, near-miss, hazard, LMRA, permits, inspection, toolbox)
 - Contractor portal at `/contractor`
 - SaaS control plane at `/admin`
-- Marketplace page at `/app/marketplace` (Phase 19 spec partially surfaced)
+- Marketplace page at `/app/marketplace` — **demoted to Administration → Templates** (not launchpad)
 - Subscription/feature gating via `plans`, `features`, `organization_feature_overrides`
 
-The product roadmap (`docs/EHS360_ROADMAP.md`) currently sequences **16A marketing → 16B API → 17 industry packs → 18 AI → 19 marketplace**. That ordering optimizes for **SaaS growth**, not for **operational EHS depth first**.
+The product roadmap (`docs/EHS360_ROADMAP.md`) sequences **Phase 19 operating model → Phase 20 launchpad → Phase 21+ core workflows**. Marketplace is deprecated as a primary product direction.
 
 ### Target state
 
 An **Enterprise EHS Operating System** where:
 
-1. **Operations-first IA** — Home tile dashboard + role-based module launch (not a flat 50-item sidebar).
+1. **Operations-first IA** — `/app/home` module launchpad (My Dashboard | EHS Operations | Reports | AI Copilot) + grouped sidebar.
 2. **Hierarchy-native** — Organization → Business Unit → **Region** → Site → Project → Department → Location, with scoped RBAC.
 3. **Workflow engines** — Configurable state machines for UA/UC, incidents, LMRA, permits, visits, MIS, CAPA — not hardcoded transitions only in `events.ts`.
 4. **Assurance layer** — Checklists, audits, inspections, scorecards, MIS roll-ups, report hub.
 5. **AI as assistive layer** — Copilot reads tenant FACT data; never autonomous closure (per `docs/PHASE_18_ADVANCED_AI.md`).
 6. **Marketplace demoted** — Templates/connectors become **admin configuration**, not the primary app entry metaphor.
+
+### Operating model (experience layer)
+
+```
+┌──────────────────────────────────────────────────────────────────────────┐
+│  /app/home — Enterprise Launchpad                                        │
+│  ┌─────────────┐  ┌──────────────────────────────┐  ┌─────────────────┐ │
+│  │ My Dashboard│  │ EHS Operations (module grid) │  │ Reports shortcut│ │
+│  │ KPI tiles   │  │ UA/UC · Incident · LMRA · PTW│  │ MIS · Scorecard │ │
+│  └─────────────┘  │ Visits · CAPA · Training · … │  └─────────────────┘ │
+│                   └──────────────────────────────┘  ┌─────────────────┐ │
+│                                                     │ AI Copilot entry│ │
+│                                                     └─────────────────┘ │
+├──────────────────────────────────────────────────────────────────────────┤
+│  Grouped sidebar: Home · Dashboard · Safety Ops · Risk & Control ·     │
+│  Assurance · People · Analytics · Reports · AI Copilot · Administration  │
+│  (Templates under Admin — not marketplace launchpad)                     │
+├──────────────────────────────────────────────────────────────────────────┤
+│  Role experiences: Worker · Supervisor · Safety Officer · PM ·           │
+│  Regional EHS · Corporate EHS                                            │
+└──────────────────────────────────────────────────────────────────────────┘
+```
 
 ### Architectural layers
 
@@ -160,38 +180,47 @@ Existing Phase 14 architecture (`docs/AI_ARCHITECTURE.md`, `docs/PHASE_18_ADVANC
 
 ---
 
-## 7. Implementation roadmap (Phases 1–24)
+## 7. Implementation roadmap (Phases 19–40)
 
-Aligned with enterprise rebuild; **do not implement Phase 5+ until 1–4 exit criteria met**.
+Aligned with enterprise operating model rebuild. Phases 1–24 on `main` delivered shell, RBAC, regions, UA/UC service methods, LMRA, site visits, MIS, scorecard, and report hub scaffolding. **Phase 20** completes the launchpad experience.
 
-| Phase | Focus | Builds on | Exit criteria |
-|-------|-------|-----------|---------------|
-| **1** | Application shell + design system | Commit `aafb99e`, `docs/EHS360_UI_SYSTEM.md` | Persona home, grouped nav, remove marketplace from primary IA |
-| **2** | RBAC + tenant hierarchy | `member_roles`, seed roles, xlsx matrix | Region table, scope admin UI, action permissions for UA/UC/MIS |
-| **3** | UA/UC + observation workflow | `ehs_events` types, `events.ts` | Allocate → close → final closure; Safety Officer gates |
-| **4** | Incident + investigation hardening | Incidents UI, `investigations` | LTI/Fatal/UA-UC classifications live; investigation workspace complete |
-| **5** | LMRA module | Field LMRA capture | LMRA entity, ESHO approval, link to site/project |
-| **6** | Work Permit depth | `permits.ts`, PTW engine | Multi-party sign-off, extension, close-out parity with reference |
-| **7** | Checklist + inspection execution | `checklists.ts` | Mobile execution, findings → CAPA auto-link |
-| **8** | CAPA + action items | `capa.ts` | Overdue escalation job, verify-by-other, source polymorphism |
-| **9** | Site visits (HSV/RSV/TSV) | New `site_visits` | Role-gated create per matrix |
-| **10** | Workflow engine | Replace `workflow.ts` stub | DB-driven definitions per module |
-| **11** | Notification + email dispatcher | `notifications.ts` | SLA reminders, escalation matrix |
-| **12** | EHS MIS | New MIS tables | Create/edit by Safety Officer; approve by BU EHS Head |
-| **13** | EHS Scorecard | New score tables | Dimension scoring, regional roll-up |
-| **14** | Report Hub | `/app/reports`, reporting engine | Scheduled PDF/Excel, register exports |
-| **15** | Analytics + executive | Phase 13 migration, `/app/executive` | Site → region → corporate drill-down |
-| **16** | Training + competency depth | `training_*` tables | Assignments, expiry, compliance % |
-| **17** | Contractor readiness | `contractors.ts` | Prequalification, induction, performance |
-| **18** | Compliance + legal register | Existing compliance module | Keep; not primary nav for field ops |
-| **19** | ESG / BRSR | `esg_*` tables | Separate nav group; don't dilute safety ops |
-| **20** | AI Copilot production | Phase 14 migration | Grounded assist on ops modules |
-| **21** | Enterprise API (16B) | `src/app/api/v1/` | Documented integrations |
-| **22** | Industry packs (17) | Config overlays | Construction/EPC pack first |
-| **23** | Marketplace as config store | Demote `/app/marketplace` | Template install → settings only |
-| **24** | Global platform (20) | Multi-region ops | Federation, localization |
+| Phase | Focus | Status | Exit criteria |
+|-------|-------|--------|---------------|
+| **19** | RAKSHA-inspired operating model (docs) | **Done** | IA, workflows, RBAC map, module map updated |
+| **20** | Enterprise launchpad + navigation | **In progress** | `/app/home` sections, grouped nav, templates demoted |
+| **21** | UA/UC + Incident + Near Miss | Next | Full CREATE→SUBMITTED→EHS TRIAGE→ASSIGNED→ACTION IN PROGRESS→ACTION COMPLETED→VERIFICATION→CLOSED |
+| **22** | LMRA + Risk Assessment | Planned | ESHO approval, risk register depth |
+| **23** | Work Permit + LOTO | Planned | Multi-party sign-off, extension, close-out |
+| **24** | Checklist + Inspection + Audit | Planned | Mobile execution, findings → CAPA |
+| **25** | TSV + HSV/RSV + BBS | Planned | Role-gated visit creation, behavioral safety |
+| **26** | CAPA + Action Management | Planned | Overdue escalation, verify-by-other |
+| **27** | EHS Score Card | Planned | Dimensional scoring, regional roll-up |
+| **28** | EHS MIS | Planned | Periodic MIS with BU EHS Head approval |
+| **29** | Reports Hub | Planned | Scheduled PDF/Excel, register exports |
+| **30** | Analytics & Benchmarking | Planned | Site → region → corporate drill-down |
+| **31** | Training & competency | Later | Assignments, expiry, compliance % |
+| **32** | Contractor readiness | Later | Prequalification, induction, performance |
+| **33** | Compliance & legal register | Later | Secondary nav group |
+| **34** | AI Copilot (production) | Later | Grounded assist on ops modules |
+| **35** | AI Agents | Later | Triage, classification, anomaly flags |
+| **36** | Mobile / field hardening | Later | Offline-first field workflows |
+| **37** | Admin & hierarchy | Later | Region scope admin, action matrix UI |
+| **38** | Multi-tenant federation | Later | Enterprise org patterns |
+| **39** | Integrations (16B API) | Later | Documented public API + connectors |
+| **40** | Hardening & global platform | Later | Localization, performance, SLA |
 
-**Immediate next coding phase:** **Phase 1** (shell + design system on top of `aafb99e`).
+**Immediate next coding phase:** **Phase 21** (UA/UC + Incident workflow UI parity with target state machine).
+
+### Prior internal phases (1–24, delivered on main)
+
+| Phase | Focus | Status |
+|-------|-------|--------|
+| 1–4 | Shell, RBAC, regions, UA/UC service | Done |
+| 5–9 | LMRA, PTW, checklists, CAPA, site visits | Partial / scaffolded |
+| 10–15 | Workflow stub, notifications, MIS, score, report hub | Partial / scaffolded |
+| 16–24 | Training, contractor, compliance, AI, API, templates | Partial |
+
+**Deprecated:** Phase 19 marketplace-first direction (`docs/PHASE_19_MARKETPLACE.md`) — superseded by operating model docs.
 
 ---
 
