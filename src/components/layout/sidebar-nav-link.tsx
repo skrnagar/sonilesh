@@ -107,7 +107,7 @@ export function SidebarNavLink({
       className={cn(
         "sidebar-nav-link flex min-h-11 items-center gap-2.5 rounded-[var(--radius-sm)] px-2.5 py-2 text-sm transition-[background-color,color,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
         active
-          ? "bg-primary font-medium text-white shadow-[var(--shadow-sm)] dark:text-[#071f2d]"
+          ? "bg-[var(--raksha-blue)] font-medium text-white shadow-[var(--shadow-sm)] dark:text-white"
           : "text-sidebar-foreground hover:bg-sidebar-hover hover:text-sidebar-foreground",
       )}
     >

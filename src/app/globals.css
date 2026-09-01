@@ -40,6 +40,12 @@
   --mkt-safety-hover: #0d6b63;
   --mkt-safety-ink: #ffffff;
   --mkt-hero: #071f2d;
+  /* RAKSHA-inspired enterprise EHS palette (modernized — not legacy portal chrome) */
+  --raksha-blue: #1565a8;
+  --raksha-blue-dark: #0d4a7a;
+  --raksha-blue-light: #e8f1f9;
+  --raksha-canvas: #5a8fc4;
+  --mkt-navy: #0d4a7a;
   --mkt-infra: #c45c26;
   --mkt-surface: #ffffff;
   --mkt-band: #ffffff;
@@ -360,9 +366,83 @@ button.bg-primary:hover {
 }
 
 .app-shell-header {
-  background: color-mix(in srgb, var(--card) 86%, transparent);
-  backdrop-filter: blur(14px) saturate(1.2);
-  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  background: linear-gradient(180deg, var(--raksha-blue) 0%, var(--raksha-blue-dark) 100%);
+  border-bottom-color: color-mix(in srgb, var(--raksha-blue-dark) 80%, #000);
+  color: #ffffff;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.app-shell-header .text-foreground {
+  color: #ffffff;
+}
+
+.app-shell-header .text-muted-foreground {
+  color: color-mix(in srgb, #ffffff 75%, transparent);
+}
+
+.app-shell-header .border-border\/80,
+.app-shell-header [class*="border-border"] {
+  border-color: color-mix(in srgb, #ffffff 22%, transparent);
+}
+
+.app-shell-header .bg-card\/90,
+.app-shell-header .bg-muted\/80 {
+  background: color-mix(in srgb, #ffffff 14%, transparent);
+  color: #ffffff;
+}
+
+.app-shell-header .text-muted-foreground.placeholder\:text-muted-foreground::placeholder {
+  color: color-mix(in srgb, #ffffff 55%, transparent);
+}
+
+.app-shell-header input {
+  color: #ffffff;
+}
+
+.app-shell-header input::placeholder {
+  color: color-mix(in srgb, #ffffff 55%, transparent);
+}
+
+.workspace-shell > .flex-1 > main {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--raksha-canvas) 18%, var(--background)) 0%,
+    var(--background) 32%,
+    var(--background) 100%
+  );
+}
+
+.raksha-module-panel {
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--raksha-blue) 92%, #000) 0%,
+    color-mix(in srgb, var(--raksha-blue-dark) 88%, #000) 100%
+  );
+  border-radius: var(--radius-lg);
+  padding: clamp(1rem, 0.75rem + 1vw, 1.5rem);
+  box-shadow: var(--shadow-md);
+}
+
+.raksha-module-tile {
+  background: #ffffff;
+  border: 1px solid color-mix(in srgb, #ffffff 85%, var(--border));
+  border-radius: var(--radius-md);
+  box-shadow: 0 2px 8px rgba(7, 31, 45, 0.12);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.raksha-module-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(7, 31, 45, 0.18);
+}
+
+.raksha-section-tab {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, #ffffff 88%, transparent);
 }
 
 .app-page {
