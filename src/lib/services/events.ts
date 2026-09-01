@@ -624,6 +624,70 @@ export async function transitionEhsEvent(
     reason: input.note,
   });
 
+  const typeMeta = REPORT_TYPE_META[typeCode as ReportTypeCode];
+  const detailPath = `${typeMeta?.listPath ?? "/app/incidents"}/${input.eventId}`;
+  const siteId = (event.site_id as string | null | undefined) ?? null;
+  const assignedTo =
+    typeof event.assigned_to === "string" ? event.assigned_to : null;
+  const createdBy =
+    typeof event.created_by === "string" ? event.created_by : null;
+  const eventNumber = String(event.event_number ?? input.eventId);
+
+  const notifyJobs: Promise<void>[] = [];
+
+  if (input.toStatus === "submitted") {
+    notifyJobs.push(
+      notifySiteSupervisors(supabase, {
+        organizationId: input.organizationId,
+        siteId,
+        actorUserId: input.userId,
+        eventKey: "ehs_event.created",
+        title: `Report submitted: ${eventNumber}`,
+        body: typeMeta?.label ?? typeCode,
+        link: detailPath,
+      }).then(() => undefined).catch(() => undefined),
+    );
+  }
+
+  if (
+    assignedTo &&
+    assignedTo !== input.userId &&
+    ["triage", "investigation", "capa", "verification", "approval"].includes(input.toStatus)
+  ) {
+    notifyJobs.push(
+      notifyUsers(supabase, {
+        organizationId: input.organizationId,
+        userIds: [assignedTo],
+        actorUserId: input.userId,
+        eventKey: "ehs_event.assigned",
+        title: `Report ${eventNumber} updated`,
+        body: `Status is now ${input.toStatus.replace(/_/g, " ")}`,
+        link: detailPath,
+      }).then(() => undefined).catch(() => undefined),
+    );
+  }
+
+  if (input.toStatus === "closed") {
+    const closedRecipients = [createdBy, assignedTo].filter(
+      (id): id is string => Boolean(id) && id !== input.userId,
+    );
+    if (closedRecipients.length) {
+      notifyJobs.push(
+        notifyUsers(supabase, {
+          organizationId: input.organizationId,
+          userIds: closedRecipients,
+          actorUserId: input.userId,
+          eventKey: "incident.alert",
+          title: `Report closed: ${eventNumber}`,
+          body: input.note ?? "The report has been closed",
+          link: detailPath,
+        }).then(() => undefined).catch(() => undefined),
+      );
+    }
+  }
+
+  await Promise.all(notifyJobs);
+
   return updated;
 }
 
@@ -763,6 +827,42 @@ export async function assigneeCloseUaucEvent(
     activity_type: "uauc_assignee_closed",
     message: input.note ?? "Assignee closed after corrective action",
   });
+
+  const { data: eventMeta } = await supabase
+    .from("ehs_events")
+    .select("event_number, site_id, allocated_by, event_types:event_type_id(code)")
+    .eq("id", input.eventId)
+    .eq("organization_id", input.organizationId)
+    .maybeSingle();
+  const metaTypeCode = (eventMeta?.event_types as { code?: string } | null)?.code;
+  const typeMeta = REPORT_TYPE_META[metaTypeCode as ReportTypeCode];
+  const detailPath = `${typeMeta?.listPath ?? "/app/hazards"}/${input.eventId}`;
+  const verifierIds = [eventMeta?.allocated_by].filter(
+    (id): id is string => typeof id === "string" && id !== input.userId,
+  );
+
+  await Promise.all([
+    notifySiteSupervisors(supabase, {
+      organizationId: input.organizationId,
+      siteId: (eventMeta?.site_id as string | null) ?? null,
+      actorUserId: input.userId,
+      eventKey: "ehs_event.assigned",
+      title: `UA/UC ready for verification: ${eventMeta?.event_number ?? input.eventId}`,
+      body: input.note ?? "Assignee completed corrective action",
+      link: detailPath,
+    }).catch(() => undefined),
+    verifierIds.length
+      ? notifyUsers(supabase, {
+          organizationId: input.organizationId,
+          userIds: verifierIds,
+          actorUserId: input.userId,
+          eventKey: "ehs_event.assigned",
+          title: `UA/UC ready for your review: ${eventMeta?.event_number ?? input.eventId}`,
+          link: detailPath,
+        }).catch(() => undefined)
+      : Promise.resolve(),
+  ]);
+
   return data;
 }
 
@@ -811,6 +911,30 @@ export async function finalCloseUaucEvent(
     entityId: input.eventId,
     reason: input.note,
   });
+
+  const { data: eventMeta } = await supabase
+    .from("ehs_events")
+    .select("event_number, assigned_to, created_by")
+    .eq("id", input.eventId)
+    .eq("organization_id", input.organizationId)
+    .maybeSingle();
+  const typeMeta = REPORT_TYPE_META[typeCode as ReportTypeCode];
+  const detailPath = `${typeMeta?.listPath ?? "/app/hazards"}/${input.eventId}`;
+  const closedRecipients = [eventMeta?.assigned_to, eventMeta?.created_by].filter(
+    (id): id is string => typeof id === "string" && id !== input.userId,
+  );
+  if (closedRecipients.length) {
+    await notifyUsers(supabase, {
+      organizationId: input.organizationId,
+      userIds: closedRecipients,
+      actorUserId: input.userId,
+      eventKey: "incident.alert",
+      title: `UA/UC closed: ${eventMeta?.event_number ?? input.eventId}`,
+      body: input.note ?? "Final closure completed",
+      link: detailPath,
+    }).catch(() => undefined);
+  }
+
   return data;
 }
 

@@ -29,20 +29,23 @@ export function NotificationDropdown({
   items,
   unreadCount: initialUnreadCount,
   onUpdate,
+  open = true,
 }: {
   items: NotificationRow[];
   unreadCount: number;
   onUpdate?: (rows: NotificationRow[]) => void;
+  /** When false the panel is hidden; fetch runs each time it opens. */
+  open?: boolean;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [loaded, setLoaded] = useState(items);
-  const [loading, setLoading] = useState(items.length === 0);
+  const [loading, setLoading] = useState(false);
 
-  // Derive unread count from local state so it stays accurate after client-side updates.
-  const unreadCount = loaded.filter((n) => !n.read_at).length;
-  // Suppress unused-variable warning while keeping the prop for future server-driven badge sync.
-  void initialUnreadCount;
+  // Prefer local list once loaded; fall back to server badge until first fetch completes.
+  const localUnread = loaded.filter((n) => !n.read_at).length;
+  const unreadCount =
+    loaded.length > 0 || !loading ? localUnread : initialUnreadCount;
 
   function updateLoaded(rows: NotificationRow[]) {
     setLoaded(rows);
@@ -50,12 +53,12 @@ export function NotificationDropdown({
   }
 
   useEffect(() => {
+    if (!open) return;
     if (items.length) {
       setLoaded(items);
-      setLoading(false);
-      return;
     }
     let cancelled = false;
+    setLoading(true);
     listRecentNotificationsAction()
       .then((rows) => {
         if (!cancelled) {
@@ -64,7 +67,7 @@ export function NotificationDropdown({
         }
       })
       .catch(() => {
-        if (!cancelled) setLoaded([]);
+        if (!cancelled) setLoaded(items.length ? items : []);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -73,7 +76,7 @@ export function NotificationDropdown({
       cancelled = true;
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items]);
+  }, [open]);
 
   function markAll() {
     startTransition(async () => {
@@ -81,6 +84,7 @@ export function NotificationDropdown({
       const now = new Date().toISOString();
       const updated = loaded.map((row) => ({ ...row, read_at: row.read_at ?? now }));
       updateLoaded(updated);
+      router.refresh();
     });
   }
 
@@ -95,6 +99,7 @@ export function NotificationDropdown({
           row.id === item.id ? { ...row, read_at: now } : row,
         );
         updateLoaded(updated);
+        router.refresh();
       }
       if (item.link) {
         router.push(item.link);

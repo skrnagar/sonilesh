@@ -202,6 +202,7 @@ export function WorkspaceShell({
               </button>
               {notesOpen ? (
                 <NotificationDropdown
+                  open={notesOpen}
                   items={localNotifications}
                   unreadCount={badgeCount}
                   onUpdate={setLocalNotifications}

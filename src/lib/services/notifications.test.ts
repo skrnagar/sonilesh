@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  EHS_NOTIFICATION_ROLES,
   incidentAlertsEnabled,
   recipientsAfterPreferences,
 } from "@/lib/services/notifications";
@@ -29,5 +30,11 @@ describe("notification preferences", () => {
         ],
       ),
     ).toEqual(["a", "c"]);
+  });
+
+  it("includes tenant admins in EHS alert fan-out roles", () => {
+    expect(EHS_NOTIFICATION_ROLES).toContain("tenant_admin");
+    expect(EHS_NOTIFICATION_ROLES).toContain("ehs_admin");
+    expect(EHS_NOTIFICATION_ROLES).toContain("supervisor");
   });
 });

@@ -12,6 +12,16 @@ export type NotificationRow = {
   created_at: string;
 };
 
+/** Roles that receive org/site EHS alert fan-out (supervisors + tenant admins). */
+export const EHS_NOTIFICATION_ROLES = [
+  "tenant_admin",
+  "ehs_admin",
+  "ehs_manager",
+  "ehs_officer",
+  "site_manager",
+  "supervisor",
+] as const;
+
 const INCIDENT_EVENT_KEYS = new Set([
   "ehs_event.created",
   "ehs_event.assigned",
@@ -179,7 +189,7 @@ export async function notifySiteSupervisors(
   for (const row of roles ?? []) {
     const code = (row.roles as { code?: string } | null)?.code;
     if (!code) continue;
-    if (!["supervisor", "ehs_officer", "ehs_manager", "site_manager"].includes(code)) continue;
+    if (!(EHS_NOTIFICATION_ROLES as readonly string[]).includes(code)) continue;
     // org-level roles (site_id null) always match; site-scoped roles only match the requested site.
     if (input.siteId && row.site_id && row.site_id !== input.siteId) continue;
     const userId = userByMember.get(row.member_id);
