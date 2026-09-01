@@ -1,7 +1,26 @@
+import { cache } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 /** Server-side page size — never dump unbounded event lists into the browser. */
 export const EVENT_LIST_PAGE_SIZE = 50;
+
+const EVENT_LIST_SELECT = `
+  id, event_number, title, status, occurred_at, description, uauc_stage, assigned_to,
+  event_types:event_type_id(code, name),
+  sites:site_id(name),
+  severity_levels:severity_id(name)
+`;
+
+/** Request-scoped: all system event type ids (one query per request). */
+const loadSystemEventTypes = cache(async (supabase: SupabaseClient) => {
+  const { data, error } = await supabase
+    .from("event_types")
+    .select("id, code")
+    .is("organization_id", null);
+
+  if (error) throw new Error(error.message);
+  return new Map((data ?? []).map((row) => [row.code, row.id]));
+});
 
 export async function listEventsByType(
   supabase: SupabaseClient,
@@ -9,30 +28,45 @@ export async function listEventsByType(
   typeCode: string,
   opts?: { limit?: number },
 ) {
-  const { data: eventType } = await supabase
-    .from("event_types")
-    .select("id")
-    .eq("code", typeCode)
-    .is("organization_id", null)
-    .maybeSingle();
-
-  if (!eventType) return [];
+  const typeIds = await loadSystemEventTypes(supabase);
+  const eventTypeId = typeIds.get(typeCode);
+  if (!eventTypeId) return [];
 
   const { data, error } = await supabase
     .from("ehs_events")
-    .select(
-      `
-      id, event_number, title, status, occurred_at, description, uauc_stage,
-      event_types:event_type_id(code, name),
-      sites:site_id(name),
-      severity_levels:severity_id(name)
-    `,
-    )
+    .select(EVENT_LIST_SELECT)
     .eq("organization_id", organizationId)
-    .eq("event_type_id", eventType.id)
+    .eq("event_type_id", eventTypeId)
     .is("deleted_at", null)
     .order("occurred_at", { ascending: false })
     .limit(opts?.limit ?? EVENT_LIST_PAGE_SIZE);
+
+  if (error) throw new Error(error.message);
+  return data ?? [];
+}
+
+/** Single round-trip for multiple event types (observations, hazards). */
+export async function listEventsByTypes(
+  supabase: SupabaseClient,
+  organizationId: string,
+  typeCodes: string[],
+  opts?: { limit?: number },
+) {
+  const typeIds = await loadSystemEventTypes(supabase);
+  const ids = typeCodes.map((code) => typeIds.get(code)).filter((id): id is string => Boolean(id));
+  if (!ids.length) return [];
+
+  const perTypeLimit = opts?.limit ?? EVENT_LIST_PAGE_SIZE;
+  const fetchLimit = Math.min(perTypeLimit * ids.length, 150);
+
+  const { data, error } = await supabase
+    .from("ehs_events")
+    .select(EVENT_LIST_SELECT)
+    .eq("organization_id", organizationId)
+    .in("event_type_id", ids)
+    .is("deleted_at", null)
+    .order("occurred_at", { ascending: false })
+    .limit(fetchLimit);
 
   if (error) throw new Error(error.message);
   return data ?? [];

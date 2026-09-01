@@ -676,6 +676,52 @@ export async function allocateUaucEvent(
   return data ?? assigned;
 }
 
+export async function beginUaucActionProgress(
+  supabase: SupabaseClient,
+  input: {
+    organizationId: string;
+    userId: string;
+    eventId: string;
+    note?: string;
+  },
+) {
+  await requirePermission(supabase, input.organizationId, input.userId, "hazards.close_assigned");
+  const { data: event } = await supabase
+    .from("ehs_events")
+    .select("id, assigned_to, status, event_types:event_type_id(code)")
+    .eq("id", input.eventId)
+    .eq("organization_id", input.organizationId)
+    .maybeSingle();
+  if (!event) throw new Error("Event not found");
+  const typeCode = (event.event_types as { code?: string } | null)?.code;
+  if (!isUaucType(typeCode)) throw new Error("Not a UA/UC event");
+  if (event.assigned_to && event.assigned_to !== input.userId) {
+    await requirePermission(supabase, input.organizationId, input.userId, "hazards.allocate");
+  }
+  if (!canTransition(event.status as EhsEventStatus, "capa")) {
+    throw new Error(`Cannot start action from status ${event.status}`);
+  }
+  const { data, error } = await supabase
+    .from("ehs_events")
+    .update({
+      status: "capa",
+      uauc_stage: "action_in_progress",
+      updated_by: input.userId,
+    })
+    .eq("id", input.eventId)
+    .select("*")
+    .single();
+  if (error) throw new Error(error.message);
+  await supabase.from("ehs_event_activity").insert({
+    organization_id: input.organizationId,
+    event_id: input.eventId,
+    actor_user_id: input.userId,
+    activity_type: "uauc_action_started",
+    message: input.note ?? "Corrective action in progress",
+  });
+  return data;
+}
+
 export async function assigneeCloseUaucEvent(
   supabase: SupabaseClient,
   input: {

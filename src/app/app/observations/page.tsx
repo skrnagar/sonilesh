@@ -4,7 +4,7 @@ import { UaucWorkflowBar } from "@/components/events/uauc-workflow-bar";
 import { StatusPill } from "@/components/modules/records-table";
 import { ForbiddenState, UpgradeState } from "@/components/shared/state-panels";
 import { requireModuleAccess } from "@/lib/auth/org-context";
-import { listEventsByType } from "@/lib/events/queries";
+import { listEventsByTypes } from "@/lib/events/queries";
 import { getUserPermissions } from "@/lib/services/rbac";
 import { formatDate } from "@/lib/utils";
 
@@ -16,10 +16,12 @@ export default async function ObservationsPage() {
   if (!access.entitled) return <UpgradeState featureName="Observations" />;
   if (!access.permitted) return <ForbiddenState />;
 
-  const [unsafeActs, unsafeConditions, observations, permissions, membersRes] = await Promise.all([
-    listEventsByType(access.supabase, access.organization.id, "unsafe_act"),
-    listEventsByType(access.supabase, access.organization.id, "unsafe_condition"),
-    listEventsByType(access.supabase, access.organization.id, "safety_observation"),
+  const [eventRows, permissions, membersRes] = await Promise.all([
+    listEventsByTypes(access.supabase, access.organization.id, [
+      "unsafe_act",
+      "unsafe_condition",
+      "safety_observation",
+    ]),
     getUserPermissions(access.supabase, access.organization.id, access.user.id),
     access.supabase
       .from("organization_members")
@@ -30,9 +32,7 @@ export default async function ObservationsPage() {
       .limit(50),
   ]);
 
-  const rows = [...unsafeActs, ...unsafeConditions, ...observations].sort(
-    (a, b) => +new Date(b.occurred_at) - +new Date(a.occurred_at),
-  );
+  const rows = [...eventRows].sort((a, b) => +new Date(b.occurred_at) - +new Date(a.occurred_at));
 
   const assignees = (membersRes.data ?? []).map((m) => {
     const p = m.profiles as { id?: string; full_name?: string; email?: string } | null;
@@ -76,6 +76,7 @@ export default async function ObservationsPage() {
               organizationId={access.organization.id}
               status={row.status}
               uaucStage={(row as { uauc_stage?: string }).uauc_stage}
+              assignedTo={(row as { assigned_to?: string | null }).assigned_to}
               typeCode={(row.event_types as { code?: string } | null)?.code}
               assignees={assignees}
               permissions={permissions}

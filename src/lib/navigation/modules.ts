@@ -88,6 +88,7 @@ export const ENTERPRISE_NAV: AppModuleDef[] = [
 
   // AI Copilot
   { key: "ai-copilot", label: "EHS Copilot", href: "/app/ai", icon: "Sparkles", featureCode: "ai_copilot", permission: "ai.use", group: "ai" },
+  { key: "ai-agents", label: "AI Agents", href: "/app/ai/agents", icon: "Bot", featureCode: "ai_copilot", permission: "ai.use", group: "ai" },
   { key: "ai-actions", label: "AI suggestions", href: "/app/ai/actions", icon: "Sparkles", featureCode: "ai_copilot", permission: "ai.approve", group: "ai" },
   { key: "search", label: "Search", href: "/app/search", icon: "Search", featureCode: "enterprise_search", permission: "search.use", group: "ai" },
 

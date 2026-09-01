@@ -5,6 +5,7 @@ import { requireWriteAccess } from "@/lib/auth/org-context";
 import {
   allocateUaucEvent,
   assigneeCloseUaucEvent,
+  beginUaucActionProgress,
   finalCloseUaucEvent,
 } from "@/lib/services/events";
 import { createLmraAssessment, reviewLmraAssessment } from "@/lib/services/lmra";
@@ -25,6 +26,25 @@ export async function allocateUaucAction(formData: FormData): Promise<ActionResu
     });
     revalidatePath("/app/observations");
     revalidatePath("/app/incidents");
+    return { ok: true };
+  } catch (err) {
+    if (isNextRedirect(err)) throw err;
+    return { ok: false, error: formatSupabaseUserError(err) };
+  }
+}
+
+export async function beginUaucActionAction(formData: FormData): Promise<ActionResult> {
+  try {
+    const access = await requireWriteAccess({ permission: "hazards.close_assigned" });
+    const eventId = String(formData.get("eventId") || "");
+    await beginUaucActionProgress(access.supabase, {
+      organizationId: access.organization.id,
+      userId: access.user.id,
+      eventId,
+      note: String(formData.get("note") || "") || undefined,
+    });
+    revalidatePath(`/app/incidents/${eventId}`);
+    revalidatePath("/app/observations");
     return { ok: true };
   } catch (err) {
     if (isNextRedirect(err)) throw err;
