@@ -10,7 +10,7 @@ import {
 } from "@/lib/services/events";
 import { createLmraAssessment, reviewLmraAssessment } from "@/lib/services/lmra";
 import { createMisSubmission, reviewMisSubmission } from "@/lib/services/mis";
-import { createSiteVisit } from "@/lib/services/site-visits";
+import { createSiteVisit, transitionSiteVisit } from "@/lib/services/site-visits";
 import { formatSupabaseUserError, isNextRedirect } from "@/lib/supabase/errors";
 import type { ActionResult } from "@/app/actions/events";
 
@@ -156,7 +156,40 @@ export async function createSiteVisitAction(formData: FormData): Promise<ActionR
       submit: formData.get("submit") === "true",
     });
     revalidatePath("/app/site-visits");
-    return { ok: true, id: row.id };
+    return { ok: true, id: row.id, href: `/app/site-visits/${row.id}` };
+  } catch (err) {
+    if (isNextRedirect(err)) throw err;
+    return { ok: false, error: formatSupabaseUserError(err) };
+  }
+}
+
+export async function transitionSiteVisitAction(formData: FormData): Promise<ActionResult> {
+  try {
+    const toStatus = String(formData.get("toStatus") || "") as
+      | "submitted"
+      | "allocated"
+      | "closed"
+      | "final_closed"
+      | "cancelled";
+    const permission =
+      toStatus === "final_closed"
+        ? "visits.final_close"
+        : toStatus === "allocated" || toStatus === "closed"
+          ? "visits.allocate"
+          : "visits.view";
+    const access = await requireWriteAccess({ permission });
+    const visitId = String(formData.get("visitId") || "");
+    await transitionSiteVisit(access.supabase, {
+      organizationId: access.organization.id,
+      userId: access.user.id,
+      visitId,
+      toStatus,
+      assignedTo: String(formData.get("assignedTo") || "") || null,
+      note: String(formData.get("note") || "") || undefined,
+    });
+    revalidatePath("/app/site-visits");
+    revalidatePath(`/app/site-visits/${visitId}`);
+    return { ok: true, href: `/app/site-visits/${visitId}` };
   } catch (err) {
     if (isNextRedirect(err)) throw err;
     return { ok: false, error: formatSupabaseUserError(err) };

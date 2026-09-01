@@ -93,29 +93,32 @@ export default async function EhsScorePage({
           polarity="higher-is-better"
           spark={score.dimensions.map((d) => d.score ?? 0)}
         />
-        {score.dimensions.map((dim) => (
-          <KpiCard
-            key={dim.key}
-            label={dim.label}
-            value={dim.score ?? "N/A"}
-            hint={dim.hint}
-            tone={
-              dim.score === null
-                ? "neutral"
-                : dim.score >= 75
-                  ? "good"
-                  : dim.score >= 60
-                    ? "watch"
-                    : "neutral"
-            }
-            href="/app/ehs-score"
-            icon="BarChart3"
-            accent="navy"
-            trend={null}
-            polarity="higher-is-better"
-            spark={dim.score !== null ? [Math.max(0, dim.score - 10), dim.score] : [0, 0]}
-          />
-        ))}
+        {score.dimensions.map((dim) => {
+          const dimScore = dim.score;
+          return (
+            <KpiCard
+              key={dim.key}
+              label={dim.label}
+              value={dimScore ?? "N/A"}
+              hint={dim.hint}
+              tone={
+                dimScore === null
+                  ? "neutral"
+                  : dimScore >= 75
+                    ? "good"
+                    : dimScore >= 60
+                      ? "watch"
+                      : "neutral"
+              }
+              href="/app/ehs-score"
+              icon="BarChart3"
+              accent="navy"
+              trend={null}
+              polarity="higher-is-better"
+              spark={dimScore !== null ? [Math.max(0, dimScore - 10), dimScore] : [0, 0]}
+            />
+          );
+        })}
       </div>
     </ModuleShell>
   );

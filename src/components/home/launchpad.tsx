@@ -4,7 +4,6 @@ import type { LucideIcon } from "lucide-react";
 import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import {
   LAUNCHPAD_SECTION_LABELS,
-  LAUNCHPAD_SECTION_ORDER,
   type LaunchpadSection,
   type LaunchpadTile,
 } from "@/lib/navigation/launchpad";
