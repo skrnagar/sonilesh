@@ -53,9 +53,9 @@ export function landingPathForSession(input: {
     return "/app/esg/metrics";
   }
   if (isReportingRole(input.roleCodes) && !isCompanyAdminRole(input.roleCodes)) {
-    return "/app/reporting/queue";
+    return "/app/home";
   }
-  return "/app/dashboard";
+  return "/app/home";
 }
 
 export const GENERIC_INVALID_CREDENTIALS = "Invalid credentials";

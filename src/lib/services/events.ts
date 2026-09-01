@@ -627,6 +627,147 @@ export async function transitionEhsEvent(
   return updated;
 }
 
+const UAUC_TYPES = new Set(["unsafe_act", "unsafe_condition"]);
+
+function isUaucType(code: string | undefined) {
+  return code ? UAUC_TYPES.has(code) : false;
+}
+
+export async function allocateUaucEvent(
+  supabase: SupabaseClient,
+  input: {
+    organizationId: string;
+    userId: string;
+    eventId: string;
+    assigneeId: string;
+    note?: string;
+  },
+) {
+  await requirePermission(supabase, input.organizationId, input.userId, "hazards.allocate");
+  const assigned = await assignReport(supabase, {
+    organizationId: input.organizationId,
+    userId: input.userId,
+    eventId: input.eventId,
+    assigneeId: input.assigneeId,
+    note: input.note,
+  });
+  const { data, error } = await supabase
+    .from("ehs_events")
+    .update({
+      status: "triage",
+      uauc_stage: "allocated",
+      allocated_at: new Date().toISOString(),
+      allocated_by: input.userId,
+      updated_by: input.userId,
+    })
+    .eq("id", input.eventId)
+    .eq("organization_id", input.organizationId)
+    .select("*")
+    .single();
+  if (error) throw new Error(error.message);
+  await supabase.from("ehs_event_activity").insert({
+    organization_id: input.organizationId,
+    event_id: input.eventId,
+    actor_user_id: input.userId,
+    activity_type: "uauc_allocated",
+    message: "UA/UC allocated to assignee",
+    metadata: { assignee_id: input.assigneeId, note: input.note ?? null },
+  });
+  return data ?? assigned;
+}
+
+export async function assigneeCloseUaucEvent(
+  supabase: SupabaseClient,
+  input: {
+    organizationId: string;
+    userId: string;
+    eventId: string;
+    note?: string;
+  },
+) {
+  await requirePermission(supabase, input.organizationId, input.userId, "hazards.close_assigned");
+  const { data: event } = await supabase
+    .from("ehs_events")
+    .select("id, assigned_to, event_types:event_type_id(code)")
+    .eq("id", input.eventId)
+    .eq("organization_id", input.organizationId)
+    .maybeSingle();
+  if (!event) throw new Error("Event not found");
+  const typeCode = (event.event_types as { code?: string } | null)?.code;
+  if (!isUaucType(typeCode)) throw new Error("Not a UA/UC event");
+  if (event.assigned_to && event.assigned_to !== input.userId) {
+    await requirePermission(supabase, input.organizationId, input.userId, "hazards.allocate");
+  }
+  const { data, error } = await supabase
+    .from("ehs_events")
+    .update({
+      status: "approval",
+      uauc_stage: "assignee_closed",
+      assignee_closed_at: new Date().toISOString(),
+      updated_by: input.userId,
+    })
+    .eq("id", input.eventId)
+    .select("*")
+    .single();
+  if (error) throw new Error(error.message);
+  await supabase.from("ehs_event_activity").insert({
+    organization_id: input.organizationId,
+    event_id: input.eventId,
+    actor_user_id: input.userId,
+    activity_type: "uauc_assignee_closed",
+    message: input.note ?? "Assignee closed after corrective action",
+  });
+  return data;
+}
+
+export async function finalCloseUaucEvent(
+  supabase: SupabaseClient,
+  input: {
+    organizationId: string;
+    userId: string;
+    eventId: string;
+    note?: string;
+  },
+) {
+  await requirePermission(supabase, input.organizationId, input.userId, "hazards.final_close");
+  const { data: event } = await supabase
+    .from("ehs_events")
+    .select("id, status, event_types:event_type_id(code)")
+    .eq("id", input.eventId)
+    .eq("organization_id", input.organizationId)
+    .maybeSingle();
+  if (!event) throw new Error("Event not found");
+  const typeCode = (event.event_types as { code?: string } | null)?.code;
+  if (!isUaucType(typeCode)) throw new Error("Not a UA/UC event");
+  if (!canTransition(event.status as EhsEventStatus, "closed")) {
+    throw new Error(`Cannot final-close from status ${event.status}`);
+  }
+  const { data, error } = await supabase
+    .from("ehs_events")
+    .update({
+      status: "closed",
+      uauc_stage: "final_closed",
+      final_closed_at: new Date().toISOString(),
+      closed_at: new Date().toISOString(),
+      closed_by: input.userId,
+      closure_notes: input.note ?? null,
+      updated_by: input.userId,
+    })
+    .eq("id", input.eventId)
+    .select("*")
+    .single();
+  if (error) throw new Error(error.message);
+  await writeAuditLog(supabase, {
+    organizationId: input.organizationId,
+    actorUserId: input.userId,
+    action: "uauc.final_closed",
+    entityType: "ehs_event",
+    entityId: input.eventId,
+    reason: input.note,
+  });
+  return data;
+}
+
 export async function upsertInvestigation(
   supabase: SupabaseClient,
   input: {

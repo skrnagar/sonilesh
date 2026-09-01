@@ -5,6 +5,7 @@ const LINKS = [
   { href: "/app/settings/organization", label: "Organization" },
   { href: "/app/settings/organization/structure", label: "Structure" },
   { href: "/app/settings/business-units", label: "Business units" },
+  { href: "/app/settings/regions", label: "Regions" },
   { href: "/app/settings/sites", label: "Sites" },
   { href: "/app/settings/projects", label: "Projects" },
   { href: "/app/settings/departments", label: "Departments" },

@@ -60,7 +60,7 @@ export default async function OnboardingStartPage({
     const org = m.organizations as unknown as { onboarding_completed_at?: string | null };
     return org?.onboarding_completed_at;
   });
-  if (completed && !incomplete) redirect("/app/dashboard");
+  if (completed && !incomplete) redirect("/app/home");
 
   const errorText = params.error ? formatSupabaseUserError(params.error) : null;
   const showSetupLink =

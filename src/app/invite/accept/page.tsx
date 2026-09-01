@@ -20,7 +20,7 @@ async function acceptInviteAction(formData: FormData) {
     });
     const jar = await cookies();
     jar.set(ORG_COOKIE, result.organizationId, WORKSPACE_COOKIE_OPTIONS);
-    redirect("/app/dashboard");
+    redirect("/app/home");
   } catch (err) {
     if (isNextRedirect(err)) throw err;
     redirect(

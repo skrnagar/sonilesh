@@ -20,6 +20,7 @@ export type DashboardQuery = {
   projectId?: string;
   departmentId?: string;
   businessUnitId?: string;
+  regionId?: string;
   severityId?: string;
   status?: string;
   ownerId?: string;
@@ -77,15 +78,17 @@ export type DashboardSnapshot = {
     projects: Named[];
     departments: Named[];
     bus: Named[];
+    regions: Named[];
     severities: Named[];
     owners: Owner[];
   };
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function applyScope(query: any, params: DashboardQuery) {
+function applyScope(query: any, params: DashboardQuery, regionSiteIds?: string[] | null) {
   let next = query;
   if (params.siteId) next = next.eq("site_id", params.siteId);
+  else if (regionSiteIds?.length) next = next.in("site_id", regionSiteIds);
   if (params.projectId) next = next.eq("project_id", params.projectId);
   if (params.departmentId) next = next.eq("department_id", params.departmentId);
   if (params.businessUnitId) next = next.eq("business_unit_id", params.businessUnitId);
@@ -126,18 +129,20 @@ export async function getDashboardSnapshot(
     projectsRes,
     departmentsRes,
     busRes,
+    regionsRes,
     eventTypesRes,
     severitiesRes,
     membersRes,
   ] = await Promise.all([
     preloaded?.sites
       ? Promise.resolve({ data: preloaded.sites })
-      : supabase.from("sites").select("id, name").eq("organization_id", organizationId).is("deleted_at", null).limit(100),
+      : supabase.from("sites").select("id, name, region_id").eq("organization_id", organizationId).is("deleted_at", null).limit(100),
     preloaded?.projects
       ? Promise.resolve({ data: preloaded.projects })
       : supabase.from("projects").select("id, name").eq("organization_id", organizationId).is("deleted_at", null).limit(100),
     supabase.from("departments").select("id, name").eq("organization_id", organizationId).is("deleted_at", null).limit(80),
     supabase.from("business_units").select("id, name").eq("organization_id", organizationId).is("deleted_at", null).limit(40),
+    supabase.from("regions").select("id, name").eq("organization_id", organizationId).is("deleted_at", null).limit(40),
     supabase.from("event_types").select("id, code, name").is("organization_id", null),
     supabase.from("severity_levels").select("id, code, name, rank, color").is("organization_id", null),
     supabase
@@ -161,6 +166,12 @@ export async function getDashboardSnapshot(
   const uaType = typeId("unsafe_act");
   const ucType = typeId("unsafe_condition");
 
+  const regionSiteIds = params.regionId
+    ? (sitesRes.data ?? [])
+        .filter((s) => "region_id" in s && s.region_id === params.regionId)
+        .map((s) => s.id)
+    : null;
+
   let eventsQuery = applyScope(
     supabase
       .from("ehs_events")
@@ -172,6 +183,7 @@ export async function getDashboardSnapshot(
       .gte("occurred_at", prevStart.toISOString())
       .lte("occurred_at", end.toISOString()),
     params,
+    regionSiteIds,
   );
   if (params.severityId) eventsQuery = eventsQuery.eq("severity_id", params.severityId);
   if (params.status) eventsQuery = eventsQuery.eq("status", params.status);
@@ -586,10 +598,14 @@ export async function getDashboardSnapshot(
       priority: item.priority,
     })),
     filters: {
-      sites: sitesRes.data ?? [],
+      sites: (sitesRes.data ?? []).map((s: { id: string; name: string }) => ({
+        id: s.id,
+        name: s.name,
+      })),
       projects: projectsRes.data ?? [],
       departments: departmentsRes.data ?? [],
       bus: busRes.data ?? [],
+      regions: regionsRes.data ?? [],
       severities: (severitiesRes.data ?? []).map((s) => ({ id: s.id, name: s.name })),
       owners,
     },

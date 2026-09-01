@@ -17,6 +17,6 @@ export async function requireOnboardingOrg(orgId: string) {
     name: string;
     onboarding_completed_at: string | null;
   };
-  if (org.onboarding_completed_at) redirect("/app/dashboard");
+  if (org.onboarding_completed_at) redirect("/app/home");
   return { supabase, user, organization: org };
 }

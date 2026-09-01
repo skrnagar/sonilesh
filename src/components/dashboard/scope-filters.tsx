@@ -28,8 +28,10 @@ export function ScopeFilters({
   projects,
   departments,
   bus,
+  regions = [],
   severities,
   owners,
+  actionPath = "/app/dashboard",
 }: {
   params: {
     range?: string;
@@ -37,6 +39,7 @@ export function ScopeFilters({
     projectId?: string;
     departmentId?: string;
     businessUnitId?: string;
+    regionId?: string;
     severityId?: string;
     status?: string;
     ownerId?: string;
@@ -47,8 +50,10 @@ export function ScopeFilters({
   projects: Option[];
   departments: Option[];
   bus: Option[];
+  regions?: Option[];
   severities: Option[];
   owners: Option[];
+  actionPath?: string;
 }) {
   const [open, setOpen] = useState(false);
   const activeCount = [
@@ -56,6 +61,7 @@ export function ScopeFilters({
     params.projectId,
     params.departmentId,
     params.businessUnitId,
+    params.regionId,
     params.severityId,
     params.status,
     params.ownerId,
@@ -113,7 +119,7 @@ export function ScopeFilters({
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <form method="get" action="/app/dashboard" className="mt-5 grid gap-3 sm:grid-cols-2">
+            <form method="get" action={actionPath} className="mt-5 grid gap-3 sm:grid-cols-2">
               <input type="hidden" name="range" value={params.range || "monthly"} />
               <label className="text-xs font-medium text-muted-foreground">
                 From
@@ -134,6 +140,19 @@ export function ScopeFilters({
                   ))}
                 </Select>
               </label>
+              {regions.length ? (
+                <label className="text-xs font-medium text-muted-foreground">
+                  Region
+                  <Select name="regionId" defaultValue={params.regionId || ""} className="mt-1 rounded-xl">
+                    <option value="">All regions</option>
+                    {regions.map((r) => (
+                      <option key={r.id} value={r.id}>
+                        {r.name}
+                      </option>
+                    ))}
+                  </Select>
+                </label>
+              ) : null}
               <label className="text-xs font-medium text-muted-foreground">
                 Site
                 <Select name="siteId" defaultValue={params.siteId || ""} className="mt-1 rounded-xl">
@@ -202,7 +221,7 @@ export function ScopeFilters({
               </label>
               <div className="mt-auto flex flex-col-reverse gap-2 pt-2 sm:col-span-2 sm:flex-row sm:justify-end">
                 <Button type="button" variant="outline" className="h-12 min-h-12 rounded-xl sm:h-10" asChild>
-                  <Link href={`/app/dashboard?range=${params.range || "monthly"}`}>Reset</Link>
+                  <Link href={`${actionPath}?range=${params.range || "monthly"}`}>Reset</Link>
                 </Button>
                 <Button type="submit" className="h-12 min-h-12 rounded-xl sm:h-10">
                   Apply filters

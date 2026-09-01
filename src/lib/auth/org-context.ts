@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import { hasFeature } from "@/lib/services/entitlements";
 import { userHasPermission } from "@/lib/services/rbac";
-import { ORG_COOKIE, PROJECT_COOKIE, SITE_COOKIE } from "@/lib/auth/workspace-cookies";
+import { ORG_COOKIE, BUSINESS_UNIT_COOKIE, REGION_COOKIE, PROJECT_COOKIE, SITE_COOKIE } from "@/lib/auth/workspace-cookies";
 import {
   isNetworkFetchError,
   isNextRedirect,
@@ -25,6 +25,8 @@ export const requireOrgContext = cache(async () => {
   try {
     const jar = await cookies();
     const requestedOrgId = jar.get(ORG_COOKIE)?.value ?? null;
+    const requestedBusinessUnitId = jar.get(BUSINESS_UNIT_COOKIE)?.value ?? null;
+    const requestedRegionId = jar.get(REGION_COOKIE)?.value ?? null;
     const requestedSiteId = jar.get(SITE_COOKIE)?.value ?? null;
     const requestedProjectId = jar.get(PROJECT_COOKIE)?.value ?? null;
     const pathname = (await headers()).get("x-ehs-pathname") ?? "";
@@ -57,29 +59,55 @@ export const requireOrgContext = cache(async () => {
       pathname.startsWith("/admin") ||
       pathname.startsWith("/field");
 
-    const [{ data: sites }, { data: projects }] = needWorkspaceLists
-      ? await Promise.all([
-          supabase
-            .from("sites")
-            .select("id, name")
-            .eq("organization_id", organization.id)
-            .is("deleted_at", null)
-            .order("name")
-            .limit(100),
-          supabase
-            .from("projects")
-            .select("id, name, site_id")
-            .eq("organization_id", organization.id)
-            .is("deleted_at", null)
-            .order("name")
-            .limit(100),
-        ])
-      : [
-          { data: [] as Array<{ id: string; name: string }> },
-          { data: [] as Array<{ id: string; name: string; site_id: string | null }> },
-        ];
+    const [{ data: businessUnits }, { data: regions }, { data: sites }, { data: projects }] =
+      needWorkspaceLists
+        ? await Promise.all([
+            supabase
+              .from("business_units")
+              .select("id, name")
+              .eq("organization_id", organization.id)
+              .is("deleted_at", null)
+              .order("name")
+              .limit(100),
+            supabase
+              .from("regions")
+              .select("id, name, business_unit_id")
+              .eq("organization_id", organization.id)
+              .is("deleted_at", null)
+              .order("name")
+              .limit(100),
+            supabase
+              .from("sites")
+              .select("id, name, region_id, business_unit_id")
+              .eq("organization_id", organization.id)
+              .is("deleted_at", null)
+              .order("name")
+              .limit(100),
+            supabase
+              .from("projects")
+              .select("id, name, site_id, business_unit_id")
+              .eq("organization_id", organization.id)
+              .is("deleted_at", null)
+              .order("name")
+              .limit(100),
+          ])
+        : [
+            { data: [] as Array<{ id: string; name: string }> },
+            { data: [] as Array<{ id: string; name: string; business_unit_id: string | null }> },
+            { data: [] as Array<{ id: string; name: string; region_id: string | null; business_unit_id: string | null }> },
+            { data: [] as Array<{ id: string; name: string; site_id: string | null; business_unit_id: string | null }> },
+          ];
 
     // Always org-validate workspace cookies — stale site/project ids caused field incident create to fail.
+    const businessUnitId =
+      requestedBusinessUnitId &&
+      (businessUnits ?? []).some((bu) => bu.id === requestedBusinessUnitId)
+        ? requestedBusinessUnitId
+        : null;
+    const regionId =
+      requestedRegionId && (regions ?? []).some((region) => region.id === requestedRegionId)
+        ? requestedRegionId
+        : null;
     const siteId =
       requestedSiteId && (sites ?? []).some((site) => site.id === requestedSiteId)
         ? requestedSiteId
@@ -97,8 +125,12 @@ export const requireOrgContext = cache(async () => {
       organization,
       membershipId: selected.id,
       organizations: orgOptions,
+      businessUnits: businessUnits ?? [],
+      regions: regions ?? [],
       sites: sites ?? [],
       projects: projects ?? [],
+      businessUnitId,
+      regionId,
       siteId,
       projectId,
     };

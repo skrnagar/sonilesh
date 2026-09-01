@@ -16,14 +16,14 @@ describe("persona routing", () => {
     ).toBe("/field/home");
   });
 
-  it("sends officers to the reporting queue", () => {
+  it("sends officers to the enterprise home", () => {
     expect(
       landingPathForSession({
         portal: "company",
         isPlatformAdmin: false,
         roleCodes: ["ehs_officer"],
       }),
-    ).toBe("/app/reporting/queue");
+    ).toBe("/app/home");
   });
 
   it("sends company secretaries to the compliance dashboard", () => {

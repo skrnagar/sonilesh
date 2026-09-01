@@ -1,3 +1,4 @@
+import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { DashboardCharts } from "@/components/dashboard/dashboard-charts";
 import { KpiCard } from "@/components/dashboard/kpi-card";
 import { PeriodToggle } from "@/components/dashboard/period-toggle";
@@ -19,6 +20,7 @@ export default async function DashboardPage({
     projectId?: string;
     departmentId?: string;
     businessUnitId?: string;
+    regionId?: string;
     severityId?: string;
     status?: string;
     ownerId?: string;
@@ -38,6 +40,12 @@ export default async function DashboardPage({
 
   return (
     <div className="app-page-stagger min-w-0 space-y-6">
+      <Breadcrumbs
+        items={[
+          { label: "Home", href: "/app/home" },
+          { label: "Dashboard" },
+        ]}
+      />
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
         <div className="min-w-0">
           <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--mkt-safety)]">
@@ -60,6 +68,7 @@ export default async function DashboardPage({
             projects={snapshot.filters.projects}
             departments={snapshot.filters.departments}
             bus={snapshot.filters.bus}
+            regions={snapshot.filters.regions}
             severities={snapshot.filters.severities}
             owners={snapshot.filters.owners}
           />

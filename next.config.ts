@@ -72,8 +72,7 @@ const nextConfig: NextConfig = {
     return [
       { source: "/field/report/incident", destination: "/field/incident", permanent: false },
       { source: "/field/report/near-miss", destination: "/field/near-miss", permanent: false },
-      { source: "/field/report/hazard", destination: "/field/lmra", permanent: false },
-      { source: "/field/hazard", destination: "/field/lmra", permanent: false },
+      { source: "/field/report/hazard", destination: "/field/hazard", permanent: false },
       { source: "/field/incidents", destination: "/field/incident", permanent: false },
       { source: "/field/hazards", destination: "/field/lmra", permanent: false },
       { source: "/field/inspections", destination: "/field/inspection", permanent: false },

@@ -414,7 +414,7 @@ export async function finishOnboardingAction(formData: FormData): Promise<void> 
       step: "finish",
       nextStep: "finish",
     });
-    redirect("/app/dashboard");
+    redirect("/app/home");
   } catch (err) {
     onboardingError(organizationId, "review", err);
   }

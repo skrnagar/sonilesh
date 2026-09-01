@@ -66,6 +66,14 @@ export default async function FieldHomePage() {
     },
     {
       action: "report_hazard",
+      href: "/field/hazard?type=unsafe_act",
+      label: "UA / UC",
+      hint: "Unsafe act or condition",
+      tone: "amber",
+      icon: ShieldAlert,
+    },
+    {
+      action: "report_hazard",
       href: "/field/lmra",
       label: FIELD_LABELS.lmra.short,
       hint: "Last-minute risk",

@@ -81,7 +81,7 @@ export const requireUser = cache(async () => {
 export async function requirePlatformAdmin() {
   const ctx = await requireUser();
   if (!ctx.profile?.is_platform_admin) {
-    redirect("/app/dashboard");
+    redirect("/app/home");
   }
   const platformRole = resolvePlatformRole({
     isPlatformAdmin: ctx.profile.is_platform_admin,

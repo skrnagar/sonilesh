@@ -44,6 +44,7 @@ describe("buildStructureTree", () => {
     businessUnits: [
       { id: "bu-1", name: "Power Division", code: "PWR", status: "active", description: null },
     ],
+    regions: [],
     sites: [
       {
         id: "site-bu",
@@ -51,6 +52,7 @@ describe("buildStructureTree", () => {
         code: "SUB-A",
         status: "active",
         business_unit_id: "bu-1",
+        region_id: null,
         city: "Pune",
       },
       {
@@ -59,6 +61,7 @@ describe("buildStructureTree", () => {
         code: "HO",
         status: "active",
         business_unit_id: null,
+        region_id: null,
         city: "Mumbai",
       },
     ],
@@ -161,6 +164,7 @@ describe("buildStructureTree", () => {
   it("falls back to root when parent references are missing (cross-org orphan handling)", () => {
     const orphanStructure = {
       businessUnits: [],
+      regions: [],
       sites: [
         {
           id: "orphan-site",
@@ -168,6 +172,7 @@ describe("buildStructureTree", () => {
           code: "IMP",
           status: "active",
           business_unit_id: "foreign-bu-id",
+          region_id: null,
           city: null,
         },
       ],

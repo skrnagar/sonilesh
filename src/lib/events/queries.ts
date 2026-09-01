@@ -22,7 +22,8 @@ export async function listEventsByType(
     .from("ehs_events")
     .select(
       `
-      id, event_number, title, status, occurred_at, description,
+      id, event_number, title, status, occurred_at, description, uauc_stage,
+      event_types:event_type_id(code, name),
       sites:site_id(name),
       severity_levels:severity_id(name)
     `,

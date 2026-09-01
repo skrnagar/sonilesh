@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireOrgContext } from "@/lib/auth/org-context";
 import { createEhsEvent } from "@/lib/services/events";
+import { createLmraFromFieldEvent } from "@/lib/services/lmra";
 import { transitionCapa, type CapaStatus } from "@/lib/services/capa";
 import { recordResponse } from "@/lib/services/checklists";
 import { transitionPermit, requestPermitRenewal } from "@/lib/services/permits";
@@ -227,6 +228,24 @@ export async function submitFieldReportAction(formData: FormData): Promise<Actio
         })
         .eq("id", event.id)
         .eq("organization_id", organization.id);
+    }
+
+    if (mode === "lmra") {
+      try {
+        await createLmraFromFieldEvent(supabase, {
+          organizationId: organization.id,
+          userId: user.id,
+          activityDescription: description,
+          siteId: resolvedSiteId,
+          projectId: projectId || undefined,
+          risks: [{ text: String(formData.get("risks") || description) }],
+          controls: [{ text: String(formData.get("controls") || immediate || "") }],
+          immediateAction: immediate || undefined,
+        });
+        revalidatePath("/app/lmra");
+      } catch (lmraErr) {
+        console.error("[field/lmra] assessment record failed", lmraErr);
+      }
     }
 
     revalidateField();

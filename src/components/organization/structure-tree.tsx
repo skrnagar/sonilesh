@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 const KIND_HREF: Record<StructureNode["kind"], string | null> = {
   organization: "/app/settings/organization",
   business_unit: "/app/settings/business-units",
+  region: "/app/settings/regions",
   site: "/app/settings/sites",
   project: "/app/settings/projects",
   department: "/app/settings/departments",

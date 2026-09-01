@@ -28,7 +28,54 @@ export type EhsEventStatus =
 
 export type MemberStatus = "invited" | "active" | "suspended" | "removed";
 
-export type RoleScope = "platform" | "organization" | "site" | "department" | "own";
+export type LmraStatus = "draft" | "submitted" | "approved" | "rejected";
+
+export type UaucStage =
+  | "reported"
+  | "allocated"
+  | "action_in_progress"
+  | "assignee_closed"
+  | "final_closed";
+
+export interface Region {
+  id: string;
+  organization_id: string;
+  business_unit_id: string | null;
+  name: string;
+  code: string;
+  status: string;
+}
+
+export interface LmraAssessment {
+  id: string;
+  organization_id: string;
+  assessment_number: string;
+  status: LmraStatus;
+  activity_description: string;
+}
+
+export interface SiteVisit {
+  id: string;
+  organization_id: string;
+  visit_number: string;
+  visit_type: "hsv" | "rsv" | "tsv";
+  status: string;
+}
+
+export interface MisSubmission {
+  id: string;
+  organization_id: string;
+  submission_number: string;
+  status: string;
+}
+
+export interface EhsScorePeriod {
+  id: string;
+  organization_id: string;
+  label: string;
+  overall_score: number | null;
+  is_demo: boolean;
+}
 
 export interface Profile {
   id: string;

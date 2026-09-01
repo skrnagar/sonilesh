@@ -17,7 +17,7 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { supabase, user, profile, organization, organizations, sites, projects, siteId, projectId } =
+  const { supabase, user, profile, organization, organizations, businessUnits, regions, sites, projects, businessUnitId, regionId, siteId, projectId } =
     await requireOrgContext();
 
   const { roleCodes } = await getRoleCodesForUser(supabase, user.id, organization.id);
@@ -94,6 +94,10 @@ export default async function AppLayout({
           <WorkspaceContextSwitchers
             organizations={organizations}
             organizationId={organization.id}
+            businessUnits={businessUnits}
+            businessUnitId={businessUnitId}
+            regions={regions}
+            regionId={regionId}
             sites={sites}
             siteId={siteId}
             projects={projects}

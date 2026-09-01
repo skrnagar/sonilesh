@@ -159,12 +159,12 @@ export function WorkspaceShell({
           </div>
           {contextSlot}
           <form
-            action="/app/incidents"
+            action="/app/search"
             method="get"
             className="relative hidden min-w-0 flex-1 max-w-md md:block"
           >
             <label htmlFor={searchId} className="sr-only">
-              Search records
+              Search workspace
             </label>
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input
@@ -172,7 +172,7 @@ export function WorkspaceShell({
               id={searchId}
               name="q"
               type="search"
-              placeholder="Search records…"
+              placeholder="Search workspace…"
               className="h-10 w-full rounded-[var(--radius-sm)] border border-border/80 bg-card/90 pl-9 pr-12 text-sm shadow-[var(--shadow-sm)] outline-none ring-offset-background placeholder:text-muted-foreground transition-[border-color,box-shadow] duration-200 hover:border-accent/35 focus-visible:border-accent/50 focus-visible:ring-2 focus-visible:ring-ring"
             />
             <kbd className="pointer-events-none absolute right-2.5 top-1/2 hidden -translate-y-1/2 rounded-md border border-border bg-muted/80 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline">

@@ -134,6 +134,90 @@ export async function updateBusinessUnit(
   return data;
 }
 
+export async function createRegionRecord(
+  supabase: SupabaseClient,
+  input: {
+    organizationId: string;
+    userId: string;
+    name: string;
+    code?: string;
+    businessUnitId?: string | null;
+    description?: string;
+  },
+) {
+  await assertHierarchyManageAccess(supabase, input.organizationId, input.userId);
+  if (input.businessUnitId) {
+    const { data: bu } = await supabase
+      .from("business_units")
+      .select("id")
+      .eq("id", input.businessUnitId)
+      .eq("organization_id", input.organizationId)
+      .maybeSingle();
+    if (!bu) throw new Error("Business unit must belong to this organization");
+  }
+  const code = codeOrSlug(input.code || slugify(input.name), "REG");
+  const { data, error } = await supabase
+    .from("regions")
+    .insert({
+      organization_id: input.organizationId,
+      business_unit_id: input.businessUnitId ?? null,
+      name: input.name.trim(),
+      code,
+      description: input.description ?? null,
+      status: "active",
+      created_by: input.userId,
+      updated_by: input.userId,
+    })
+    .select("*")
+    .single();
+  if (error) throw new Error(error.message);
+  await writeAuditLog(supabase, {
+    organizationId: input.organizationId,
+    actorUserId: input.userId,
+    action: "region.created",
+    entityType: "region",
+    entityId: data.id,
+    newValues: data,
+  });
+  return data;
+}
+
+export async function updateRegionRecord(
+  supabase: SupabaseClient,
+  input: {
+    organizationId: string;
+    userId: string;
+    id: string;
+    patch: Record<string, unknown>;
+  },
+) {
+  await assertHierarchyManageAccess(supabase, input.organizationId, input.userId);
+  const { data: previous } = await supabase
+    .from("regions")
+    .select("*")
+    .eq("id", input.id)
+    .eq("organization_id", input.organizationId)
+    .maybeSingle();
+  const { data, error } = await supabase
+    .from("regions")
+    .update({ ...input.patch, updated_by: input.userId })
+    .eq("id", input.id)
+    .eq("organization_id", input.organizationId)
+    .select("*")
+    .single();
+  if (error) throw new Error(error.message);
+  await writeAuditLog(supabase, {
+    organizationId: input.organizationId,
+    actorUserId: input.userId,
+    action: "region.updated",
+    entityType: "region",
+    entityId: data.id,
+    previousValues: previous,
+    newValues: data,
+  });
+  return data;
+}
+
 export async function createSiteRecord(
   supabase: SupabaseClient,
   input: {
@@ -142,6 +226,7 @@ export async function createSiteRecord(
     name: string;
     code?: string;
     businessUnitId?: string | null;
+    regionId?: string | null;
     address?: string;
     country?: string;
     state?: string;
@@ -176,12 +261,22 @@ export async function createSiteRecord(
       .maybeSingle();
     if (!bu) throw new Error("Business unit must belong to this organization");
   }
+  if (input.regionId) {
+    const { data: region } = await supabase
+      .from("regions")
+      .select("id")
+      .eq("id", input.regionId)
+      .eq("organization_id", input.organizationId)
+      .maybeSingle();
+    if (!region) throw new Error("Region must belong to this organization");
+  }
   const code = codeOrSlug(input.code || slugify(input.name), "SITE");
   const { data, error } = await supabase
     .from("sites")
     .insert({
       organization_id: input.organizationId,
       business_unit_id: input.businessUnitId ?? null,
+      region_id: input.regionId ?? null,
       name: input.name.trim(),
       code,
       address: input.address ?? null,
@@ -493,6 +588,7 @@ export async function getOrganizationStructure(
 ) {
   const [
     { data: businessUnits },
+    { data: regions },
     { data: sites },
     { data: projects },
     { data: departments },
@@ -505,8 +601,14 @@ export async function getOrganizationStructure(
       .is("deleted_at", null)
       .order("name"),
     supabase
+      .from("regions")
+      .select("id, name, code, status, business_unit_id, description")
+      .eq("organization_id", organizationId)
+      .is("deleted_at", null)
+      .order("name"),
+    supabase
       .from("sites")
-      .select("id, name, code, status, business_unit_id, city")
+      .select("id, name, code, status, business_unit_id, region_id, city")
       .eq("organization_id", organizationId)
       .is("deleted_at", null)
       .order("name"),
@@ -532,6 +634,7 @@ export async function getOrganizationStructure(
 
   return {
     businessUnits: businessUnits ?? [],
+    regions: regions ?? [],
     sites: sites ?? [],
     projects: projects ?? [],
     departments: departments ?? [],
@@ -542,7 +645,7 @@ export async function getOrganizationStructure(
 export type StructureNode = {
   id: string;
   label: string;
-  kind: "organization" | "business_unit" | "site" | "project" | "department" | "location";
+  kind: "organization" | "business_unit" | "region" | "site" | "project" | "department" | "location";
   meta?: string;
   children: StructureNode[];
 };
@@ -571,6 +674,20 @@ export function buildStructureTree(
     root.children.push(node);
   }
 
+  const regionNodes = new Map<string, StructureNode>();
+  for (const region of structure.regions ?? []) {
+    const node: StructureNode = {
+      id: region.id,
+      label: region.name,
+      kind: "region",
+      meta: region.code,
+      children: [],
+    };
+    regionNodes.set(region.id, node);
+    const parent = region.business_unit_id ? buNodes.get(region.business_unit_id) : null;
+    (parent ?? root).children.push(node);
+  }
+
   const siteNodes = new Map<string, StructureNode>();
   for (const site of structure.sites) {
     const node: StructureNode = {
@@ -581,7 +698,11 @@ export function buildStructureTree(
       children: [],
     };
     siteNodes.set(site.id, node);
-    const parent = site.business_unit_id ? buNodes.get(site.business_unit_id) : null;
+    const parent = site.region_id
+      ? regionNodes.get(site.region_id)
+      : site.business_unit_id
+        ? buNodes.get(site.business_unit_id)
+        : null;
     (parent ?? root).children.push(node);
   }
 
