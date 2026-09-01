@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ADMIN_NAV_GROUPS } from "@/lib/navigation/modules";
+import { ADMIN_NAV_GROUPS } from "@/lib/navigation/platform-admin";
 import { BrandLockup } from "@/components/brand/brand-lockup";
 import { SidebarNavLink } from "@/components/layout/sidebar-nav-link";
 import {

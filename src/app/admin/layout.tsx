@@ -5,7 +5,7 @@ import { WorkspaceShellFallback } from "@/components/layout/workspace-shell-fall
 import { requirePlatformAdmin } from "@/lib/auth/session";
 import { signOutAction } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
-import AppLoading from "@/app/app/loading";
+import AdminLoading from "@/app/admin/loading";
 
 async function AdminWorkspaceLoader({ children }: { children: React.ReactNode }) {
   const { profile, user, platformRole } = await requirePlatformAdmin();
@@ -24,7 +24,7 @@ async function AdminWorkspaceLoader({ children }: { children: React.ReactNode })
         </form>
       }
     >
-      <Suspense fallback={<AppLoading />}>{children}</Suspense>
+      <Suspense fallback={<AdminLoading />}>{children}</Suspense>
     </WorkspaceShell>
   );
 }

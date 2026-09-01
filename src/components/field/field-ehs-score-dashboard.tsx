@@ -20,8 +20,8 @@ import {
   FieldCard,
   FieldEmpty,
 } from "@/components/field/field-ui";
-import type { EhsScoreBiDashboard } from "@/lib/services/ehs-score-bi";
-import { MONTH_LABELS } from "@/lib/services/ehs-score-bi";
+import type { EhsScoreBiDashboard } from "@/lib/ehs-score/bi";
+import { MONTH_LABELS } from "@/lib/ehs-score/bi";
 
 type Option = { id: string; name: string };
 type RegionOption = Option & { business_unit_id?: string | null };

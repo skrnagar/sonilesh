@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ChevronDown, Smartphone } from "lucide-react";
 import {
-  ENTERPRISE_NAV,
+  WORKSPACE_NAV,
   NAV_GROUP_LABELS,
   type AppModuleDef,
   type NavGroup,
-} from "@/lib/navigation/modules";
+} from "@/lib/navigation/workspace";
 import { BrandLockup } from "@/components/brand/brand-lockup";
 import { SidebarNavLink } from "@/components/layout/sidebar-nav-link";
 import { cn } from "@/lib/utils";
@@ -39,7 +39,7 @@ export function AppSidebar({
   permissions: string[];
   organizationName: string;
 }) {
-  const visible = ENTERPRISE_NAV.filter((module) => {
+  const visible = WORKSPACE_NAV.filter((module) => {
     if (module.featureCode && !enabledFeatures.includes(module.featureCode)) {
       return false;
     }
@@ -56,7 +56,7 @@ export function AppSidebar({
     const initial: Record<string, boolean> = {};
     for (const group of SIDEBAR_GROUPS) {
       const stored = localStorage.getItem(storageKey(group));
-      const groupItems = ENTERPRISE_NAV.filter((m) => m.group === group);
+      const groupItems = WORKSPACE_NAV.filter((m) => m.group === group);
       const defaultCollapsed =
         group === "administration" ||
         groupItems.some((m) => m.defaultCollapsed);

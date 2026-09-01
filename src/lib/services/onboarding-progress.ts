@@ -170,7 +170,7 @@ export async function getOrganizationSetupCompletion(
       label: "Organization profile",
       complete: Boolean(org?.name && org?.industry),
       percent: org?.name && org?.industry ? 100 : 40,
-      href: "/app/settings/organization",
+      href: "/org-admin",
     },
     {
       key: "site",
@@ -205,7 +205,7 @@ export async function getOrganizationSetupCompletion(
       label: "EHS configuration",
       complete: hasEhsConfig,
       percent: hasEhsConfig ? 100 : branding.primaryColor || branding.logoUrl || org?.logo_url ? 40 : 20,
-      href: "/app/settings/organization",
+      href: "/org-admin",
     },
   ];
 

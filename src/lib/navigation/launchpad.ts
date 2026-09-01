@@ -319,7 +319,7 @@ export const LAUNCHPAD_TILES: LaunchpadTile[] = [
     key: "documents",
     label: "Documents",
     description: "Controlled documents",
-    href: "/app/documents",
+    href: "/app/files",
     icon: Folder,
     section: "operations",
     featureCode: "document_control",
