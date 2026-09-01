@@ -94,6 +94,9 @@ export const fieldPrimaryBtnClass =
 export const fieldSecondaryBtnClass =
   "flex min-h-12 w-full items-center justify-center rounded-[var(--radius-md)] border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground shadow-[var(--shadow-sm)] transition-colors hover:bg-muted disabled:opacity-60";
 
+export const fieldRakshaBtnClass =
+  "inline-flex min-h-11 items-center justify-center rounded-[var(--radius-md)] bg-[#6f42c1] px-4 py-2.5 text-sm font-semibold text-white shadow-[var(--shadow-md)] transition-colors hover:bg-[#5a32a8] disabled:opacity-60";
+
 export const fieldHeaderBtnClass =
   "relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--radius-sm)] border border-border/80 bg-card text-foreground shadow-[var(--shadow-sm)] transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 

@@ -72,7 +72,7 @@ export const RAKSHA_LAUNCHPAD_TILES: RakshaLaunchpadTile[] = [
     label: "UA/UC/WSN",
     fieldAction: "report_hazard",
     icon: Eye,
-    fieldHref: "/field/report",
+    fieldHref: "/field/ualist",
     webHref: "/app/observations",
     prefetch: true,
   },

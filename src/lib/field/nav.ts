@@ -37,7 +37,9 @@ export const FIELD_NAV_ITEMS: FieldNavItem[] = [
       p.startsWith("/field/hazard") ||
       p.startsWith("/field/site-visits") ||
       p.startsWith("/field/bbs") ||
-      p.startsWith("/field/reports"),
+      p.startsWith("/field/reports") ||
+      p.startsWith("/field/ualist") ||
+      p.startsWith("/field/ua-uc"),
   },
   {
     href: "/field/actions",

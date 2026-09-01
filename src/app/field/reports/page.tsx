@@ -1,14 +1,34 @@
-import { FieldScaffoldPage } from "@/components/field/field-scaffold-page";
+import { FieldContextStrip } from "@/components/field/field-context-strip";
+import { FieldReportsHub } from "@/components/field/field-reports-hub";
+import { FieldForbidden } from "@/components/field/field-ui";
+import { canFieldAction } from "@/lib/auth/field-roles";
+import { requireOrgContext } from "@/lib/auth/org-context";
+import { resolveFieldRole } from "@/lib/field/resolve-role";
 
-export default function FieldReportsPage() {
+export default async function FieldReportsPage() {
+  const role = await resolveFieldRole();
+  if (!canFieldAction(role, "raksha_reports")) return <FieldForbidden />;
+
+  const access = await requireOrgContext();
+  const businessUnitName =
+    access.businessUnits.find((bu) => bu.id === access.businessUnitId)?.name ?? "—";
+  const regionName = access.regions.find((r) => r.id === access.regionId)?.name ?? "—";
+  const projectName = access.projects.find((p) => p.id === access.projectId)?.name ?? "—";
+
   return (
-    <FieldScaffoldPage
-      title="RAKSHA Reports"
-      subtitle="Registers, filters, and exports for your site."
-      action="raksha_reports"
-      body="Full Raksha report packs and BI filters are available on desktop. Use Report Hub for UA/UC, incidents, site visits, action items, and MIS status exports."
-      webHref="/app/reports/hub"
-      webLabel="Open Report Hub"
-    />
+    <div className="space-y-4">
+      <FieldContextStrip
+        userName={access.profile?.full_name ?? "—"}
+        businessUnitName={businessUnitName}
+        regionName={regionName}
+        projectName={projectName}
+        role={role}
+        projectId={access.projectId}
+        siteId={access.siteId}
+        regionId={access.regionId}
+        businessUnitId={access.businessUnitId}
+      />
+      <FieldReportsHub role={role} />
+    </div>
   );
 }

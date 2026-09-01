@@ -20,6 +20,11 @@ export const FIELD_LABELS = {
   permits: { short: "Permits", title: "My permits" },
   training: { short: "Training", title: "My training" },
   toolbox: { short: "Toolbox", title: "Toolbox talk" },
+  uauc: {
+    short: "UA/UC/WSN",
+    title: "Reported UA/UC/WSN List",
+    subtitle: "Unsafe acts, unsafe conditions, and work stop notices",
+  },
   siteVisits: {
     short: "Site visits",
     title: "Site visits",

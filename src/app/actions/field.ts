@@ -60,8 +60,11 @@ async function persistMedia(
 
 function revalidateField() {
   revalidatePath("/field");
+  revalidatePath("/field/ualist");
+  revalidatePath("/field/ua-uc");
   revalidatePath("/app/dashboard");
   revalidatePath("/app/incidents");
+  revalidatePath("/app/observations");
 }
 
 function revalidateFieldSiteVisits(visitId?: string) {
@@ -102,7 +105,14 @@ async function resolveFieldSiteId(
 
 export async function submitFieldReportAction(formData: FormData): Promise<ActionResult> {
   try {
-    const { supabase, user, organization, siteId, projectId } = await requireOrgContext();
+    const {
+      supabase,
+      user,
+      organization,
+      siteId,
+      projectId,
+      businessUnitId: workspaceBusinessUnitId,
+    } = await requireOrgContext();
     const mode = String(formData.get("mode") || "incident");
     const intent = String(formData.get("intent") || "submit");
     const description = String(formData.get("description") || "").trim();
@@ -114,7 +124,11 @@ export async function submitFieldReportAction(formData: FormData): Promise<Actio
     const typeParam = String(formData.get("type") || formData.get("category") || "");
     const reportKind = String(formData.get("report_kind") || "");
     let eventTypeCode =
-      mode === "near-miss" || mode === "near_miss"
+      mode === "uauc"
+        ? ["unsafe_act", "unsafe_condition", "safety_observation"].includes(typeParam)
+          ? typeParam
+          : "unsafe_act"
+        : mode === "near-miss" || mode === "near_miss"
         ? "near_miss"
         : mode === "hazard" || mode === "lmra" || mode === "observation"
           ? ["unsafe_act", "unsafe_condition", "hazard", "safety_observation"].includes(typeParam)
@@ -146,6 +160,11 @@ export async function submitFieldReportAction(formData: FormData): Promise<Actio
     }
 
     const gps = String(formData.get("gps") || formData.get("location_text") || "");
+    const locationText = String(formData.get("location_text") || "").trim();
+    const subcategory = String(formData.get("subcategory") || "").trim();
+    const businessUnitId =
+      String(formData.get("businessUnitId") || "") || workspaceBusinessUnitId || undefined;
+    const formProjectId = String(formData.get("projectId") || "") || projectId || undefined;
     const latRaw = String(formData.get("latitude") || "");
     const lngRaw = String(formData.get("longitude") || "");
     const immediate = String(formData.get("immediate_action") || "");
@@ -180,24 +199,33 @@ export async function submitFieldReportAction(formData: FormData): Promise<Actio
       organizationId: organization.id,
       userId: user.id,
       eventTypeCode,
-      description: [
-        description,
-        gps ? `GPS/Location: ${gps}` : null,
-        people ? `People involved: ${people}` : null,
-        formData.get("risk_level") ? `Risk level: ${formData.get("risk_level")}` : null,
-      ]
-        .filter(Boolean)
-        .join("\n"),
+      description:
+        mode === "uauc"
+          ? description
+          : [
+              description,
+              gps ? `GPS/Location: ${gps}` : null,
+              people ? `People involved: ${people}` : null,
+              formData.get("risk_level") ? `Risk level: ${formData.get("risk_level")}` : null,
+            ]
+              .filter(Boolean)
+              .join("\n"),
       title: description.slice(0, 80),
       immediateAction: immediate || undefined,
       occurredAt: String(formData.get("occurred_at") || new Date().toISOString()),
       submit: intent === "submit" || intent === "true",
       siteId: resolvedSiteId,
-      projectId: projectId || undefined,
+      projectId: formProjectId,
+      businessUnitId,
       severityId,
       potentialSeverityId,
       categoryId:
-        eventTypeCode === "incident" || eventTypeCode === "near_miss" || eventTypeCode === "hazard"
+        eventTypeCode === "incident" ||
+        eventTypeCode === "near_miss" ||
+        eventTypeCode === "hazard" ||
+        eventTypeCode === "unsafe_act" ||
+        eventTypeCode === "unsafe_condition" ||
+        eventTypeCode === "safety_observation"
           ? categoryId
           : undefined,
       source: "field",
@@ -213,7 +241,19 @@ export async function submitFieldReportAction(formData: FormData): Promise<Actio
     });
 
     const event = "event" in created ? created.event : created;
-    const media = await persistMedia(supabase, organization.id, `events/${event.id}`, formData);
+    const noAttachments = String(formData.get("no_attachments") || "") === "true";
+    const media = noAttachments
+      ? null
+      : await persistMedia(supabase, organization.id, `events/${event.id}`, formData);
+
+    const metadataPatch: Record<string, unknown> = {
+      ...(typeof event.metadata === "object" && event.metadata ? event.metadata : {}),
+      field_capture: true,
+    };
+    if (locationText) metadataPatch.location_text = locationText;
+    if (subcategory) metadataPatch.subcategory = subcategory;
+    if (gps) metadataPatch.gps = gps;
+
     if (media) {
       await supabase.from("ehs_event_attachments").insert({
         organization_id: organization.id,
@@ -229,13 +269,17 @@ export async function submitFieldReportAction(formData: FormData): Promise<Actio
         .from("ehs_events")
         .update({
           metadata: {
-            ...(typeof event.metadata === "object" && event.metadata ? event.metadata : {}),
-            field_capture: true,
-            gps: gps || null,
+            ...metadataPatch,
             photo: media.fileName,
             photo_uploaded: media.uploaded,
           },
         })
+        .eq("id", event.id)
+        .eq("organization_id", organization.id);
+    } else if (mode === "uauc" || locationText || subcategory || gps) {
+      await supabase
+        .from("ehs_events")
+        .update({ metadata: metadataPatch })
         .eq("id", event.id)
         .eq("organization_id", organization.id);
     }

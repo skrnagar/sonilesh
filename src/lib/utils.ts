@@ -23,3 +23,16 @@ export function formatDate(value?: string | Date | null) {
     day: "2-digit",
   }).format(date);
 }
+
+export function formatDateTime(value?: string | Date | null) {
+  if (!value) return "—";
+  const date = typeof value === "string" ? new Date(value) : value;
+  return new Intl.DateTimeFormat("en-GB", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  }).format(date);
+}
