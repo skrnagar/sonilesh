@@ -114,25 +114,30 @@ export default async function SiteVisitsPage({
       {rows.length ? (
         <ul className="divide-y divide-border rounded-2xl border border-border bg-card">
           {rows.map((row) => (
-            <li key={row.id} className="flex items-center justify-between gap-3 px-4 py-3 text-sm">
-              <div>
-                <p className="font-medium">
-                  {row.visit_number}{" "}
-                  <span className="text-muted-foreground">· {row.visit_type.toUpperCase()}</span>
-                </p>
-                <p className="truncate text-muted-foreground">{row.summary || "No summary"}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">{formatDate(row.visit_date)}</span>
-                <StatusPill value={row.status} />
-              </div>
+            <li key={row.id}>
+              <Link
+                href={`/app/site-visits/${row.id}`}
+                className="flex items-center justify-between gap-3 px-4 py-3 text-sm transition-colors hover:bg-muted/50"
+              >
+                <div>
+                  <p className="font-medium">
+                    {row.visit_number}{" "}
+                    <span className="text-muted-foreground">· {row.visit_type.toUpperCase()}</span>
+                  </p>
+                  <p className="truncate text-muted-foreground">{row.summary || "No summary"}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">{formatDate(row.visit_date)}</span>
+                  <StatusPill value={row.status} />
+                </div>
+              </Link>
             </li>
           ))}
         </ul>
       ) : (
         <EmptyState
           title="No site visits yet"
-          description="Create HSV, RSV, or TSV records when your role permits. Visit workflow supports allocate and final closure in future phases."
+          description="Create HSV, RSV, or TSV records when your role permits. Open a visit to allocate, close, or final-close the workflow."
         />
       )}
     </ModuleShell>
