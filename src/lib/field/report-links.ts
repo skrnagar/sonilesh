@@ -135,7 +135,7 @@ export const FIELD_REPORT_LINKS: FieldReportLink[] = [
     href: "/field/ehs-score",
     fieldAction: "ehs_score",
     status: "live",
-    nextSteps: "Scorecard scaffold — connect to analytics export.",
+    nextSteps: "BI dashboard with MIS pending counts, yearly chart, and score status table.",
   },
   // — iQuality Reports —
   {
@@ -144,9 +144,8 @@ export const FIELD_REPORT_LINKS: FieldReportLink[] = [
     category: "iquality",
     href: "/field/reports/quality-observations",
     fieldAction: "raksha_reports",
-    status: "scaffold",
-    webHref: "/app/observations",
-    nextSteps: "Add iQuality observation list and capture flow.",
+    status: "live",
+    nextSteps: "Hierarchical report with SBU/region/project filters, export, and mobile cards.",
   },
   {
     key: "checklists",
