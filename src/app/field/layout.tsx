@@ -96,11 +96,11 @@ export default async function FieldLayout({ children }: { children: React.ReactN
   if (organization.status === "suspended") redirect("/login");
 
   return (
-    <div className="min-h-dvh overflow-x-clip bg-transparent text-foreground">
+    <div className="flex min-h-dvh flex-col overflow-x-clip bg-transparent text-foreground">
       <Suspense fallback={null}>
         <NavigationProgress />
       </Suspense>
-      <header className="field-shell-header sticky top-0 z-20 border-b border-border/80 pt-[env(safe-area-inset-top)] shadow-[var(--shadow-header)] lg:shadow-none">
+      <header className="field-shell-header sticky top-0 z-20 shrink-0 border-b border-border/80 pt-[env(safe-area-inset-top)] shadow-[var(--shadow-header)] lg:shadow-none">
         <div className={FIELD_SHELL_CLASS}>
           <div className="flex h-12 items-center gap-2 lg:h-14 lg:gap-3">
             <div className="flex min-w-0 shrink-0 items-center gap-2">
@@ -174,11 +174,11 @@ export default async function FieldLayout({ children }: { children: React.ReactN
         </div>
       </header>
       <main
-        className={`app-page ${FIELD_SHELL_CLASS} pb-[calc(4.75rem+env(safe-area-inset-bottom))] pt-4 lg:pb-8`}
+        className={`app-page ${FIELD_SHELL_CLASS} min-h-0 flex-1 pb-[calc(4.75rem+env(safe-area-inset-bottom))] pt-4 lg:pb-8`}
       >
         <Suspense fallback={<FieldPageSkeleton />}>{children}</Suspense>
       </main>
-      <footer className="hidden border-t border-border/60 bg-card/80 py-2 text-center text-[11px] text-muted-foreground lg:block">
+      <footer className="hidden shrink-0 border-t border-border/60 bg-card/80 py-2 text-center text-[11px] text-muted-foreground lg:block">
         Copyright © 2026 SONIL EHS360
       </footer>
       <FieldTabBar />
