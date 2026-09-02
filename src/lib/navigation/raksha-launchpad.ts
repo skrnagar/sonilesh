@@ -192,11 +192,11 @@ export const RAKSHA_LAUNCHPAD_TILES: RakshaLaunchpadTile[] = [
   },
 ];
 
+/** Serializable tile props safe to pass from Server Components to RakshaLaunchpadGrid. */
 export type ResolvedRakshaTile = {
   key: RakshaLaunchpadKey;
   label: string;
   href: string;
-  icon: LucideIcon;
   prefetch?: boolean;
 };
 
@@ -206,7 +206,6 @@ export function filterRakshaLaunchpadForField(role: FieldRole): ResolvedRakshaTi
       key: tile.key,
       label: tile.label,
       href: tile.fieldHref,
-      icon: tile.icon,
       prefetch: tile.prefetch,
     }),
   );
@@ -241,7 +240,6 @@ export function filterRakshaLaunchpadForWeb(permissions: string[]): ResolvedRaks
     key: tile.key,
     label: tile.label,
     href: tile.webHref,
-    icon: tile.icon,
     prefetch: tile.prefetch,
   }));
 }

@@ -17,7 +17,7 @@ export const getRoleCodesForUser = cache(async function getRoleCodesForUser(
   if (organizationId) memberQuery = memberQuery.eq("organization_id", organizationId);
 
   const { data: member, error } = await memberQuery.maybeSingle();
-  if (error) throw new Error(error.message);
+  if (error) return { organizationId: null as string | null, roleCodes: [] as string[] };
   if (!member) return { organizationId: null as string | null, roleCodes: [] as string[] };
 
   const { data: memberRoles, error: roleError } = await supabase
@@ -25,7 +25,9 @@ export const getRoleCodesForUser = cache(async function getRoleCodesForUser(
     .select("roles:role_id(code)")
     .eq("member_id", member.id)
     .is("deleted_at", null);
-  if (roleError) throw new Error(roleError.message);
+  if (roleError) {
+    return { organizationId: member.organization_id as string, roleCodes: [] as string[] };
+  }
 
   const roleCodes = (memberRoles ?? [])
     .map((row) => (row.roles as { code?: string } | null)?.code)

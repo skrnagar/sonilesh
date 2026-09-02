@@ -3,16 +3,49 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import type { LucideIcon } from "lucide-react";
+import {
+  AlertTriangle,
+  ClipboardCheck,
+  ClipboardList,
+  Eye,
+  FileSpreadsheet,
+  FileText,
+  Gauge,
+  GraduationCap,
+  Home,
+  LayoutGrid,
+  LayoutTemplate,
+  MapPin,
+  ScanSearch,
+  Shield,
+  ThumbsUp,
+  Wrench,
+  type LucideIcon,
+} from "lucide-react";
+import type { RakshaLaunchpadKey, ResolvedRakshaTile } from "@/lib/navigation/raksha-launchpad";
 import { cn } from "@/lib/utils";
 
-export type RakshaGridTile = {
-  key: string;
-  label: string;
-  href: string;
-  icon: LucideIcon;
-  prefetch?: boolean;
+const RAKSHA_TILE_ICONS: Record<RakshaLaunchpadKey, LucideIcon> = {
+  "my-zone": Home,
+  "raksha-reports": FileText,
+  "ua-uc-wsn": Eye,
+  incident: AlertTriangle,
+  "hsv-rsv": MapPin,
+  "tsv-hsr-rsr-wer": Shield,
+  utilities: Wrench,
+  training: GraduationCap,
+  "ehs-mis": FileSpreadsheet,
+  "ehs-score": Gauge,
+  nc: ClipboardList,
+  checklist: ClipboardCheck,
+  "new-checklist": LayoutGrid,
+  "checklist-template": LayoutTemplate,
+  lmra: ScanSearch,
+  "work-permit": Shield,
+  bbs: ThumbsUp,
 };
+
+export type RakshaGridTile = ResolvedRakshaTile;
 
 export function RakshaLaunchpadGrid({ tiles }: { tiles: RakshaGridTile[] }) {
   const pathname = usePathname();
@@ -27,7 +60,7 @@ export function RakshaLaunchpadGrid({ tiles }: { tiles: RakshaGridTile[] }) {
   return (
     <div className="grid grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-4 lg:gap-4 xl:grid-cols-5">
       {tiles.map((tile) => {
-        const Icon = tile.icon;
+        const Icon = RAKSHA_TILE_ICONS[tile.key] ?? Home;
         const pending = pendingKey === tile.key;
         return (
           <Link
@@ -41,9 +74,7 @@ export function RakshaLaunchpadGrid({ tiles }: { tiles: RakshaGridTile[] }) {
               pending && "pointer-events-none opacity-70",
             )}
           >
-            <span
-              className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-[var(--raksha-blue)] bg-white"
-            >
+            <span className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-[var(--raksha-blue)] bg-white">
               <Icon
                 className={cn(
                   "h-5 w-5 text-[var(--raksha-blue)]",

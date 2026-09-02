@@ -92,12 +92,16 @@ export const requireOrgContext = cache(async () => {
     const selected =
       memberships.find((row) => row.organization_id === requestedOrgId) ?? memberships[0];
 
-    const organization = selected.organizations as unknown as Organization;
+    const organization = selected.organizations as unknown as Organization | null;
+    if (!organization?.id) redirect("/onboarding");
 
-    const orgOptions: OrgOption[] = memberships.map((row) => {
-      const org = row.organizations as unknown as Organization;
-      return { id: org.id, name: org.name, membershipId: row.id };
-    });
+    const orgOptions: OrgOption[] = memberships
+      .map((row) => {
+        const org = row.organizations as unknown as Organization | null;
+        if (!org?.id) return null;
+        return { id: org.id, name: org.name, membershipId: row.id };
+      })
+      .filter((row): row is OrgOption => row !== null);
 
     const needWorkspaceLists =
       pathname.startsWith("/app") ||

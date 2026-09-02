@@ -34,11 +34,17 @@ function redirectToLogin(request: NextRequest, pathname: string) {
 }
 
 function withSecurityHeaders(
-  response: NextResponse,
+  request: NextRequest,
   pathname: string,
   requestId: string,
 ) {
-  response.headers.set("x-ehs-pathname", pathname);
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-ehs-pathname", pathname);
+  requestHeaders.set("x-request-id", requestId);
+
+  const response = NextResponse.next({
+    request: { headers: requestHeaders },
+  });
   response.headers.set("x-request-id", requestId);
   response.headers.set("X-Content-Type-Options", "nosniff");
   return response;
@@ -59,11 +65,7 @@ async function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
 export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const requestId = requestIdFrom(request);
-  let supabaseResponse = withSecurityHeaders(
-    NextResponse.next({ request }),
-    pathname,
-    requestId,
-  );
+  let supabaseResponse = withSecurityHeaders(request, pathname, requestId);
 
   if (!hasSupabaseConfig()) {
     return supabaseResponse;
@@ -135,11 +137,7 @@ export async function updateSession(request: NextRequest) {
         cookiesToSet.forEach(({ name, value }) => {
           request.cookies.set(name, value);
         });
-        supabaseResponse = withSecurityHeaders(
-          NextResponse.next({ request }),
-          pathname,
-          requestId,
-        );
+        supabaseResponse = withSecurityHeaders(request, pathname, requestId);
         supabaseResponse.headers.set("Cache-Control", "private, no-store");
         cookiesToSet.forEach(({ name, value, options }) => {
           supabaseResponse.cookies.set(name, value, {

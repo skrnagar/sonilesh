@@ -11,6 +11,7 @@ export const config = {
     "/app/:path*",
     "/admin/:path*",
     "/org-admin/:path*",
+    "/field",
     "/field/:path*",
     "/contractor/:path*",
     "/onboarding/:path*",
