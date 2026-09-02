@@ -475,6 +475,40 @@ button.bg-primary:hover {
     0 6px 18px rgba(7, 31, 45, 0.16);
 }
 
+/* KEC MyZone-style hub — full-bleed navy with white square tiles */
+.myzone-hub {
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--raksha-blue) 94%, #000) 0%,
+    color-mix(in srgb, var(--raksha-blue-dark) 90%, #000) 55%,
+    color-mix(in srgb, var(--raksha-blue-dark) 96%, #000) 100%
+  );
+  border-radius: var(--radius-lg);
+}
+
+.myzone-tile {
+  background: #ffffff;
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 14px rgba(7, 31, 45, 0.14);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.myzone-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(7, 31, 45, 0.2);
+}
+
+.myzone-tile:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(7, 31, 45, 0.16);
+}
+
+.myzone-tile[data-active="true"] {
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, #ffffff 85%, transparent),
+    0 8px 22px rgba(7, 31, 45, 0.22);
+}
+
 .raksha-section-tab {
   font-size: 0.6875rem;
   font-weight: 700;

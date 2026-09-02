@@ -4,6 +4,7 @@ import {
   filterRakshaLaunchpadForField,
   RAKSHA_LAUNCHPAD_TILES,
 } from "@/lib/navigation/raksha-launchpad";
+import { filterMyZoneTilesForField } from "@/lib/navigation/myzone-launchpad";
 
 describe("field role gating", () => {
   it("maps contractor to limited actions", () => {
@@ -38,8 +39,8 @@ describe("field role gating", () => {
   });
 });
 
-describe("RAKSHA launchpad", () => {
-  it("defines all 17 modules", () => {
+describe("RAKSHA launchpad (web legacy)", () => {
+  it("defines all 17 modules for web home", () => {
     expect(RAKSHA_LAUNCHPAD_TILES).toHaveLength(17);
   });
 
@@ -48,5 +49,14 @@ describe("RAKSHA launchpad", () => {
     expect(tiles.some((t) => t.key === "my-zone")).toBe(true);
     expect(tiles.some((t) => t.key === "utilities")).toBe(false);
     expect(tiles.some((t) => t.key === "incident")).toBe(true);
+  });
+});
+
+describe("My Zone field home", () => {
+  it("uses app hub tiles without Raksha branding", () => {
+    const tiles = filterMyZoneTilesForField("employee");
+    expect(tiles.some((t) => t.key === "iquality")).toBe(true);
+    expect(tiles.some((t) => t.label.toLowerCase().includes("raksha"))).toBe(false);
+    expect(tiles.every((t) => t.href !== "/app/home")).toBe(true);
   });
 });
