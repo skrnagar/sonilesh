@@ -143,6 +143,3 @@ export function filterIQualityTilesForField(role: FieldRole): ResolvedIQualityTi
   }));
 }
 
-export const IQUALITY_TILE_ICONS: Record<IQualityTileKey, LucideIcon> = Object.fromEntries(
-  IQUALITY_TILES.map((tile) => [tile.key, tile.icon]),
-) as Record<IQualityTileKey, LucideIcon>;

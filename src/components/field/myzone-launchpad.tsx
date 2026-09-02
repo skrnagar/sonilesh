@@ -2,16 +2,9 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { MyZoneTileGrid } from "@/components/navigation/myzone-tile-grid";
 import type { ResolvedIQualityTile } from "@/lib/navigation/iquality-launchpad";
-import { IQUALITY_TILE_ICONS } from "@/lib/navigation/iquality-launchpad";
 import type { ResolvedMyZoneTile } from "@/lib/navigation/myzone-launchpad";
-import { MY_ZONE_TILE_ICONS } from "@/lib/navigation/myzone-launchpad";
 import type { ResolvedEhsOperationsTile } from "@/lib/navigation/ehs-operations-launchpad";
-import { EHS_OPERATIONS_TILES } from "@/lib/navigation/ehs-operations-launchpad";
 import { cn } from "@/lib/utils";
-
-const EHS_OPS_ICONS = Object.fromEntries(
-  EHS_OPERATIONS_TILES.map((tile) => [tile.key, tile.icon]),
-);
 
 type HubShellProps = {
   title: string;
@@ -76,7 +69,7 @@ export function MyZoneLaunchpad({
           {siteName} · {projectName}
         </p>
       </div>
-      <MyZoneTileGrid tiles={tiles} icons={MY_ZONE_TILE_ICONS} columns="hub" />
+      <MyZoneTileGrid tiles={tiles} columns="hub" />
       <p className="text-center text-[11px] text-white/60 lg:hidden">
         Copyright © 2026 SONIL EHS360
       </p>
@@ -91,12 +84,7 @@ export function IQualityLaunchpad({ tiles }: { tiles: ResolvedIQualityTile[] }) 
       subtitle="Quality management modules"
       backHref="/field"
     >
-      <MyZoneTileGrid
-        tiles={tiles}
-        icons={IQUALITY_TILE_ICONS}
-        favoritesKey="sonil-iquality-favorites"
-        columns="subhub"
-      />
+      <MyZoneTileGrid tiles={tiles} iconSet="iquality" favoritesKey="sonil-iquality-favorites" columns="subhub" />
     </MyZoneHubShell>
   );
 }
@@ -108,12 +96,7 @@ export function EhsOperationsLaunchpad({ tiles }: { tiles: ResolvedEhsOperations
       subtitle="Field safety and compliance modules"
       backHref="/field"
     >
-      <MyZoneTileGrid
-        tiles={tiles}
-        icons={EHS_OPS_ICONS}
-        favoritesKey="sonil-ehs-ops-favorites"
-        columns="subhub"
-      />
+      <MyZoneTileGrid tiles={tiles} iconSet="ehs-ops" favoritesKey="sonil-ehs-ops-favorites" columns="subhub" />
     </MyZoneHubShell>
   );
 }

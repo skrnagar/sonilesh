@@ -3,10 +3,88 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { Heart, type LucideIcon } from "lucide-react";
+import {
+  AlertTriangle,
+  BarChart3,
+  CalendarCheck,
+  CalendarClock,
+  ClipboardCheck,
+  ClipboardList,
+  Eye,
+  FileSpreadsheet,
+  FileText,
+  Gauge,
+  GraduationCap,
+  Headphones,
+  Heart,
+  LayoutGrid,
+  LayoutTemplate,
+  Leaf,
+  Lightbulb,
+  MapPin,
+  MapPinned,
+  MessageSquareQuote,
+  OctagonAlert,
+  ScanSearch,
+  Shield,
+  ThumbsUp,
+  Wrench,
+  type LucideIcon,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const FAVORITES_STORAGE_KEY = "sonil-myzone-favorites";
+
+/** Icon lookup by tile key — kept client-side so server pages only pass serializable tile props. */
+const MYZONE_HUB_ICONS: Record<string, LucideIcon> = {
+  iquality: ClipboardCheck,
+  reports: FileText,
+  brsr: Leaf,
+  "data-hub": BarChart3,
+  "my-attendance": CalendarCheck,
+  "i-track": MapPinned,
+  "ia-tracker": ScanSearch,
+  "ehs-operations": Shield,
+};
+
+const IQUALITY_HUB_ICONS: Record<string, LucideIcon> = {
+  "quality-observation": Eye,
+  nc: ClipboardList,
+  wsn: OctagonAlert,
+  "checklist-template": ClipboardCheck,
+  "quality-visit": MapPin,
+  checklist: ClipboardCheck,
+  scorecard: Gauge,
+  "mis-report": FileSpreadsheet,
+  "audit-schedule": CalendarClock,
+  "support-request": Headphones,
+  kaizen: Lightbulb,
+  "customer-feedback": MessageSquareQuote,
+};
+
+const EHS_OPS_HUB_ICONS: Record<string, LucideIcon> = {
+  "ua-uc-wsn": Eye,
+  incident: AlertTriangle,
+  "hsv-rsv": MapPin,
+  "tsv-hsr-rsr-wer": Shield,
+  utilities: Wrench,
+  training: GraduationCap,
+  "ehs-mis": FileSpreadsheet,
+  "ehs-score": Gauge,
+  nc: ClipboardList,
+  checklist: ClipboardCheck,
+  "new-checklist": LayoutGrid,
+  "checklist-template": LayoutTemplate,
+  lmra: ScanSearch,
+  "work-permit": Shield,
+  bbs: ThumbsUp,
+};
+
+const MYZONE_ICON_SETS = {
+  myzone: MYZONE_HUB_ICONS,
+  iquality: IQUALITY_HUB_ICONS,
+  "ehs-ops": EHS_OPS_HUB_ICONS,
+} as const;
 
 export type MyZoneGridTile = {
   key: string;
@@ -17,7 +95,7 @@ export type MyZoneGridTile = {
 
 type MyZoneTileGridProps = {
   tiles: MyZoneGridTile[];
-  icons: Record<string, LucideIcon>;
+  iconSet?: keyof typeof MYZONE_ICON_SETS;
   favoritesKey?: string;
   showFavorites?: boolean;
   columns?: "hub" | "subhub";
@@ -37,11 +115,12 @@ function readFavorites(storageKey: string): Set<string> {
 
 export function MyZoneTileGrid({
   tiles,
-  icons,
+  iconSet = "myzone",
   favoritesKey = FAVORITES_STORAGE_KEY,
   showFavorites = true,
   columns = "hub",
 }: MyZoneTileGridProps) {
+  const icons = MYZONE_ICON_SETS[iconSet];
   const pathname = usePathname();
   const [pendingKey, setPendingKey] = useState<string | null>(null);
   const [favorites, setFavorites] = useState<Set<string>>(() => new Set());

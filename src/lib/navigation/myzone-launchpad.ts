@@ -117,6 +117,3 @@ export function filterMyZoneTilesForField(role: FieldRole): ResolvedMyZoneTile[]
   }));
 }
 
-export const MY_ZONE_TILE_ICONS: Record<MyZoneTileKey, LucideIcon> = Object.fromEntries(
-  MY_ZONE_TILES.map((tile) => [tile.key, tile.icon]),
-) as Record<MyZoneTileKey, LucideIcon>;
