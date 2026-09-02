@@ -1,18 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 /** Thin top progress bar — visible during client navigations. */
 export function NavigationProgress() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const [active, setActive] = useState(false);
 
   useEffect(() => {
     setActive(false);
-  }, [pathname, searchParams]);
+  }, [pathname]);
 
   useEffect(() => {
     function onClick(e: MouseEvent) {

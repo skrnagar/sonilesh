@@ -97,9 +97,7 @@ export default async function FieldLayout({ children }: { children: React.ReactN
 
   return (
     <div className="flex min-h-dvh flex-col overflow-x-clip bg-transparent text-foreground">
-      <Suspense fallback={null}>
-        <NavigationProgress />
-      </Suspense>
+      <NavigationProgress />
       <header className="field-shell-header sticky top-0 z-20 shrink-0 border-b border-border/80 pt-[env(safe-area-inset-top)] shadow-[var(--shadow-header)] lg:shadow-none">
         <div className={FIELD_SHELL_CLASS}>
           <div className="flex h-12 items-center gap-2 lg:h-14 lg:gap-3">

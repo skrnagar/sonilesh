@@ -24,9 +24,7 @@ export async function FilesWorkspaceLoader({ children }: { children: React.React
 
   return (
     <div style={brandingCssVars(branding)}>
-      <Suspense fallback={null}>
-        <NavigationProgress />
-      </Suspense>
+      <NavigationProgress />
       <WorkspaceShell
         title="Files & Data"
         userLabel={userLabel}

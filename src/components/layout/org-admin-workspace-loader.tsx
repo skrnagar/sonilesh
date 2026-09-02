@@ -26,9 +26,7 @@ export async function OrgAdminWorkspaceLoader({ children }: { children: React.Re
 
   return (
     <div style={brandingCssVars(branding)}>
-      <Suspense fallback={null}>
-        <NavigationProgress />
-      </Suspense>
+      <NavigationProgress />
       <WorkspaceShell
         title="Organization Admin"
         userLabel={userLabel}

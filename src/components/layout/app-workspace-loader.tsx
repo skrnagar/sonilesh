@@ -76,9 +76,7 @@ export async function AppWorkspaceLoader({ children }: { children: React.ReactNo
 
   return (
     <div style={tenantStyle}>
-      <Suspense fallback={null}>
-        <NavigationProgress />
-      </Suspense>
+      <NavigationProgress />
       <WorkspaceShell
         title="EHS Workspace"
         userLabel={userLabel}
