@@ -7,8 +7,8 @@ import {
 } from "@/lib/navigation/ehs-operations-launchpad";
 
 describe("My Zone launchpad", () => {
-  it("defines 8 app hub tiles without Raksha", () => {
-    expect(MY_ZONE_TILES).toHaveLength(8);
+  it("defines 7 app hub tiles without Raksha", () => {
+    expect(MY_ZONE_TILES).toHaveLength(7);
     expect(MY_ZONE_TILES.some((t) => t.label.toLowerCase().includes("raksha"))).toBe(false);
     expect(MY_ZONE_TILES.some((t) => t.key === "iquality")).toBe(true);
     expect(MY_ZONE_TILES.some((t) => t.key === "reports")).toBe(true);
@@ -19,7 +19,6 @@ describe("My Zone launchpad", () => {
     expect(tiles.some((t) => t.key === "iquality")).toBe(true);
     expect(tiles.some((t) => t.key === "reports")).toBe(true);
     expect(tiles.some((t) => t.key === "i-track")).toBe(true);
-    expect(tiles.some((t) => t.key === "ehs-operations")).toBe(true);
   });
 
   it("hides reports for contractors without report access", () => {

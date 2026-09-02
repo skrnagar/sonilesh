@@ -47,6 +47,7 @@ describe("RAKSHA launchpad (web legacy)", () => {
   it("filters tiles for employee role", () => {
     const tiles = filterRakshaLaunchpadForField("employee");
     expect(tiles.some((t) => t.key === "my-zone")).toBe(true);
+    expect(tiles.find((t) => t.key === "my-zone")?.href).toBe("/field/my-zone");
     expect(tiles.some((t) => t.key === "utilities")).toBe(false);
     expect(tiles.some((t) => t.key === "incident")).toBe(true);
   });

@@ -58,14 +58,16 @@ export function RakshaLaunchpadGrid({ tiles }: { tiles: RakshaGridTile[] }) {
   if (!tiles.length) return null;
 
   return (
-    <div className="grid grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-4 lg:gap-4 xl:grid-cols-5">
+    <div className="grid grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-4 lg:grid-cols-6 lg:gap-4">
       {tiles.map((tile) => {
         const Icon = RAKSHA_TILE_ICONS[tile.key] ?? Home;
         const pending = pendingKey === tile.key;
         const active =
           tile.href === "/field"
             ? pathname === "/field" || pathname === "/field/home"
-            : pathname === tile.href || pathname.startsWith(`${tile.href}/`);
+            : tile.href === "/field/my-zone"
+              ? pathname === "/field/my-zone"
+              : pathname === tile.href || pathname.startsWith(`${tile.href}/`) || pathname.startsWith(`${tile.href}?`);
         return (
           <Link
             key={tile.key}

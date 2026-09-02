@@ -1,18 +1,17 @@
 import { FieldEmpty } from "@/components/field/field-ui";
-import { FieldLaunchpad } from "@/components/field/field-launchpad";
+import { MyZoneHubShell, MyZoneLaunchpad } from "@/components/field/myzone-launchpad";
 import { requireOrgContext } from "@/lib/auth/org-context";
 import { greetingForNow } from "@/lib/auth/field-roles";
 import { resolveFieldRole } from "@/lib/field/resolve-role";
-import { filterRakshaLaunchpadForField } from "@/lib/navigation/raksha-launchpad";
-import { cn } from "@/lib/utils";
+import { filterMyZoneTilesForField } from "@/lib/navigation/myzone-launchpad";
 
-export default async function FieldHomePage() {
+export default async function FieldMyZonePage() {
   try {
     const { profile, sites, projects, siteId, projectId, supabase, membershipId } =
       await requireOrgContext();
 
     const role = await resolveFieldRole(supabase, membershipId);
-    const menuTiles = filterRakshaLaunchpadForField(role);
+    const menuTiles = filterMyZoneTilesForField(role);
     const userName = profile?.full_name?.split(" ")[0] || "Field user";
     const siteName =
       sites.find((s) => s.id === siteId)?.name ?? sites[0]?.name ?? "Unassigned site";
@@ -23,21 +22,20 @@ export default async function FieldHomePage() {
       "—";
 
     return (
-      <FieldLaunchpad
+      <MyZoneLaunchpad
         tiles={menuTiles}
         greeting={greetingForNow()}
         userName={userName}
         siteName={siteName}
         projectName={projectName}
-        className={cn("-mx-3 sm:-mx-4 lg:-mx-6")}
       />
     );
   } catch (e) {
-    const message = e instanceof Error ? e.message : "Could not load field home.";
+    const message = e instanceof Error ? e.message : "Could not load My Zone.";
     return (
-      <section className="raksha-module-panel space-y-4">
+      <MyZoneHubShell title="My Zone">
         <FieldEmpty text={message} />
-      </section>
+      </MyZoneHubShell>
     );
   }
 }

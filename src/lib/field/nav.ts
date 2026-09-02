@@ -40,6 +40,7 @@ export const FIELD_NAV_ITEMS: FieldNavItem[] = [
       p.startsWith("/field/reports") ||
       p.startsWith("/field/ualist") ||
       p.startsWith("/field/ua-uc") ||
+      p.startsWith("/field/my-zone") ||
       p.startsWith("/field/iquality") ||
       p.startsWith("/field/operations"),
   },

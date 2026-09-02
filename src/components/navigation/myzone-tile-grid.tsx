@@ -44,7 +44,6 @@ const MYZONE_HUB_ICONS: Record<string, LucideIcon> = {
   "my-attendance": CalendarCheck,
   "i-track": MapPinned,
   "ia-tracker": ScanSearch,
-  "ehs-operations": Shield,
 };
 
 const IQUALITY_HUB_ICONS: Record<string, LucideIcon> = {
@@ -166,9 +165,13 @@ export function MyZoneTileGrid({
         const Icon = icons[tile.key];
         const pending = pendingKey === tile.key;
         const active =
-          tile.href === "/field"
-            ? pathname === "/field" || pathname === "/field/home"
-            : pathname === tile.href || pathname.startsWith(`${tile.href}/`);
+          tile.href === "/field/my-zone"
+            ? pathname === "/field/my-zone"
+            : tile.href === "/field"
+              ? pathname === "/field" || pathname === "/field/home"
+              : pathname === tile.href ||
+                pathname.startsWith(`${tile.href}/`) ||
+                pathname.startsWith(`${tile.href}?`);
         const favorited = favorites.has(tile.key);
 
         return (

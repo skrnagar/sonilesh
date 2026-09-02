@@ -7,10 +7,8 @@ import {
   Leaf,
   MapPinned,
   ScanSearch,
-  Shield,
 } from "lucide-react";
 import { canFieldAction, type FieldAction, type FieldRole } from "@/lib/auth/field-roles";
-import { filterEhsOperationsForField } from "@/lib/navigation/ehs-operations-launchpad";
 
 export type MyZoneTileKey =
   | "iquality"
@@ -19,8 +17,7 @@ export type MyZoneTileKey =
   | "data-hub"
   | "my-attendance"
   | "i-track"
-  | "ia-tracker"
-  | "ehs-operations";
+  | "ia-tracker";
 
 export type MyZoneTileDef = {
   key: MyZoneTileKey;
@@ -29,11 +26,9 @@ export type MyZoneTileDef = {
   icon: LucideIcon;
   fieldAction: FieldAction;
   prefetch?: boolean;
-  /** Show when user has any EHS operations module (computed dynamically). */
-  dynamicEhsOps?: boolean;
 };
 
-/** KEC MyZone-style app launcher — field home at `/field`. */
+/** KEC MyZone-style app launcher — `/field/my-zone`. */
 export const MY_ZONE_TILES: MyZoneTileDef[] = [
   {
     key: "iquality",
@@ -85,15 +80,6 @@ export const MY_ZONE_TILES: MyZoneTileDef[] = [
     icon: ScanSearch,
     fieldAction: "my_zone",
   },
-  {
-    key: "ehs-operations",
-    label: "EHS Operations",
-    href: "/field/operations",
-    icon: Shield,
-    fieldAction: "my_zone",
-    prefetch: true,
-    dynamicEhsOps: true,
-  },
 ];
 
 export type ResolvedMyZoneTile = {
@@ -104,12 +90,7 @@ export type ResolvedMyZoneTile = {
 };
 
 export function filterMyZoneTilesForField(role: FieldRole): ResolvedMyZoneTile[] {
-  const ehsOps = filterEhsOperationsForField(role);
-
-  return MY_ZONE_TILES.filter((tile) => {
-    if (tile.dynamicEhsOps) return ehsOps.length > 0;
-    return canFieldAction(role, tile.fieldAction);
-  }).map((tile) => ({
+  return MY_ZONE_TILES.filter((tile) => canFieldAction(role, tile.fieldAction)).map((tile) => ({
     key: tile.key,
     label: tile.label,
     href: tile.href,

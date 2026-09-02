@@ -82,7 +82,8 @@ export function IQualityLaunchpad({ tiles }: { tiles: ResolvedIQualityTile[] }) 
     <MyZoneHubShell
       title="iQuality"
       subtitle="Quality management modules"
-      backHref="/field"
+      backHref="/field/my-zone"
+      backLabel="Back to My Zone"
     >
       <MyZoneTileGrid tiles={tiles} iconSet="iquality" favoritesKey="sonil-iquality-favorites" columns="subhub" />
     </MyZoneHubShell>
@@ -95,6 +96,7 @@ export function EhsOperationsLaunchpad({ tiles }: { tiles: ResolvedEhsOperations
       title="EHS Operations"
       subtitle="Field safety and compliance modules"
       backHref="/field"
+      backLabel="Back to Home"
     >
       <MyZoneTileGrid tiles={tiles} iconSet="ehs-ops" favoritesKey="sonil-ehs-ops-favorites" columns="subhub" />
     </MyZoneHubShell>

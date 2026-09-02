@@ -38,7 +38,7 @@ export const RAKSHA_LAUNCHPAD_TILES: RakshaLaunchpadTile[] = [
     label: "MY ZONE",
     fieldAction: "my_zone",
     icon: Home,
-    fieldHref: "/field",
+    fieldHref: "/field/my-zone",
     webHref: "/app/home",
     prefetch: true,
   },
