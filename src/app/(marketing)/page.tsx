@@ -15,19 +15,17 @@ import { SectionHeader } from "@/components/marketing/section-header";
 import { FeatureCard } from "@/components/marketing/feature-card";
 import { IndustryCard } from "@/components/marketing/industry-card";
 import { CTASection } from "@/components/marketing/cta-section";
-import { ProductScreenshot } from "@/components/marketing/product-screenshot";
-import { LazyDashboardPreview, LazyPricingBoard, LazyWorkflowDiagram } from "@/components/marketing/lazy-previews";
+import { HeroSection } from "@/components/marketing/hero-section";
+import { AdoptionLoop } from "@/components/marketing/adoption-loop";
+import { LazyPricingBoard, LazyWorkflowDiagram } from "@/components/marketing/lazy-previews";
 import { MobilePreview } from "@/components/marketing/mobile-preview";
 import { ResourceCard } from "@/components/marketing/resource-card";
 import { ModuleBento } from "@/components/marketing/module-bento";
 import { ControlRoomVisuals } from "@/components/marketing/charts/lazy";
-import { ScrollCue } from "@/components/marketing/motion";
 import { Reveal, Stagger } from "@/components/marketing/reveal";
 import { metadataForPath } from "@/lib/marketing/seo";
 import {
   architectureSteps,
-  brand,
-  buyerAudiences,
   company,
   executionPillars,
   listCanonicalIndustries,
@@ -40,73 +38,11 @@ export const metadata = metadataForPath("/");
 export default function HomePage() {
   return (
     <>
-      <section className="relative overflow-x-clip overflow-hidden border-b border-white/10 bg-[var(--mkt-hero)] text-white">
-        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="mkt-grid-fade absolute inset-0 opacity-55" />
-        </div>
-        <Container className="relative grid items-start gap-6 py-8 md:gap-8 md:py-12 lg:min-h-[min(70vh,680px)] lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-center lg:gap-10 lg:py-16">
-          <div className="max-w-xl min-w-0">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-teal-200 sm:tracking-[0.22em]">
-              {brand.eyebrow}
-            </p>
-            <h1 className="mkt-h1 mt-3 sm:mt-4">
-              {brand.tagline}
-            </h1>
-            <p className="mkt-body mt-3 text-base text-white/80 sm:mt-4 sm:text-lg">
-              {brand.supporting}
-            </p>
-            <div className="mt-5 flex flex-col items-stretch gap-3 sm:mt-6 sm:flex-row sm:flex-wrap sm:items-center">
-              <Button asChild size="lg" variant="safety" className="h-12 min-h-12 px-6">
-                <Link href="/book-a-demo">
-                  Book a Demo
-                  <ArrowRight className="h-4 w-4" aria-hidden />
-                </Link>
-              </Button>
-              <Button
-                asChild
-                size="lg"
-                variant="outline"
-                className="h-12 min-h-12 border-white/25 bg-transparent px-6 text-white hover:bg-white/10 hover:text-white"
-              >
-                <Link href="/signup">Start Free</Link>
-              </Button>
-            </div>
-            <ul className="mt-5 flex flex-wrap gap-x-4 gap-y-1 text-sm text-white/75 sm:mt-6">
-              <li>LMRA at the workfront</li>
-              <li>BRSR on the same record</li>
-              <li>No invented certifications</li>
-            </ul>
-            <ScrollCue className="mt-6 sm:mt-8" />
-          </div>
-          <div className="relative min-w-0">
-            <div className="relative pb-4 lg:pb-8 lg:pl-10 xl:pl-16">
-              <ProductScreenshot title="SONIL EHS360 · Control board" stage>
-                <LazyDashboardPreview />
-              </ProductScreenshot>
-              <div className="pointer-events-none relative z-10 mx-auto mt-5 w-fit lg:absolute lg:bottom-0 lg:left-0 lg:mx-0 lg:mt-0">
-                <MobilePreview className="scale-[0.92] shadow-[var(--shadow-lg)] lg:origin-bottom-left lg:scale-[0.78] xl:scale-[0.86]" />
-              </div>
-            </div>
-          </div>
-        </Container>
-      </section>
+      <HeroSection />
 
       <section id="mkt-after-hero" className="scroll-mt-16 border-b border-border mkt-band md:scroll-mt-20">
         <Container className="py-8 md:py-10">
-          <p className="text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-            Built beside civil EPC execution — India-first, not a generic office-safety template
-          </p>
-          <div className="mt-5 flex flex-wrap justify-center gap-2">
-            {buyerAudiences.map((name) => (
-              <span
-                key={name}
-                className="rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground"
-              >
-                {name}
-              </span>
-            ))}
-          </div>
-          <p className="mt-6 mx-auto max-w-2xl text-center text-sm leading-relaxed text-muted-foreground">
+          <p className="mx-auto max-w-2xl text-center text-sm leading-relaxed text-muted-foreground">
             Parent company {company.parent} ({company.legalEntity}) executes transmission, substation, solar civil, telecom, and industrial foundations from {company.hq}. Public site: toolbox talks, PPE, and a zero-harm HSE culture — the same work SONIL EHS360 is built to record.{" "}
             <Link href="/about" className="font-medium text-accent underline-offset-4 hover:underline">
               About the company
@@ -124,7 +60,7 @@ export default function HomePage() {
               description="Spreadsheets, WhatsApp trails, and a separate sustainability workbook leave site reality invisible — and filings get re-keyed from numbers nobody can audit back to the event."
             />
           </Reveal>
-          <div className="mt-14 grid gap-10 md:grid-cols-3 md:gap-12">
+          <div className="mt-12 grid gap-6 md:grid-cols-3">
             <FeatureCard
               icon={AlertTriangle}
               title="Fragmented capture"
@@ -140,6 +76,21 @@ export default function HomePage() {
               title="Parallel reporting stacks"
               body="Statutory calendars and ESG questionnaires sit outside the EHS record — two systems, one set of facts."
             />
+          </div>
+        </Container>
+      </section>
+
+      <section className="mkt-section border-y border-border mkt-band">
+        <Container>
+          <Reveal>
+            <SectionHeader
+              eyebrow="How teams adopt"
+              title="Capture → Own → Verify → Report"
+              description="A plain-language loop from workfront logging to leadership-ready reporting — without re-keying into a separate sustainability workbook."
+            />
+          </Reveal>
+          <div className="mt-12">
+            <AdoptionLoop />
           </div>
         </Container>
       </section>
@@ -382,7 +333,7 @@ export default function HomePage() {
               description="Same multi-tenant core — configured for construction, EPC packages, power corridors, renewables, plants, and industrial sites."
             />
           </Reveal>
-          <Stagger className="mt-10">
+          <Stagger className="mt-10 grid gap-4 sm:grid-cols-2">
             {listCanonicalIndustries().map((industry) => (
               <IndustryCard
                 key={industry.slug}

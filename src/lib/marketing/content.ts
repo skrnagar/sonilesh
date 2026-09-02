@@ -7,10 +7,10 @@ export const brand = {
   wordmark: "SONIL",
   legalName: "SONIL BUILDCON PRIVATE LIMITED",
   product: "EHS360",
-  eyebrow: "The modern EHS + ESG platform",
-  tagline: "One Platform for EHS, ESG & Compliance.",
+  eyebrow: "EHS · ESG · Compliance",
+  tagline: "From field capture to audit-ready reporting.",
   supporting:
-    "Connect field safety, risk management, regulatory compliance, sustainability reporting and management analytics in one configurable platform.",
+    "One multi-tenant platform for incidents, permits, CAPA, statutory tracking, and BRSR-oriented ESG — built beside civil EPC execution in India.",
   description:
     "India-first multi-tenant SaaS for EHS operations, ESG/BRSR-oriented reporting, and regulatory tracking — field capture through CAPA, statutory tasks, and leadership analytics in one tenant. Self-hosting is an enterprise option.",
 } as const;
@@ -71,6 +71,48 @@ export const executionPillars = [
     title: "Full transparency",
     body: "Audit-oriented records and leadership dashboards — no invented certifications, logos, or case studies on this site.",
   },
+] as const;
+
+export const heroHighlights = [
+  "LMRA at the workfront",
+  "BRSR on the same record",
+  "No invented certifications",
+] as const;
+
+export const trustSignals = [
+  "India-first statutory & BRSR",
+  "35+ launchpad modules",
+  "Multi-tenant SaaS",
+  "Honest marketing only",
+] as const;
+
+export const adoptionLoop = [
+  {
+    step: "01",
+    title: "Capture",
+    body: "Incidents, near misses, hazards, LMRA, and permits — logged at the workfront before the shift moves on.",
+  },
+  {
+    step: "02",
+    title: "Own",
+    body: "Findings become owned actions with due dates, evidence, and role-based accountability across sites.",
+  },
+  {
+    step: "03",
+    title: "Verify",
+    body: "CAPA and compliance tasks close with verification — not inbox replies or spreadsheet ticks.",
+  },
+  {
+    step: "04",
+    title: "Report",
+    body: "Leadership dashboards, statutory calendars, and ESG/BRSR views pull from the same system of record.",
+  },
+] as const;
+
+export const authSignupPillars = [
+  { name: "EHS operations", detail: "Incidents, permits, inspections, risk, CAPA" },
+  { name: "Compliance & assurance", detail: "Statutory tracking, audits, document control" },
+  { name: "ESG & BRSR", detail: "Reporting views on operational data" },
 ] as const;
 
 export const buyerAudiences = [

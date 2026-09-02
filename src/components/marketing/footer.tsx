@@ -9,42 +9,41 @@ export function Footer() {
   return (
     <footer className="border-t border-white/10 bg-[var(--mkt-hero)] text-white/75">
       <Container className="py-16 md:py-20">
-        <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-[1.5fr_repeat(4,minmax(0,1fr))] md:gap-10">
-          <div className="max-w-sm">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_repeat(5,minmax(0,1fr))] lg:gap-8">
+          <div className="max-w-sm sm:col-span-2 lg:col-span-1">
             <Link href="/" className="inline-flex">
               <BrandLockup inverse />
             </Link>
-            <p className="mt-5 text-sm font-medium leading-relaxed text-white/85">
+            <p className="mt-5 text-sm font-medium leading-relaxed text-white/88">
               {brand.tagline}
             </p>
-            <p className="mt-2 text-sm leading-relaxed text-white/60">
+            <p className="mt-2 text-sm leading-relaxed text-white/58">
               {brand.supporting}
             </p>
-            <p className="mt-4 text-xs leading-relaxed text-white/45">
+            <p className="mt-5 text-xs leading-relaxed text-white/45">
               {company.legalEntity}
               <br />
               {company.hq} {company.pin}
               <br />
-              <a className="text-white/70 hover:text-white" href={`mailto:${company.email}`}>
+              <a className="text-white/70 transition-colors hover:text-white" href={`mailto:${company.email}`}>
                 {company.email}
               </a>
               {" · "}
-              <a className="text-white/70 hover:text-white" href={`tel:${company.phone.replace(/\s/g, "")}`}>
+              <a className="text-white/70 transition-colors hover:text-white" href={`tel:${company.phone.replace(/\s/g, "")}`}>
                 {company.phone}
               </a>
             </p>
           </div>
           {footerColumns.map((column) => (
             <div key={column.title}>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/45">
-                {column.title}
-              </p>
-              <ul className="mt-4 space-y-2.5">
+              <p className="mkt-eyebrow text-white/42">{column.title}</p>
+              <ul className="mt-4 space-y-2">
                 {column.links.map((link) => (
                   <li key={link.href + link.label}>
                     <Link
                       href={link.href}
-                      className="inline-flex min-h-11 items-center text-sm text-white/75 transition-colors hover:text-white motion-reduce:transition-none"
+                      className="inline-flex min-h-10 items-center text-sm text-white/72 transition-colors hover:text-white motion-reduce:transition-none"
+                      {...(link.href.startsWith("http") ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                     >
                       {link.label}
                     </Link>
@@ -54,14 +53,12 @@ export function Footer() {
             </div>
           ))}
         </div>
-        <div className="mt-16 flex flex-col gap-4 border-t border-white/10 pt-6 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between">
-          <p>© 2026 {brand.legalName}</p>
+        <div className="mt-14 flex flex-col gap-4 border-t border-white/10 pt-6 text-xs text-white/42 sm:flex-row sm:items-center sm:justify-between">
+          <p>© 2026 {brand.legalName}. All rights reserved.</p>
           <div className="flex flex-wrap items-center gap-3 sm:justify-end">
-            <p>Multi-tenant EHS + ESG + compliance SaaS · India-first</p>
+            <p>SONIL EHS360 · Multi-tenant EHS + ESG + compliance SaaS · India-first</p>
             <div className="flex items-center gap-2">
-              <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/45">
-                Theme
-              </span>
+              <span className="mkt-eyebrow text-white/38">Theme</span>
               <ThemeToggle
                 compact
                 className="border-white/20 bg-white/10 text-white shadow-none hover:bg-white/15 hover:text-white focus-visible:ring-white/50"

@@ -172,6 +172,14 @@ export const footerColumns: { title: string; links: NavLink[] }[] = [
       { label: "Sign in", href: "/login" },
       { label: "BRSR checker", href: "/resources/brsr-applicability" },
       { label: "Guides", href: "/resources" },
+    ],
+  },
+  {
+    title: "Legal",
+    links: [
+      { label: "Security", href: "/security" },
+      { label: "Self-hosting", href: "/self-hosting" },
+      { label: "Contact", href: "/contact" },
       { label: "SONIL Buildcon", href: "https://www.sonilbuildcon.com/" },
     ],
   },

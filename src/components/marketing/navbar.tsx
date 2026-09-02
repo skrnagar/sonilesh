@@ -217,14 +217,16 @@ export function Navbar() {
   }
 
   const navLink =
-    "relative inline-flex min-h-11 shrink-0 items-center gap-0.5 whitespace-nowrap rounded-lg px-2.5 py-2 text-[13px] font-semibold tracking-[-0.01em] text-foreground/80 opacity-100 transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none xl:gap-1 xl:px-3";
+    "relative inline-flex min-h-11 shrink-0 items-center gap-0.5 whitespace-nowrap rounded-lg px-2.5 py-2 text-[13px] font-medium tracking-[-0.01em] text-foreground/75 transition-colors hover:bg-muted/80 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none xl:gap-1 xl:px-3";
 
   return (
     <header
       ref={headerRef}
       className={cn(
-        "sticky top-0 z-50 isolate overflow-visible border-b border-border bg-card/95 text-foreground shadow-[var(--shadow-header)] backdrop-blur-xl transition-[box-shadow] duration-200 motion-reduce:transition-none",
-        scrolled && "shadow-[var(--shadow-md)]",
+        "sticky top-0 z-50 isolate overflow-visible border-b transition-[background-color,box-shadow,border-color] duration-200 motion-reduce:transition-none",
+        scrolled
+          ? "border-border/80 bg-card/85 shadow-[var(--shadow-md)] backdrop-blur-xl backdrop-saturate-150"
+          : "border-transparent bg-card/70 shadow-[var(--shadow-header)] backdrop-blur-md backdrop-saturate-150",
       )}
     >
       <Container className="flex h-14 items-center justify-between gap-2 md:h-16 md:gap-3 lg:h-[4.25rem]">

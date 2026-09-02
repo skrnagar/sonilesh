@@ -1,27 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Sans, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import "./globals.css";
 
-const sans = IBM_Plex_Sans({
+const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "600"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-sans-face",
   display: "swap",
   preload: true,
 });
 
-const display = Plus_Jakarta_Sans({
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  variable: "--font-display-face",
-  display: "swap",
-  preload: false,
-});
-
 export const metadata: Metadata = {
   title: {
-    default: "SONIL EHS360 — One Platform for EHS, ESG & Compliance.",
+    default: "SONIL EHS360 — From field capture to audit-ready reporting.",
     template: "%s | SONIL EHS360",
   },
   description:
@@ -43,13 +35,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "SONIL EHS360",
-    title: "SONIL EHS360 — One Platform for EHS, ESG & Compliance.",
+    title: "SONIL EHS360 — From field capture to audit-ready reporting.",
     description:
       "Connect field safety, risk, regulatory compliance, sustainability reporting and management analytics in one configurable platform.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "SONIL EHS360 — One Platform for EHS, ESG & Compliance.",
+    title: "SONIL EHS360 — From field capture to audit-ready reporting.",
     description:
       "India-first EHS, ESG and regulatory compliance on one multi-tenant platform.",
   },
@@ -72,7 +64,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${sans.variable} ${display.variable} bg-background text-foreground antialiased`}>
+      <body className={`${inter.variable} bg-background text-foreground antialiased`}>
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>

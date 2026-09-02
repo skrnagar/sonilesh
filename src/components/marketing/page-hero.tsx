@@ -16,6 +16,7 @@ type PageHeroProps = {
   children?: React.ReactNode;
   className?: string;
   compact?: boolean;
+  align?: "left" | "center";
 };
 
 export function PageHero({
@@ -29,7 +30,10 @@ export function PageHero({
   children,
   className,
   compact,
+  align = "left",
 }: PageHeroProps) {
+  const centered = align === "center" && !children;
+
   return (
     <section
       className={cn(
@@ -43,23 +47,32 @@ export function PageHero({
           className={cn(
             "grid gap-10",
             children && "lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-center lg:gap-16",
+            centered && "mx-auto max-w-3xl text-center",
           )}
         >
-          <FadeIn>
+          <FadeIn className={centered ? "flex flex-col items-center" : undefined}>
             {eyebrow ? (
-              <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--mkt-safety)]">
-                {eyebrow}
-              </p>
+              <p className="mkt-eyebrow mb-4 text-[var(--mkt-safety)]">{eyebrow}</p>
             ) : null}
-            <h1 className="mkt-h1-page max-w-2xl text-primary">
+            <h1 className={cn("mkt-h1-page text-primary", centered ? "max-w-2xl" : "max-w-2xl")}>
               {title}
             </h1>
             {description ? (
-              <p className="mkt-body mt-5 text-[1.05rem] text-muted-foreground">
+              <p
+                className={cn(
+                  "mkt-lead mt-5 text-muted-foreground",
+                  centered && "mx-auto",
+                )}
+              >
                 {description}
               </p>
             ) : null}
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <div
+              className={cn(
+                "mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap",
+                centered && "justify-center",
+              )}
+            >
               <Button asChild size="lg" variant="safety" className="h-12 px-6">
                 <Link href={primaryHref}>
                   {primaryLabel}

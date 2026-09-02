@@ -22,13 +22,14 @@ export default function ProductHubPage() {
         secondaryLabel="Start Free"
         compact
       />
-      <section className="py-12 md:py-16">
+      <section className="mkt-section">
         <Container>
-          <ol className="mb-10 grid gap-3 text-sm md:grid-cols-4 lg:grid-cols-7">
-            {architectureSteps.map((step) => (
-              <li key={step.title} className="rounded-lg border border-border bg-card p-4">
-                <p className="font-display font-semibold text-primary">{step.title}</p>
-                <p className="mt-1 text-muted-foreground">{step.body}</p>
+          <ol className="mb-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
+            {architectureSteps.map((step, index) => (
+              <li key={step.title} className="rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-sm)]">
+                <p className="mkt-eyebrow text-muted-foreground">{String(index + 1).padStart(2, "0")}</p>
+                <p className="mt-3 font-display text-base font-semibold text-primary">{step.title}</p>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{step.body}</p>
               </li>
             ))}
           </ol>
