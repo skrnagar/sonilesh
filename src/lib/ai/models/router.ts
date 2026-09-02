@@ -1,5 +1,6 @@
 import type { AIModelTask, AIProviderName } from "@/lib/ai/core/types";
 import { defaultModelForTask, isAiConfigured, readAiEnv } from "@/lib/ai/core/config";
+import { createOpenRouterProvider } from "@/lib/ai/openrouter";
 
 export type ResolvedModel = {
   provider: AIProviderName;
@@ -18,6 +19,7 @@ export class AIModelRouter {
   detectProvider(env = readAiEnv()): AIProviderName {
     if (env.provider) return env.provider;
     if (env.gatewayKey || process.env.VERCEL_OIDC_TOKEN) return "gateway";
+    if (env.openrouterKey) return "openrouter";
     if (env.azureKey && env.azureEndpoint) return "azure";
     if (env.anthropicKey) return "anthropic";
     if (env.googleKey) return "google";
@@ -47,6 +49,15 @@ export async function loadLanguageModel(task: AIModelTask) {
     return { kind: "instance" as const, model: mod.google(resolved.modelId), resolved };
   }
 
+  if (resolved.provider === "openrouter") {
+    try {
+      const client = createOpenRouterProvider();
+      return { kind: "instance" as const, model: client(resolved.modelId), resolved };
+    } catch {
+      return null;
+    }
+  }
+
   const openaiMod = await import("@ai-sdk/openai").catch(() => null);
   if (!openaiMod) return null;
   const env = readAiEnv();
@@ -69,6 +80,7 @@ export function listProviders(): AIProvider[] {
   const env = readAiEnv();
   return [
     { name: "gateway", configured: Boolean(env.gatewayKey || process.env.VERCEL_OIDC_TOKEN) },
+    { name: "openrouter", configured: Boolean(env.openrouterKey) },
     { name: "openai", configured: Boolean(env.openaiKey) },
     { name: "azure", configured: Boolean(env.azureKey && env.azureEndpoint) },
     { name: "anthropic", configured: Boolean(env.anthropicKey) },

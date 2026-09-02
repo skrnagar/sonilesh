@@ -23,7 +23,7 @@ export const AI_MODEL_TASKS = [
 
 export type AIModelTask = (typeof AI_MODEL_TASKS)[number];
 
-export const AI_PROVIDERS = ["gateway", "openai", "azure", "anthropic", "google"] as const;
+export const AI_PROVIDERS = ["gateway", "openrouter", "openai", "azure", "anthropic", "google"] as const;
 export type AIProviderName = (typeof AI_PROVIDERS)[number];
 
 export const AI_AGENT_KEYS = [

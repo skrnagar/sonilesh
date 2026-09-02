@@ -12,6 +12,22 @@ Apply `supabase/migrations` to the linked Supabase project (SQL editor, CLI, or 
 
 Required env: `NEXT_PUBLIC_SUPABASE_URL`, anon/publishable key, `SUPABASE_SERVICE_ROLE_KEY` (server), `NEXT_PUBLIC_APP_URL`.
 
+### EHS Copilot (OpenRouter)
+
+Server-side only — never expose `OPENROUTER_API_KEY` to the browser or commit it to git.
+
+| Variable | Purpose |
+|---|---|
+| `OPENROUTER_API_KEY` | OpenRouter API key ([openrouter.ai/keys](https://openrouter.ai/keys)) |
+| `OPENROUTER_MODEL` | Default model (e.g. `openai/gpt-4o`) |
+| `OPENROUTER_SITE_URL` | Sent as `HTTP-Referer` (use production URL on Vercel) |
+| `OPENROUTER_APP_NAME` | Sent as `X-Title` (default `SONIL EHS360`) |
+| `AI_PROVIDER` | Set to `openrouter` when using OpenRouter |
+
+Copy placeholders from `.env.example` into `.env.local` for local dev. On Vercel, add the same variables under **Project → Settings → Environment Variables** (Production + Preview). Rotate any key that was pasted in chat.
+
+Routes: `/app/ai` (workspace), `/field/ai` (field scope), `POST /api/ai/chat`.
+
 ## Scripts
 
 | Command | Purpose |

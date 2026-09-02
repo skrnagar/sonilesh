@@ -19,25 +19,27 @@ export function readAiEnv() {
   return {
     provider: AI_PROVIDERS_SET.has(provider) ? provider : null,
     gatewayKey: process.env.AI_GATEWAY_API_KEY || process.env.VERCEL_AI_GATEWAY_API_KEY,
+    openrouterKey: process.env.OPENROUTER_API_KEY,
     openaiKey: process.env.OPENAI_API_KEY,
     anthropicKey: process.env.ANTHROPIC_API_KEY,
     googleKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GOOGLE_API_KEY,
     azureKey: process.env.AZURE_OPENAI_API_KEY,
     azureEndpoint: process.env.AZURE_OPENAI_ENDPOINT,
     azureDeployment: process.env.AZURE_OPENAI_DEPLOYMENT,
-    chatModel: process.env.AI_MODEL_CHAT,
+    chatModel: process.env.AI_MODEL_CHAT || process.env.OPENROUTER_MODEL,
     ragModel: process.env.AI_MODEL_RAG,
     analysisModel: process.env.AI_MODEL_ANALYSIS,
   };
 }
 
-const AI_PROVIDERS_SET = new Set(["gateway", "openai", "azure", "anthropic", "google"]);
+const AI_PROVIDERS_SET = new Set(["gateway", "openrouter", "openai", "azure", "anthropic", "google"]);
 
 export function isAiConfigured() {
   const env = readAiEnv();
   return Boolean(
     env.gatewayKey ||
       process.env.VERCEL_OIDC_TOKEN ||
+      env.openrouterKey ||
       env.openaiKey ||
       env.anthropicKey ||
       env.googleKey ||
@@ -68,6 +70,9 @@ export function defaultModelForTask(task: AIModelTask, provider: AIProviderName)
     return task === "CLASSIFICATION" || task === "SUMMARIZATION"
       ? "openai/gpt-4.1-mini"
       : "openai/gpt-4.1-mini";
+  }
+  if (provider === "openrouter") {
+    return process.env.OPENROUTER_MODEL || "openai/gpt-4o";
   }
   return "gpt-4.1-mini";
 }

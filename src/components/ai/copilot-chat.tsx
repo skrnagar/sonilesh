@@ -1,7 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport } from "ai";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { AICitation, AIToolResult } from "@/lib/ai/core/types";
@@ -23,6 +25,13 @@ const SUGGESTIONS = [
   "Draft a CAPA for the latest incident",
 ];
 
+function messageText(parts: Array<{ type?: string; text?: string }> | undefined) {
+  return (parts ?? [])
+    .filter((part) => part.type === "text")
+    .map((part) => String(part.text ?? ""))
+    .join("\n");
+}
+
 export function CopilotChat({
   agentKey = "copilot",
   scope = "workspace",
@@ -37,22 +46,73 @@ export function CopilotChat({
   const [input, setInput] = useState("");
   const [pending, setPending] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [fallbackMessages, setFallbackMessages] = useState<ChatMessage[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const conversationIdRef = useRef<string | null>(null);
 
-  const sources = useMemo(
-    () => messages.flatMap((m) => m.citations ?? []),
-    [messages],
+  const transport = useMemo(
+    () =>
+      new DefaultChatTransport({
+        api: "/api/ai/chat",
+        fetch: async (input, init) => {
+          const res = await fetch(input, init);
+          const nextConversationId = res.headers.get("X-Conversation-Id");
+          if (nextConversationId) {
+            conversationIdRef.current = nextConversationId;
+            setConversationId(nextConversationId);
+          }
+          return res;
+        },
+        prepareSendMessagesRequest({ messages, body }) {
+          const lastUser = [...messages].reverse().find((m) => m.role === "user");
+          const prompt = messageText(lastUser?.parts as Array<{ type?: string; text?: string }>);
+          return {
+            body: {
+              ...body,
+              messages,
+              prompt,
+              conversationId: conversationIdRef.current,
+              agentKey,
+              scope,
+            },
+          };
+        },
+      }),
+    [agentKey, scope],
   );
 
-  async function send(text: string) {
+  const {
+    messages: streamMessages,
+    sendMessage,
+    status: streamStatus,
+    error: streamError,
+  } = useChat({
+    transport,
+  });
+
+  const streaming = configured && streamStatus !== "ready";
+  const displayMessages: ChatMessage[] = configured
+    ? streamMessages.map((m) => ({
+        id: m.id,
+        role: m.role === "user" ? "user" : "assistant",
+        text: messageText(m.parts as Array<{ type?: string; text?: string }>),
+        configured: true,
+      }))
+    : fallbackMessages;
+
+  const sources = useMemo(
+    () => displayMessages.flatMap((m) => m.citations ?? []),
+    [displayMessages],
+  );
+
+  async function sendDeterministic(text: string) {
     const prompt = text.trim();
     if (!prompt || pending) return;
     setPending(true);
     setError(null);
     setInput("");
     const userMsg: ChatMessage = { id: crypto.randomUUID(), role: "user", text: prompt };
-    setMessages((prev) => [...prev, userMsg]);
+    setFallbackMessages((prev) => [...prev, userMsg]);
     try {
       const res = await fetch("/api/ai/chat", {
         method: "POST",
@@ -62,12 +122,12 @@ export function CopilotChat({
       const contentType = res.headers.get("content-type") ?? "";
       if (!res.ok) {
         const body = await res.json().catch(() => ({ error: res.statusText }));
-        throw new Error(body.error || "Copilot request failed");
+        throw new Error(body.error || body.text || "Copilot request failed");
       }
       if (contentType.includes("application/json")) {
         const body = await res.json();
         setConversationId(body.conversationId ?? conversationId);
-        setMessages((prev) => [
+        setFallbackMessages((prev) => [
           ...prev,
           {
             id: crypto.randomUUID(),
@@ -81,7 +141,7 @@ export function CopilotChat({
         ]);
       } else {
         const raw = await res.text();
-        setMessages((prev) => [
+        setFallbackMessages((prev) => [
           ...prev,
           {
             id: crypto.randomUUID(),
@@ -98,6 +158,22 @@ export function CopilotChat({
     }
   }
 
+  async function send(text: string) {
+    const prompt = text.trim();
+    if (!prompt || pending || streaming) return;
+    setError(null);
+    setInput("");
+    if (configured) {
+      await sendMessage({ text: prompt });
+      return;
+    }
+    await sendDeterministic(prompt);
+  }
+
+  const activeError =
+    error ?? (streamError ? (streamError.message || "Copilot failed") : null);
+  const isPending = configured ? streaming : pending;
+
   return (
     <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_280px]">
       <div className="space-y-4">
@@ -112,17 +188,19 @@ export function CopilotChat({
               key={s}
               type="button"
               className="rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground hover:text-foreground"
-              onClick={() => send(s)}
+              onClick={() => void send(s)}
             >
               {s}
             </button>
           ))}
         </div>
         <div className="min-h-[320px] space-y-3 rounded-2xl border border-border bg-card p-4">
-          {messages.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Ask about incidents, CAPA, permits, SDS, or documents in this organization.</p>
+          {displayMessages.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              Ask about incidents, CAPA, permits, SDS, or documents in this organization.
+            </p>
           ) : null}
-          {messages.map((m) => (
+          {displayMessages.map((m) => (
             <div key={m.id} className={m.role === "user" ? "ml-8" : "mr-8"}>
               <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
                 {m.role === "user" ? "You" : "Copilot"}
@@ -135,8 +213,8 @@ export function CopilotChat({
               ) : null}
             </div>
           ))}
-          {pending ? <p className="text-sm text-muted-foreground">Looking up authorized records…</p> : null}
-          {error ? <p className="text-sm text-destructive">{error}</p> : null}
+          {isPending ? <p className="text-sm text-muted-foreground">Looking up authorized records…</p> : null}
+          {activeError ? <p className="text-sm text-destructive">{activeError}</p> : null}
         </div>
         <form
           className="flex gap-2"
@@ -151,7 +229,7 @@ export function CopilotChat({
             placeholder="Ask EHS Copilot…"
             className="h-10 flex-1 rounded-md border border-border bg-card px-3 text-sm"
           />
-          <Button type="submit" disabled={pending}>
+          <Button type="submit" disabled={isPending}>
             Send
           </Button>
         </form>
@@ -159,7 +237,9 @@ export function CopilotChat({
       <aside className="space-y-3 rounded-2xl border border-border bg-card p-4">
         <h2 className="text-sm font-semibold">Sources</h2>
         {sources.length === 0 ? (
-          <p className="text-xs text-muted-foreground">Citations appear when a tool returns tenant records. Nothing is invented.</p>
+          <p className="text-xs text-muted-foreground">
+            Citations appear when a tool returns tenant records. Nothing is invented.
+          </p>
         ) : (
           <ul className="space-y-2">
             {sources.map((s, i) => (

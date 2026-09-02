@@ -8,6 +8,8 @@ import { loadLanguageModel } from "@/lib/ai/models/router";
 import { buildSdkTools } from "@/lib/ai/tools/sdk";
 import { createConversation, getConversation, appendMessage, saveMessageSources } from "@/lib/ai/conversations";
 import { logAiUsage } from "@/lib/ai/audit";
+import { checkRateLimit } from "@/lib/ai/guardrails/rate-limit";
+import { detectInjectionAttempt, sanitizeUserPrompt } from "@/lib/ai/guardrails";
 import type { AIAgentKey, AIScope } from "@/lib/ai/core/types";
 
 export const runtime = "nodejs";
@@ -28,7 +30,7 @@ function asScope(value: unknown, agentKey: AIAgentKey): AIScope {
 export async function POST(req: Request) {
   const { supabase, user, organization, siteId, projectId, profile } = await requireOrgContext();
   const body = await req.json().catch(() => ({}));
-  const prompt = String(body.prompt ?? body.message ?? "").trim();
+  const prompt = sanitizeUserPrompt(String(body.prompt ?? body.message ?? "").trim());
   if (!prompt) {
     return NextResponse.json({ error: "Message required" }, { status: 400 });
   }
@@ -48,6 +50,18 @@ export async function POST(req: Request) {
 
   if (!canUseAgent(ctx)) {
     return NextResponse.json({ error: "AI Copilot is not enabled for this user." }, { status: 403 });
+  }
+
+  const rate = checkRateLimit({ organizationId: organization.id, userId: user.id });
+  if (!rate.allowed) {
+    return NextResponse.json({ error: rate.reason }, { status: 429 });
+  }
+
+  if (detectInjectionAttempt(prompt)) {
+    return NextResponse.json({
+      error: "Prompt rejected by safety guardrails.",
+      text: "I will not follow instructions that try to override Copilot safety rules. Ask an EHS question about this organization.",
+    }, { status: 400 });
   }
 
   let conversationId = typeof body.conversationId === "string" ? body.conversationId : null;
@@ -124,6 +138,7 @@ export async function POST(req: Request) {
     });
 
     return result.toUIMessageStreamResponse({
+      headers: { "X-Conversation-Id": conversationId! },
       originalMessages: uiMessages as never,
       onFinish: async ({ responseMessage }) => {
         const text = (responseMessage.parts ?? [])

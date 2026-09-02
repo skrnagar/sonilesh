@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bell, ClipboardList } from "lucide-react";
+import { Bell, Bot, ClipboardList } from "lucide-react";
 import { FieldScaffoldPage } from "@/components/field/field-scaffold-page";
 import { FieldActionLink } from "@/components/field/field-ui";
 
@@ -19,6 +19,14 @@ export default function FieldUtilitiesPage() {
           My zone shortcuts
         </h2>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <FieldActionLink
+            href="/field/ai"
+            label="Field Copilot"
+            hint="Ask about your actions, permits, and training"
+            icon={Bot}
+            tone="navy"
+            prefetch={false}
+          />
           <FieldActionLink
             href="/field/actions"
             label="Allocated Action List"
