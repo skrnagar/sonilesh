@@ -14,7 +14,7 @@ function ReportLinkButton({ link }: { link: FieldReportLink }) {
     <Link
       href={link.href}
       className={cn(
-        "block rounded-[var(--radius-sm)] border border-border/80 bg-[#f5f7fa] px-3 py-2.5 text-center text-sm font-medium text-[var(--raksha-blue)] shadow-[var(--shadow-sm)] transition-colors hover:border-[var(--raksha-blue)]/40 hover:bg-[var(--raksha-blue-light)]",
+        "block rounded-[var(--radius-md)] border border-border/80 bg-card px-3.5 py-3 text-center text-sm font-medium text-foreground shadow-[var(--shadow-sm)] transition-[border-color,background-color,box-shadow] duration-200 hover:border-primary/35 hover:bg-primary/5 hover:shadow-[var(--shadow-md)]",
         link.status === "scaffold" && "opacity-90",
       )}
     >
@@ -56,8 +56,8 @@ export function FieldReportsHub({ role }: { role: FieldRole }) {
   return (
     <div className="space-y-5">
       <div className="rounded-[var(--radius-md)] border border-border/80 bg-muted/40 px-4 py-3">
-        <h1 className="text-base font-semibold text-[var(--raksha-blue-dark)]">Raksha Reports</h1>
-        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+        <h1 className="text-lg font-semibold tracking-tight text-[var(--raksha-blue-dark)]">Report</h1>
+        <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
           All the data / reports on this page is made available through the Analytics platform.
           Please visit KEC MyZone &gt; KEC BI for advanced dashboards.
         </p>

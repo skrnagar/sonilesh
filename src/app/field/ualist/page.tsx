@@ -1,9 +1,10 @@
-import { UaucListPanel } from "@/components/field/uauc-list-panel";
-import { FieldForbidden, FieldPageHeader } from "@/components/field/field-ui";
+import { UaucListPanelLazy } from "@/components/field/uauc-list-panel-lazy";
+import { FieldDemoBanner, FieldForbidden, FieldPageHeader } from "@/components/field/field-ui";
 import { canFieldAction } from "@/lib/auth/field-roles";
 import { requireOrgContext } from "@/lib/auth/org-context";
+import { DEMO_UAUC_ROWS, withDemoFallback } from "@/lib/field/demo-fallback";
 import { resolveFieldRole } from "@/lib/field/resolve-role";
-import { listUaucEvents, type UaucListFilters } from "@/lib/services/uauc-list";
+import { listUaucEvents, type UaucListFilters } from "@/lib/field/services/uauc";
 
 export default async function FieldUaucListPage({
   searchParams,
@@ -26,6 +27,11 @@ export default async function FieldUaucListPage({
   };
 
   const rows = await listUaucEvents(access.supabase, access.organization.id);
+  const { rows: displayRows, isDemoPreview } = withDemoFallback(
+    rows,
+    DEMO_UAUC_ROWS,
+    access.organization.slug,
+  );
 
   return (
     <div className="space-y-4">
@@ -33,12 +39,14 @@ export default async function FieldUaucListPage({
         title="Reported UA/UC/WSN List"
         subtitle="Unsafe acts, unsafe conditions, and work stop notices reported from the field."
       />
-      <UaucListPanel
-        rows={rows}
+      {isDemoPreview ? <FieldDemoBanner /> : null}
+      <UaucListPanelLazy
+        rows={displayRows}
         businessUnits={access.businessUnits}
         regions={access.regions}
         projects={access.projects}
         initialFilters={initialFilters}
+        isDemoPreview={isDemoPreview}
       />
     </div>
   );

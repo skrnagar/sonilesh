@@ -7,12 +7,11 @@ import {
   completeFieldCapaAction,
 } from "@/app/actions/field";
 import { ActionCompleteCard, CapaCompleteCard } from "@/components/field/field-submit-form";
-import { FieldEmpty } from "@/components/field/field-ui";
+import { FieldEmpty, FieldStatusPill } from "@/components/field/field-ui";
 import {
   formatFieldActionDate,
   type AllocatedActionRow,
 } from "@/lib/field/allocated-actions";
-import { cn } from "@/lib/utils";
 
 type SortKey =
   | "actionItem"
@@ -26,16 +25,7 @@ type SortKey =
 const PAGE_SIZES = [10, 25, 50];
 
 function ActionStatusPill({ label }: { label: "Open" | "Closed" }) {
-  return (
-    <span
-      className={cn(
-        "inline-flex rounded px-2.5 py-0.5 text-xs font-semibold capitalize text-white",
-        label === "Open" ? "bg-[#00a5b5]" : "bg-[#e91e8c]",
-      )}
-    >
-      {label}
-    </span>
-  );
+  return <FieldStatusPill label={label} tone={label === "Open" ? "open" : "closed"} />;
 }
 
 function SortButton({
@@ -65,7 +55,13 @@ function SortButton({
   );
 }
 
-export function FieldAllocatedActionList({ rows }: { rows: AllocatedActionRow[] }) {
+export function FieldAllocatedActionList({
+  rows,
+  isDemoPreview = false,
+}: {
+  rows: AllocatedActionRow[];
+  isDemoPreview?: boolean;
+}) {
   const [search, setSearch] = useState("");
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(0);
@@ -216,12 +212,12 @@ export function FieldAllocatedActionList({ rows }: { rows: AllocatedActionRow[] 
                     <ActionStatusPill label={row.statusLabel} />
                   </td>
                   <td className="px-3 py-3 align-top">
-                    {row.canUpdate ? (
+                    {row.canUpdate && !isDemoPreview ? (
                       <button
                         type="button"
                         onClick={() => setEditing(row)}
                         aria-label={`Update ${row.actionItem}`}
-                        className="inline-flex h-9 w-9 items-center justify-center rounded border border-[#5eb3e8] bg-[#e8f4fc] text-[#1565a8] transition-colors hover:bg-[#d4ebfa]"
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-[var(--radius-sm)] border border-primary/30 bg-primary/10 text-primary transition-colors hover:bg-primary/15"
                       >
                         <Pencil className="h-4 w-4" aria-hidden />
                       </button>

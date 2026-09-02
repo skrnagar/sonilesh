@@ -61,7 +61,7 @@ export const RAKSHA_LAUNCHPAD_TILES: RakshaLaunchpadTile[] = [
   },
   {
     key: "raksha-reports",
-    label: "RAKSHA REPORTS",
+    label: "REPORT",
     fieldAction: "raksha_reports",
     icon: FileText,
     fieldHref: "/field/reports",

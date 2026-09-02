@@ -1,4 +1,4 @@
-import { FieldEhsScoreDashboard } from "@/components/field/field-ehs-score-dashboard";
+import { FieldEhsScoreDashboardLazy } from "@/components/field/field-ehs-score-dashboard-lazy";
 import { FieldForbidden, FieldPageHeader } from "@/components/field/field-ui";
 import { canFieldAction } from "@/lib/auth/field-roles";
 import { requireOrgContext } from "@/lib/auth/org-context";
@@ -6,7 +6,7 @@ import { resolveFieldRole } from "@/lib/field/resolve-role";
 import {
   defaultEhsScoreBiFilters,
   loadEhsScoreBiDashboard,
-} from "@/lib/services/ehs-score-bi";
+} from "@/lib/field/services/ehs-score";
 
 export default async function FieldEhsScorePage({
   searchParams,
@@ -48,7 +48,7 @@ export default async function FieldEhsScorePage({
         title="BU/Region Wise EHS Score"
         subtitle={`EHS assessment, yearly trends, and status · ${dashboard.periodLabel}`}
       />
-      <FieldEhsScoreDashboard
+      <FieldEhsScoreDashboardLazy
         dashboard={dashboard}
         businessUnits={access.businessUnits}
         regions={access.regions}

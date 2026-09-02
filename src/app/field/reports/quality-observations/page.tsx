@@ -1,4 +1,4 @@
-import { QualityObservationsPanel } from "@/components/field/quality-observations-panel";
+import { QualityObservationsPanelLazy } from "@/components/field/quality-observations-panel-lazy";
 import { FieldForbidden, FieldPageHeader } from "@/components/field/field-ui";
 import { canFieldAction } from "@/lib/auth/field-roles";
 import { requireOrgContext } from "@/lib/auth/org-context";
@@ -41,7 +41,7 @@ export default async function FieldQualityObservationsPage({
         title="Observations / NCR / WSN"
         subtitle="Quality observations grouped by SBU, region, and project."
       />
-      <QualityObservationsPanel
+      <QualityObservationsPanelLazy
         rows={rows}
         businessUnits={access.businessUnits}
         regions={access.regions}

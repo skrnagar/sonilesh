@@ -7,7 +7,8 @@ import { LayoutGrid } from "lucide-react";
 import {
   fieldControlClass,
   FieldError,
-  fieldRakshaBtnClass,
+  fieldPrimaryBtnInlineClass,
+  fieldIconBtnClass,
 } from "@/components/field/field-ui";
 import { FieldPhotoInputs } from "@/components/field/field-photo-inputs";
 import { attachDirectUpload } from "@/lib/storage/direct-upload";
@@ -96,7 +97,7 @@ export function UaucReportForm({
         <Link
           href="/field/ualist"
           aria-label="Back to list"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-[#6f42c1] text-white hover:bg-[#5a32a8]"
+          className={fieldIconBtnClass}
         >
           <LayoutGrid className="h-4 w-4" />
         </Link>
@@ -245,7 +246,7 @@ export function UaucReportForm({
       {error ? <FieldError text={error} /> : null}
 
       <div className="flex justify-end">
-        <button type="submit" disabled={pending} className={`${fieldRakshaBtnClass} min-w-[8rem]`}>
+        <button type="submit" disabled={pending} className={`${fieldPrimaryBtnInlineClass} min-w-[8rem]`}>
           {pending ? "Submitting…" : "Submit"}
         </button>
       </div>

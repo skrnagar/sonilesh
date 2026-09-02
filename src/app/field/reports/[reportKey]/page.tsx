@@ -74,7 +74,7 @@ export default async function FieldReportScaffoldPage({
       </FieldCard>
       <div className="flex flex-col gap-2 sm:flex-row">
         <Link href="/field/reports" className={`${fieldSecondaryBtnClass} sm:flex-1`}>
-          Back to Raksha Reports
+          Back to Report
         </Link>
         {link.webHref ? (
           <Link href={link.webHref} className={`${fieldPrimaryBtnClass} sm:flex-1`}>

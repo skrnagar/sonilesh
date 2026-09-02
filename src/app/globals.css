@@ -435,6 +435,19 @@ button.bg-primary:hover {
 .raksha-module-tile:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 18px rgba(7, 31, 45, 0.18);
+  border-color: color-mix(in srgb, var(--raksha-blue) 65%, #ffffff);
+}
+
+.raksha-module-tile:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(7, 31, 45, 0.14);
+}
+
+.raksha-module-tile[data-active="true"] {
+  border-color: var(--raksha-blue);
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--raksha-blue) 28%, transparent),
+    0 6px 18px rgba(7, 31, 45, 0.16);
 }
 
 .raksha-section-tab {

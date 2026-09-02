@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createFieldSiteVisitAction } from "@/app/actions/field";
 import {
   FieldCard,
+  FieldDemoBanner,
   FieldEmpty,
   FieldForbidden,
   FieldPageHeader,
@@ -12,10 +13,11 @@ import {
 import { FieldSubmitForm } from "@/components/field/field-submit-form";
 import { canFieldAction } from "@/lib/auth/field-roles";
 import { requireOrgContext } from "@/lib/auth/org-context";
+import { DEMO_SITE_VISIT_ROWS, withDemoFallback } from "@/lib/field/demo-fallback";
 import { resolveFieldRole } from "@/lib/field/resolve-role";
 import { FIELD_LABELS } from "@/lib/field/labels";
+import { listSiteVisits } from "@/lib/field/services/site-visits";
 import { getUserPermissions } from "@/lib/services/rbac";
-import { listSiteVisits } from "@/lib/services/site-visits";
 import { formatDate } from "@/lib/utils";
 
 const VISIT_TYPES = [
@@ -42,6 +44,12 @@ export default async function FieldSiteVisitsPage({
     getUserPermissions(access.supabase, access.organization.id, access.user.id),
     listSiteVisits(access.supabase, access.organization.id, { visitType }),
   ]);
+
+  const { rows: displayRows, isDemoPreview } = withDemoFallback(
+    rows,
+    DEMO_SITE_VISIT_ROWS,
+    access.organization.slug,
+  );
 
   const creatableTypes = VISIT_TYPES.filter((t) => permissions.includes(t.permission));
   const sites = access.sites;
@@ -74,6 +82,8 @@ export default async function FieldSiteVisitsPage({
           </Link>
         ))}
       </div>
+
+      {isDemoPreview ? <FieldDemoBanner /> : null}
 
       {creatableTypes.length ? (
         <FieldCard>
@@ -132,12 +142,12 @@ export default async function FieldSiteVisitsPage({
         <FieldEmpty text="Your role cannot create site visits. You can still open visits assigned to you." />
       )}
 
-      {rows.length ? (
+      {displayRows.length ? (
         <div className="space-y-2">
-          {rows.map((row) => (
+          {displayRows.map((row) => (
             <FieldRow
               key={row.id}
-              href={`/field/site-visits/${row.id}`}
+              href={isDemoPreview ? undefined : `/field/site-visits/${row.id}`}
               title={`${row.visit_number} · ${row.visit_type.toUpperCase()}`}
               meta={`${row.summary || "No summary"} · ${formatDate(row.visit_date)} · ${String(row.status).replaceAll("_", " ")}`}
             />

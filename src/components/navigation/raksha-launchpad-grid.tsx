@@ -62,28 +62,49 @@ export function RakshaLaunchpadGrid({ tiles }: { tiles: RakshaGridTile[] }) {
       {tiles.map((tile) => {
         const Icon = RAKSHA_TILE_ICONS[tile.key] ?? Home;
         const pending = pendingKey === tile.key;
+        const active =
+          tile.href === "/field"
+            ? pathname === "/field" || pathname === "/field/home"
+            : pathname === tile.href || pathname.startsWith(`${tile.href}/`);
         return (
           <Link
             key={tile.key}
             href={tile.href}
             prefetch={tile.prefetch}
             aria-busy={pending || undefined}
+            aria-current={active ? "page" : undefined}
+            data-active={active || undefined}
             onClick={() => setPendingKey(tile.key)}
             className={cn(
               "raksha-module-tile group flex min-h-[6.75rem] flex-col items-center justify-center gap-2.5 p-3 text-center motion-reduce:transition-none",
               pending && "pointer-events-none opacity-70",
             )}
           >
-            <span className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-[var(--raksha-blue)] bg-white">
+            <span
+              className={cn(
+                "flex h-11 w-11 items-center justify-center rounded-full border-2 bg-white transition-colors duration-200",
+                active
+                  ? "border-primary bg-primary/10"
+                  : "border-[var(--raksha-blue)] group-hover:border-primary/60",
+              )}
+            >
               <Icon
                 className={cn(
-                  "h-5 w-5 text-[var(--raksha-blue)]",
+                  "h-5 w-5 transition-colors duration-200",
+                  active ? "text-primary" : "text-[var(--raksha-blue)] group-hover:text-primary",
                   pending && "animate-pulse",
                 )}
                 aria-hidden
               />
             </span>
-            <span className="font-display text-[10px] font-bold uppercase leading-tight tracking-wide text-[var(--raksha-blue-dark)] group-hover:text-[var(--raksha-blue)] sm:text-[11px]">
+            <span
+              className={cn(
+                "font-display text-[10px] font-bold uppercase leading-tight tracking-wide sm:text-[11px]",
+                active
+                  ? "text-primary"
+                  : "text-[var(--raksha-blue-dark)] group-hover:text-[var(--raksha-blue)]",
+              )}
+            >
               {tile.label}
             </span>
           </Link>

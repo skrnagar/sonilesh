@@ -1,13 +1,14 @@
 import { FieldContextStrip } from "@/components/field/field-context-strip";
-import { FieldReportsHub } from "@/components/field/field-reports-hub";
+import { FieldReportsHubLazy } from "@/components/field/field-reports-hub-lazy";
 import { FieldForbidden } from "@/components/field/field-ui";
 import { canFieldAction } from "@/lib/auth/field-roles";
 import { requireOrgContext } from "@/lib/auth/org-context";
 import { resolveFieldRole } from "@/lib/field/resolve-role";
+import { reportsService } from "@/lib/field/services/reports";
 
 export default async function FieldReportsPage() {
   const role = await resolveFieldRole();
-  if (!canFieldAction(role, "raksha_reports")) return <FieldForbidden />;
+  if (!canFieldAction(role, reportsService.fieldAction)) return <FieldForbidden />;
 
   const access = await requireOrgContext();
   const businessUnitName =
@@ -28,7 +29,7 @@ export default async function FieldReportsPage() {
         regionId={access.regionId}
         businessUnitId={access.businessUnitId}
       />
-      <FieldReportsHub role={role} />
+      <FieldReportsHubLazy role={role} />
     </div>
   );
 }

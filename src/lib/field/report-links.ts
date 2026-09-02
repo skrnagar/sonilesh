@@ -53,7 +53,7 @@ export const FIELD_REPORT_CATEGORIES: {
   label: string;
   subtitle?: string;
 }[] = [
-  { key: "raksha", label: "Raksha Reports" },
+  { key: "raksha", label: "Report" },
   { key: "iquality", label: "iQuality Reports" },
   {
     key: "other",

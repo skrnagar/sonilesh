@@ -6,10 +6,12 @@ import { ArrowDown, ArrowUp, ArrowUpDown, Eye, LayoutGrid } from "lucide-react";
 import {
   fieldControlClass,
   fieldPrimaryBtnClass,
+  fieldPrimaryBtnInlineClass,
   fieldSecondaryBtnClass,
-  fieldRakshaBtnClass,
+  fieldIconBtnClass,
   FieldCard,
   FieldEmpty,
+  FieldStatusPill,
 } from "@/components/field/field-ui";
 import type { UaucListFilters, UaucListRow } from "@/lib/services/uauc-list";
 import { formatDateTime } from "@/lib/utils";
@@ -31,18 +33,15 @@ type Props = {
   regions: Option[];
   projects: Option[];
   initialFilters: UaucListFilters;
+  isDemoPreview?: boolean;
 };
 
 function UaucStatusPill({ label }: { label: string }) {
-  const open = label === "Open";
   return (
-    <span
-      className={`inline-flex rounded-full px-3 py-0.5 text-xs font-semibold ${
-        open ? "bg-teal-600 text-white" : "border border-border bg-muted text-foreground"
-      }`}
-    >
-      {label}
-    </span>
+    <FieldStatusPill
+      label={label}
+      tone={label === "Open" ? "open" : label === "Closed" ? "closed" : "neutral"}
+    />
   );
 }
 
@@ -52,6 +51,7 @@ export function UaucListPanel({
   regions,
   projects,
   initialFilters,
+  isDemoPreview = false,
 }: Props) {
   const [filters, setFilters] = useState<UaucListFilters>(initialFilters);
   const [draft, setDraft] = useState<UaucListFilters>(initialFilters);
@@ -139,7 +139,7 @@ export function UaucListPanel({
     <div className="space-y-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div />
-        <Link href="/field/ua-uc/new" className={fieldRakshaBtnClass}>
+        <Link href="/field/ua-uc/new" className={fieldPrimaryBtnInlineClass}>
           Report UA/UC/WSN
         </Link>
       </div>
@@ -239,7 +239,7 @@ export function UaucListPanel({
               />
             </label>
             <div className="flex items-end gap-2">
-              <button type="submit" className={`${fieldRakshaBtnClass} flex-1`}>
+              <button type="submit" className={`${fieldPrimaryBtnInlineClass} flex-1`}>
                 Search
               </button>
               <button type="button" onClick={onReset} className={`${fieldSecondaryBtnClass} flex-1`}>
@@ -296,13 +296,22 @@ export function UaucListPanel({
                       <UaucStatusPill label={row.statusLabel} />
                     </td>
                     <td className="px-3 py-3">
-                      <Link
-                        href={`/field/ua-uc/${row.id}`}
-                        aria-label={`View ${row.eventNumber}`}
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-[#6f42c1] text-white hover:bg-[#5a32a8]"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Link>
+                      {isDemoPreview ? (
+                        <span
+                          className={`${fieldIconBtnClass} pointer-events-none opacity-60`}
+                          aria-hidden
+                        >
+                          <Eye className="h-4 w-4" />
+                        </span>
+                      ) : (
+                        <Link
+                          href={`/field/ua-uc/${row.id}`}
+                          aria-label={`View ${row.eventNumber}`}
+                          className={fieldIconBtnClass}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Link>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -311,12 +320,32 @@ export function UaucListPanel({
           </div>
 
           <div className="space-y-2 lg:hidden">
-            {sorted.map((row) => (
-              <Link
-                key={row.id}
-                href={`/field/ua-uc/${row.id}`}
-                className="block rounded-[var(--radius-lg)] border border-border bg-card p-3.5 shadow-[var(--shadow-sm)]"
-              >
+            {sorted.map((row) =>
+              isDemoPreview ? (
+                <div
+                  key={row.id}
+                  className="block rounded-[var(--radius-lg)] border border-border bg-card p-3.5 shadow-[var(--shadow-sm)]"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="font-semibold text-foreground">{row.eventNumber}</p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">
+                        {formatDateTime(row.occurredAt)}
+                      </p>
+                    </div>
+                    <UaucStatusPill label={row.statusLabel} />
+                  </div>
+                  <p className="mt-2 line-clamp-2 text-sm text-foreground">{row.description}</p>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    {row.createdByName} · Action items ({row.actionItemCount})
+                  </p>
+                </div>
+              ) : (
+                <Link
+                  key={row.id}
+                  href={`/field/ua-uc/${row.id}`}
+                  className="block rounded-[var(--radius-lg)] border border-border bg-card p-3.5 shadow-[var(--shadow-sm)] transition-[border-color,box-shadow] hover:border-primary/30 hover:shadow-[var(--shadow-md)]"
+                >
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <p className="font-semibold text-foreground">{row.eventNumber}</p>
@@ -330,8 +359,9 @@ export function UaucListPanel({
                 <p className="mt-2 text-xs text-muted-foreground">
                   {row.createdByName} · Action items ({row.actionItemCount})
                 </p>
-              </Link>
-            ))}
+                </Link>
+              ),
+            )}
           </div>
         </>
       ) : (
