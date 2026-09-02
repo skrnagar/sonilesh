@@ -2,9 +2,6 @@ import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const fieldHeadingFace =
-  "[font-family:var(--font-sans-face),ui-sans-serif,system-ui,sans-serif]";
-
 export function FieldPageHeader({
   title,
   subtitle,
@@ -15,10 +12,7 @@ export function FieldPageHeader({
   return (
     <header className="space-y-1">
       <h1
-        className={cn(
-          "text-xl font-semibold tracking-tight text-foreground sm:text-2xl",
-          fieldHeadingFace,
-        )}
+        className="font-display text-xl font-semibold tracking-tight text-foreground sm:text-2xl"
       >
         {title}
       </h1>
@@ -150,6 +144,21 @@ export const fieldIconBtnClass =
 export const fieldHeaderBtnClass =
   "relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[var(--radius-sm)] border border-border/80 bg-card text-foreground shadow-[var(--shadow-sm)] transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
+/** Icon buttons on the white desktop field header (RAKSHA-style). */
+export const fieldDesktopHeaderBtnClass =
+  "relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
+export function fieldHeaderInitials(name: string | null | undefined): string {
+  return (
+    (name ?? "")
+      .split(/[\s@]+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join("") || "U"
+  );
+}
+
 const TONE: Record<string, string> = {
   navy: "bg-[var(--sidebar-active)] text-primary",
   green: "bg-[var(--success-soft)] text-[var(--success-ink)]",
@@ -236,10 +245,7 @@ export function FieldSection({
   return (
     <section className="space-y-2">
       <h2
-        className={cn(
-          "text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground",
-          fieldHeadingFace,
-        )}
+        className="font-display text-xs font-semibold uppercase tracking-[0.16em] text-muted-foreground"
       >
         {title}
       </h2>

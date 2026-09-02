@@ -143,8 +143,8 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --font-sans: var(--font-sans-face), "Inter", "Segoe UI", system-ui, sans-serif;
-  --font-display: var(--font-sans-face), "Inter", "Segoe UI", system-ui, sans-serif;
+  --font-sans: var(--font-sans-face), "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+  --font-display: var(--font-sans-face), "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 4px);
@@ -427,6 +427,60 @@ button.bg-primary:hover {
 
 .app-shell-header input::placeholder {
   color: color-mix(in srgb, #ffffff 55%, transparent);
+}
+
+/* Field app — navy compact header on mobile; RAKSHA-style white bar on desktop */
+.field-shell-header {
+  background: linear-gradient(180deg, var(--raksha-blue) 0%, var(--raksha-blue-dark) 100%);
+  border-bottom-color: color-mix(in srgb, var(--raksha-blue-dark) 80%, #000);
+  color: #ffffff;
+}
+
+.field-shell-header .text-foreground {
+  color: #ffffff;
+}
+
+.field-shell-header .text-muted-foreground {
+  color: color-mix(in srgb, #ffffff 75%, transparent);
+}
+
+.field-shell-header .border-border\/80,
+.field-shell-header [class*="border-border"] {
+  border-color: color-mix(in srgb, #ffffff 22%, transparent);
+}
+
+.field-shell-header .bg-card\/90,
+.field-shell-header .bg-muted\/80 {
+  background: color-mix(in srgb, #ffffff 14%, transparent);
+  color: #ffffff;
+}
+
+@media (min-width: 1024px) {
+  .field-shell-header {
+    background: #ffffff;
+    border-bottom-color: var(--border);
+    color: var(--foreground);
+    box-shadow: var(--shadow-header);
+  }
+
+  .field-shell-header .text-foreground {
+    color: var(--foreground);
+  }
+
+  .field-shell-header .text-muted-foreground {
+    color: var(--muted-foreground);
+  }
+
+  .field-shell-header .border-border\/80,
+  .field-shell-header [class*="border-border"] {
+    border-color: var(--border);
+  }
+
+  .field-shell-header .bg-card\/90,
+  .field-shell-header .bg-muted\/80 {
+    background: var(--muted);
+    color: var(--foreground);
+  }
 }
 
 .workspace-shell > .flex-1 > main {
