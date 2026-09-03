@@ -19,7 +19,7 @@ export default async function OrgAdminPlanPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold">Plan</h1>
+        <h1 className="font-display text-[length:var(--text-app-title)] font-semibold tracking-tight">Plan</h1>
         <p className="text-sm text-muted-foreground">
           Subscription status and enabled modules for your organization.
         </p>

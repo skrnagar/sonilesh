@@ -42,7 +42,7 @@ export function PageHero({
       )}
     >
       <div aria-hidden className="mkt-page-hero-wash pointer-events-none absolute inset-0" />
-      <Container className={cn("relative", compact ? "py-12 md:py-16" : "py-16 md:py-24")}>
+      <Container className={cn("relative", compact ? "py-14 md:py-20" : "py-20 md:py-28")}>
         <div
           className={cn(
             "grid gap-10",

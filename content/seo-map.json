@@ -4,9 +4,9 @@
   "pages": [
     {
       "path": "/",
-      "title": "EHS + ESG + Compliance Software | EHS360",
-      "description": "India-first multi-tenant SaaS for EHS, ESG and regulatory compliance — field safety, CAPA, BRSR-ready reporting and tenant isolation in one platform.",
-      "h1": "From field capture to audit-ready reporting.",
+      "title": "EHS Operating System for India | SONIL EHS360",
+      "description": "India-first multi-tenant EHS OS — 17 field modules, My Zone apps, workspace controls, and org admin from workfront capture to BRSR-ready reporting.",
+      "h1": "The EHS operating system for India’s critical sites.",
       "primaryKeyword": "EHS software India",
       "secondaryKeywords": ["EHS management software", "ESG compliance software", "regulatory compliance software India"],
       "intent": "transactional",
@@ -290,11 +290,11 @@
     },
     {
       "path": "/field-experience",
-      "title": "Field Experience | EHS360",
-      "description": "SONIL EHS360 field experience for fast incident, LMRA, permit, and inspection capture where work happens.",
-      "h1": "Field capture where work happens",
+      "title": "Field Experience | SONIL EHS360",
+      "description": "Seventeen EHS module tiles on field home, My Zone app launcher, desktop header and mobile tabs — built for gloves, glare, and time pressure.",
+      "h1": "Seventeen EHS modules. One My Zone hub.",
       "primaryKeyword": "EHS field app",
-      "secondaryKeywords": ["LMRA software", "mobile EHS reporting"],
+      "secondaryKeywords": ["LMRA software", "mobile EHS reporting", "EHS module launchpad"],
       "intent": "commercial",
       "targetWordCount": 700,
       "indexed": true

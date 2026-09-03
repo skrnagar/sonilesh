@@ -29,7 +29,7 @@ export default async function OrgAdminDataPage({
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-xl font-semibold">Data</h1>
+        <h1 className="font-display text-[length:var(--text-app-title)] font-semibold tracking-tight">Data</h1>
         <p className="text-sm text-muted-foreground">
           File upload policies and organization data export requests.
         </p>

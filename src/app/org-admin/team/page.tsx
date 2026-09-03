@@ -39,7 +39,7 @@ export default async function OrgAdminTeamPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold">Team</h1>
+          <h1 className="font-display text-[length:var(--text-app-title)] font-semibold tracking-tight">Team</h1>
           <p className="text-sm text-muted-foreground">
             Invite and manage users for the management dashboard. Plan limit:{" "}
             {limit.unlimited || limit.limit == null

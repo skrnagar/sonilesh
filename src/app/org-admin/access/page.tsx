@@ -8,7 +8,7 @@ export default async function OrgAdminAccessPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold">Access</h1>
+        <h1 className="font-display text-[length:var(--text-app-title)] font-semibold tracking-tight">Access</h1>
         <p className="text-sm text-muted-foreground">
           Role-based permissions are enforced server-side across all apps in your tenant.
         </p>

@@ -21,8 +21,8 @@ export default async function OrgAdminGeneralPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold">General</h1>
-        <p className="text-sm text-muted-foreground">
+        <h1 className="font-display text-[length:var(--text-app-title)] font-semibold tracking-tight">General</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
           Company profile, slug, and custom domain for your tenant.
         </p>
       </div>

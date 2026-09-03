@@ -6,6 +6,7 @@ import {
   Building2,
   CreditCard,
   Database,
+  LayoutGrid,
   Palette,
   Shield,
   Users,
@@ -14,6 +15,7 @@ import { ORG_ADMIN_NAV } from "@/lib/navigation/org-admin";
 import { cn } from "@/lib/utils";
 
 const ICONS = {
+  LayoutGrid,
   Building2,
   Palette,
   Users,
@@ -22,23 +24,25 @@ const ICONS = {
   Database,
 } as const;
 
+const OVERVIEW = { href: "/org-admin", label: "Overview", icon: "LayoutGrid" as const };
+
 export function OrgAdminSidebar({ organizationName }: { organizationName: string }) {
   const pathname = usePathname();
+  const items = [OVERVIEW, ...ORG_ADMIN_NAV];
 
   return (
     <aside className="flex h-dvh shrink-0 flex-col overflow-hidden border-r border-sidebar-border bg-sidebar/95 text-sidebar-foreground shadow-[1px_0_0_var(--sidebar-border)] backdrop-blur-sm">
       <div className="sidebar-brand border-b border-sidebar-border px-3 py-3.5">
-        <p className="text-sm font-semibold tracking-tight">Org Admin</p>
+        <p className="font-display text-sm font-semibold tracking-tight">Org Admin</p>
         <p className="mt-0.5 truncate text-xs text-sidebar-muted">{organizationName}</p>
       </div>
       <nav className="min-h-0 flex-1 overflow-y-auto px-2 py-3" aria-label="Organization admin">
         <ul className="space-y-0.5">
-          {ORG_ADMIN_NAV.map((item) => {
+          {items.map((item) => {
             const active =
-              pathname === item.href ||
-              (item.href !== "/org-admin/general" && pathname.startsWith(`${item.href}/`)) ||
-              (item.href === "/org-admin/general" &&
-                (pathname === "/org-admin" || pathname === "/org-admin/general"));
+              item.href === "/org-admin"
+                ? pathname === "/org-admin"
+                : pathname === item.href || pathname.startsWith(`${item.href}/`);
             const Icon = ICONS[item.icon as keyof typeof ICONS];
             return (
               <li key={item.href}>
@@ -47,7 +51,7 @@ export function OrgAdminSidebar({ organizationName }: { organizationName: string
                   className={cn(
                     "flex items-center gap-2 rounded-xl px-2.5 py-2 text-sm font-medium transition-colors",
                     active
-                      ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                      ? "bg-sidebar-active text-sidebar-foreground shadow-[inset_0_0_0_1px_color-mix(in_srgb,var(--accent)_22%,transparent)]"
                       : "text-sidebar-muted hover:bg-sidebar-hover hover:text-sidebar-foreground",
                   )}
                 >
@@ -59,7 +63,13 @@ export function OrgAdminSidebar({ organizationName }: { organizationName: string
           })}
         </ul>
       </nav>
-      <div className="border-t border-sidebar-border p-2.5">
+      <div className="space-y-1 border-t border-sidebar-border p-2.5">
+        <Link
+          href="/field"
+          className="flex items-center rounded-xl px-2.5 py-2 text-xs text-sidebar-muted transition-colors hover:bg-sidebar-hover hover:text-sidebar-foreground"
+        >
+          Open field app
+        </Link>
         <Link
           href="/app/home"
           className="flex items-center rounded-xl px-2.5 py-2 text-xs text-sidebar-muted transition-colors hover:bg-sidebar-hover hover:text-sidebar-foreground"

@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   ...metadataForPath("/"),
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://sonilesh.vercel.app"),
   title: {
-    default: `${brand.name} — EHS + ESG + Compliance software`,
+    default: `${brand.name} — EHS operating system`,
     template: `%s | ${brand.name}`,
   },
 };

@@ -16,7 +16,7 @@ type CTASectionProps = {
 
 export function CTASection({
   title = "See SONIL EHS360 on your operations.",
-  description = "Walk field safety, risk, regulatory tracking, ESG/BRSR reporting and leadership analytics — mapped to your sites. Start Free creates an account; commercial terms are not a public free-forever trial.",
+  description = "Walk the field home, My Zone apps, workspace controls, and org admin — mapped to your sites. Start Free creates an account; commercial terms are not a public free-forever trial.",
   primaryHref = "/book-a-demo",
   primaryLabel = "Book a Demo",
   secondaryHref = "/signup",

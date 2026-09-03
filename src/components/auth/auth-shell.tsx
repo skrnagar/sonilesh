@@ -44,7 +44,7 @@ export function AuthShell({
               Book a demo
             </Link>
             {" · "}
-            35+ launchpad modules · No invented certifications
+            Field · My Zone · Workspace · Org Admin · Honest marketing
           </p>
         </div>
         <p className="relative text-xs text-white/45">India-first EHS + ESG + compliance SaaS</p>

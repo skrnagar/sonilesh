@@ -217,7 +217,7 @@ export function Navbar() {
   }
 
   const navLink =
-    "relative inline-flex min-h-11 shrink-0 items-center gap-0.5 whitespace-nowrap rounded-lg px-2.5 py-2 text-[13px] font-medium tracking-[-0.01em] text-foreground/75 transition-colors hover:bg-muted/80 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none xl:gap-1 xl:px-3";
+    "relative inline-flex min-h-11 shrink-0 items-center gap-0.5 whitespace-nowrap rounded-lg px-2.5 py-2 text-[13px] font-semibold tracking-[-0.01em] text-foreground/70 transition-colors hover:bg-muted/80 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transition-none xl:gap-1 xl:px-3";
 
   return (
     <header

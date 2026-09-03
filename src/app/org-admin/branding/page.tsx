@@ -26,7 +26,7 @@ export default async function OrgAdminBrandingPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold">Branding</h1>
+        <h1 className="font-display text-[length:var(--text-app-title)] font-semibold tracking-tight">Branding</h1>
         <p className="text-sm text-muted-foreground">
           Tenant colors and terminology — scoped to your organization only.
         </p>

@@ -13,11 +13,11 @@ const plusJakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: "SONIL EHS360 — From field capture to audit-ready reporting.",
+    default: "SONIL EHS360 — The EHS operating system for India’s critical sites.",
     template: "%s | SONIL EHS360",
   },
   description:
-    "India-first multi-tenant platform for EHS operations, ESG/BRSR-oriented reporting, and regulatory tracking — field capture through CAPA and leadership analytics.",
+    "India-first multi-tenant platform for EHS operations, ESG/BRSR-oriented reporting, and regulatory tracking — field modules, My Zone, workspace, and org admin.",
   manifest: "/manifest.webmanifest",
   applicationName: "SONIL EHS360",
   icons: {
@@ -35,13 +35,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "SONIL EHS360",
-    title: "SONIL EHS360 — From field capture to audit-ready reporting.",
+    title: "SONIL EHS360 — The EHS operating system for India’s critical sites.",
     description:
-      "Connect field safety, risk, regulatory compliance, sustainability reporting and management analytics in one configurable platform.",
+      "Field EHS modules, My Zone apps, workspace controls, and org admin — one multi-tenant platform from workfront capture to BRSR-ready reporting.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "SONIL EHS360 — From field capture to audit-ready reporting.",
+    title: "SONIL EHS360 — The EHS operating system for India’s critical sites.",
     description:
       "India-first EHS, ESG and regulatory compliance on one multi-tenant platform.",
   },

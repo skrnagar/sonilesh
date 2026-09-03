@@ -7,10 +7,10 @@ export const brand = {
   wordmark: "SONIL",
   legalName: "SONIL BUILDCON PRIVATE LIMITED",
   product: "EHS360",
-  eyebrow: "EHS · ESG · Compliance",
-  tagline: "From field capture to audit-ready reporting.",
+  eyebrow: "Enterprise EHS OS",
+  tagline: "The EHS operating system for India’s critical sites.",
   supporting:
-    "One multi-tenant platform for incidents, permits, CAPA, statutory tracking, and BRSR-oriented ESG — built beside civil EPC execution in India.",
+    "Field modules, My Zone apps, workspace controls, and org admin — one multi-tenant platform from workfront capture to BRSR-ready reporting.",
   description:
     "India-first multi-tenant SaaS for EHS operations, ESG/BRSR-oriented reporting, and regulatory tracking — field capture through CAPA, statutory tasks, and leadership analytics in one tenant. Self-hosting is an enterprise option.",
 } as const;
@@ -48,10 +48,34 @@ export const company = {
 
 /** Real product facts — not invented program metrics. */
 export const productFacts = [
-  { value: "3", label: "Domains, one tenant", detail: "EHS operations, ESG/BRSR reporting, and regulatory tracking — entitled per plan." },
-  { value: "3", label: "Work surfaces", detail: "Field app, operations workspace, and platform admin." },
+  { value: "17", label: "Field EHS modules", detail: "Incidents, permits, LMRA, inspections, CAPA, and more on the field home." },
+  { value: "4+", label: "App surfaces", detail: "Field, My Zone hub, operations workspace, and organization admin." },
   { value: "1", label: "System of record", detail: "Capture, CAPA, compliance tasks, and leadership views on the same data." },
   { value: "IN", label: "India-first", detail: "BRSR-oriented ESG, statutory tracking, and self-hosting as an enterprise option." },
+] as const;
+
+/** Atlassian-style product family — surfaces buyers actually use. */
+export const productSurfaces = [
+  {
+    title: "Field",
+    href: "/field-experience",
+    body: "Seventeen EHS module tiles on home — incidents, near misses, LMRA, permits, inspections, and more — with desktop header nav and mobile bottom tabs.",
+  },
+  {
+    title: "My Zone",
+    href: "/field-experience",
+    body: "App launcher for iQuality, Reports, BRSR, Data Hub, and related work apps — beside the EHS launchpad, not a separate product.",
+  },
+  {
+    title: "Workspace",
+    href: "/product",
+    body: "High-density operations for investigation, CAPA ownership, permits, and leadership analytics on the same tenant record.",
+  },
+  {
+    title: "Org Admin",
+    href: "/platform",
+    body: "Tenant branding, team invites, access matrix, plan entitlements, and data controls for organization administrators.",
+  },
 ] as const;
 
 export const executionPillars = [
@@ -74,14 +98,14 @@ export const executionPillars = [
 ] as const;
 
 export const heroHighlights = [
-  "LMRA at the workfront",
-  "BRSR on the same record",
-  "No invented certifications",
+  "17 field EHS modules",
+  "My Zone app hub",
+  "Desktop + mobile",
 ] as const;
 
 export const trustSignals = [
   "India-first statutory & BRSR",
-  "35+ launchpad modules",
+  "Field + My Zone + workspace",
   "Multi-tenant SaaS",
   "Honest marketing only",
 ] as const;
@@ -439,24 +463,49 @@ export type ModuleSlug = (typeof modules)[number]["slug"];
 export const platformPillars = [
   {
     title: "Field",
-    body: "Fast capture for incidents, LMRA, permits, toolbox talks, and inspections where work happens.",
+    body: "Seventeen EHS modules on home — fast capture for incidents, LMRA, permits, toolbox talks, and inspections where work happens.",
+  },
+  {
+    title: "My Zone",
+    body: "Launcher for quality, reports, BRSR, data hub, and related apps beside the EHS field home.",
   },
   {
     title: "Operations",
     body: "High-density workspace for investigation, ownership, and day-to-day control.",
   },
   {
-    title: "Risk",
-    body: "Assessments, permits, and critical controls connected to real work packages.",
-  },
-  {
-    title: "Assurance",
-    body: "Inspections, audits, CAPA, and verification in one closed loop.",
+    title: "Org Admin",
+    body: "Tenant branding, team, access, plan, and data — administered without touching platform staff tools.",
   },
   {
     title: "Leadership",
     body: "Analytics and status visibility from site execution to the boardroom.",
   },
+] as const;
+
+/** Field marketing — module groups shown on /field-experience (not competitor brand names). */
+export const fieldModuleGroups = [
+  {
+    title: "Report & respond",
+    items: ["Incidents", "Near misses", "Hazards", "UA/UC", "Actions"],
+  },
+  {
+    title: "Authorize & inspect",
+    items: ["Permits", "LMRA", "Inspections", "Checklists", "Site visits"],
+  },
+  {
+    title: "Assure & score",
+    items: ["Training", "PPE", "BBS", "EHS score", "Toolbox"],
+  },
+] as const;
+
+export const myZoneApps = [
+  "iQuality",
+  "Reports",
+  "BRSR",
+  "Data Hub",
+  "MIS",
+  "Utilities",
 ] as const;
 
 /** Conceptual architecture used on homepage and product hub. */

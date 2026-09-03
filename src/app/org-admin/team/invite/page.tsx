@@ -46,7 +46,7 @@ export default async function OrgAdminTeamInvitePage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl font-semibold">Invite team member</h1>
+        <h1 className="font-display text-[length:var(--text-app-title)] font-semibold tracking-tight">Invite team member</h1>
         <p className="text-sm text-muted-foreground">
           Secure token invitations with configurable expiry (default{" "}
           {process.env.INVITE_EXPIRY_DAYS ?? "7"} days).

@@ -151,9 +151,9 @@
   --radius-xl: calc(var(--radius) + 8px);
   --text-app-title: clamp(1.25rem, 1.1rem + 0.6vw, 1.625rem);
   --text-app-section: clamp(0.9375rem, 0.9rem + 0.2vw, 1.0625rem);
-  --text-mkt-hero: clamp(2.25rem, 1.35rem + 3.8vw, 4rem);
-  --text-mkt-page: clamp(2.1rem, 1.45rem + 2.1vw, 3rem);
-  --text-mkt-section: clamp(1.8rem, 1.5rem + 1.2vw, 2.5rem);
+  --text-mkt-hero: clamp(2.5rem, 1.4rem + 4.2vw, 4.5rem);
+  --text-mkt-page: clamp(2.15rem, 1.5rem + 2.2vw, 3.15rem);
+  --text-mkt-section: clamp(1.85rem, 1.5rem + 1.35vw, 2.65rem);
   --text-mkt-kpi: 1.875rem;
   --text-mkt-lead: clamp(1.05rem, 0.98rem + 0.35vw, 1.2rem);
 }
@@ -255,12 +255,12 @@ button.bg-primary:hover {
 }
 
 .mkt-section {
-  padding-block: 4.5rem;
+  padding-block: 5rem;
 }
 
 @media (min-width: 768px) {
   .mkt-section {
-    padding-block: 6.5rem;
+    padding-block: 7.5rem;
   }
 }
 
@@ -330,9 +330,10 @@ button.bg-primary:hover {
 
 .mkt-hero-glow {
   background:
-    radial-gradient(ellipse at 15% -5%, color-mix(in srgb, var(--mkt-safety) 22%, transparent), transparent 42%),
-    radial-gradient(ellipse at 88% 12%, color-mix(in srgb, var(--mkt-infra) 14%, transparent), transparent 38%),
-    radial-gradient(ellipse at 50% 100%, color-mix(in srgb, var(--mkt-navy) 35%, transparent), transparent 55%);
+    radial-gradient(ellipse at 50% -10%, color-mix(in srgb, var(--mkt-safety) 28%, transparent), transparent 48%),
+    radial-gradient(ellipse at 12% 40%, color-mix(in srgb, var(--mkt-navy) 40%, transparent), transparent 42%),
+    radial-gradient(ellipse at 92% 18%, color-mix(in srgb, #1f6f8b 22%, transparent), transparent 40%),
+    radial-gradient(ellipse at 50% 100%, color-mix(in srgb, var(--mkt-navy) 30%, transparent), transparent 55%);
 }
 
 .mkt-hero-wash {

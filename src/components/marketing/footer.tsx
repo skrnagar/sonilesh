@@ -14,7 +14,10 @@ export function Footer() {
             <Link href="/" className="inline-flex">
               <BrandLockup inverse />
             </Link>
-            <p className="mt-5 text-sm font-medium leading-relaxed text-white/88">
+            <p className="mt-5 font-display text-lg font-semibold tracking-tight text-white">
+              {brand.name}
+            </p>
+            <p className="mt-2 text-sm font-medium leading-relaxed text-white/88">
               {brand.tagline}
             </p>
             <p className="mt-2 text-sm leading-relaxed text-white/58">
@@ -56,7 +59,7 @@ export function Footer() {
         <div className="mt-14 flex flex-col gap-4 border-t border-white/10 pt-6 text-xs text-white/42 sm:flex-row sm:items-center sm:justify-between">
           <p>© 2026 {brand.legalName}. All rights reserved.</p>
           <div className="flex flex-wrap items-center gap-3 sm:justify-end">
-            <p>SONIL EHS360 · Multi-tenant EHS + ESG + compliance SaaS · India-first</p>
+            <p>SONIL EHS360 · Field · My Zone · Workspace · Org Admin · India-first</p>
             <div className="flex items-center gap-2">
               <span className="mkt-eyebrow text-white/38">Theme</span>
               <ThemeToggle
