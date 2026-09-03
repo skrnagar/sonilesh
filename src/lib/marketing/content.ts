@@ -9,6 +9,9 @@ export const brand = {
   product: "EHS360",
   eyebrow: "Enterprise EHS OS",
   tagline: "The EHS operating system for India’s critical sites.",
+  /** Short hero line — keep first viewport free of feature dumps. */
+  heroSupporting:
+    "One multi-tenant platform from workfront capture to BRSR-ready reporting.",
   supporting:
     "Field modules, My Zone apps, workspace controls, and org admin — one multi-tenant platform from workfront capture to BRSR-ready reporting.",
   description:

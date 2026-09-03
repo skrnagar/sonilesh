@@ -151,7 +151,9 @@
   --radius-xl: calc(var(--radius) + 8px);
   --text-app-title: clamp(1.25rem, 1.1rem + 0.6vw, 1.625rem);
   --text-app-section: clamp(0.9375rem, 0.9rem + 0.2vw, 1.0625rem);
-  --text-mkt-hero: clamp(2.5rem, 1.4rem + 4.2vw, 4.5rem);
+  --text-mkt-hero: clamp(2.75rem, 1.35rem + 5vw, 5.75rem);
+  --text-mkt-hero-brand: clamp(2.65rem, 1.2rem + 4.8vw, 5.25rem);
+  --text-mkt-hero-headline: clamp(1.45rem, 1.1rem + 1.75vw, 2.4rem);
   --text-mkt-page: clamp(2.15rem, 1.5rem + 2.2vw, 3.15rem);
   --text-mkt-section: clamp(1.85rem, 1.5rem + 1.35vw, 2.65rem);
   --text-mkt-kpi: 1.875rem;
@@ -330,10 +332,122 @@ button.bg-primary:hover {
 
 .mkt-hero-glow {
   background:
-    radial-gradient(ellipse at 50% -10%, color-mix(in srgb, var(--mkt-safety) 28%, transparent), transparent 48%),
-    radial-gradient(ellipse at 12% 40%, color-mix(in srgb, var(--mkt-navy) 40%, transparent), transparent 42%),
-    radial-gradient(ellipse at 92% 18%, color-mix(in srgb, #1f6f8b 22%, transparent), transparent 40%),
-    radial-gradient(ellipse at 50% 100%, color-mix(in srgb, var(--mkt-navy) 30%, transparent), transparent 55%);
+    radial-gradient(ellipse at 50% -8%, color-mix(in srgb, var(--mkt-safety) 34%, transparent), transparent 52%),
+    radial-gradient(ellipse at 8% 36%, color-mix(in srgb, var(--mkt-navy) 48%, transparent), transparent 46%),
+    radial-gradient(ellipse at 94% 12%, color-mix(in srgb, #1f6f8b 28%, transparent), transparent 42%),
+    radial-gradient(ellipse at 50% 108%, color-mix(in srgb, var(--mkt-navy) 36%, transparent), transparent 58%);
+}
+
+.mkt-hero-aurora {
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 0%, color-mix(in srgb, #0f766e 22%, transparent), transparent 70%),
+    radial-gradient(ellipse 40% 30% at 18% 55%, color-mix(in srgb, #0d4a7a 18%, transparent), transparent 70%),
+    radial-gradient(ellipse 36% 28% at 86% 42%, color-mix(in srgb, #1f6f8b 14%, transparent), transparent 68%);
+  animation: mkt-hero-aurora 14s ease-in-out infinite alternate;
+  opacity: 0.9;
+}
+
+.mkt-hero-brand {
+  font-family: var(--font-display);
+  font-size: var(--text-mkt-hero-brand);
+  font-weight: 700;
+  letter-spacing: -0.048em;
+  line-height: 0.98;
+  color: #ffffff;
+}
+
+.mkt-hero-brand-word {
+  color: #ffffff;
+}
+
+.mkt-hero-brand-product {
+  background: linear-gradient(105deg, #5eead4 0%, #2dd4bf 42%, #99f6e4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.mkt-hero-headline {
+  font-family: var(--font-display);
+  font-size: var(--text-mkt-hero-headline);
+  font-weight: 500;
+  letter-spacing: -0.028em;
+  line-height: 1.22;
+  color: color-mix(in srgb, #ffffff 92%, transparent);
+  max-width: 36rem;
+  margin-inline: auto;
+}
+
+.mkt-hero-support {
+  font-size: clamp(1.02rem, 0.96rem + 0.28vw, 1.175rem);
+  line-height: 1.55;
+  letter-spacing: -0.01em;
+}
+
+.mkt-hero-cta-primary {
+  box-shadow:
+    0 8px 28px -10px rgba(15, 118, 110, 0.65),
+    0 0 0 1px color-mix(in srgb, #5eead4 18%, transparent);
+  animation: mkt-cta-glow 3.4s ease-in-out infinite;
+}
+
+.mkt-hero-visual {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.mkt-hero-visual::before,
+.mkt-hero-visual::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.mkt-hero-visual::before {
+  inset: 0;
+  background:
+    linear-gradient(90deg, var(--mkt-hero) 0%, transparent 12%, transparent 88%, var(--mkt-hero) 100%),
+    linear-gradient(180deg, transparent 55%, var(--mkt-hero) 100%);
+}
+
+.mkt-hero-visual::after {
+  inset: auto 0 0 0;
+  height: 38%;
+  background: linear-gradient(180deg, transparent 0%, color-mix(in srgb, var(--mkt-hero) 70%, transparent) 55%, var(--mkt-hero) 100%);
+}
+
+.mkt-hero-visual-inner {
+  width: min(100%, 96rem);
+  margin-inline: auto;
+  padding-inline: clamp(0.25rem, 1.5vw, 1.25rem);
+  transform: translateY(0);
+  animation: mkt-hero-visual-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
+}
+
+.mkt-hero-stage {
+  width: 100%;
+}
+
+.mkt-product-glow-bleed {
+  inset: 8% -8% -28% -8%;
+  background:
+    radial-gradient(ellipse at 50% 35%, color-mix(in srgb, var(--mkt-safety) 52%, transparent), transparent 62%),
+    radial-gradient(ellipse at 78% 18%, color-mix(in srgb, #1f6f8b 30%, transparent), transparent 50%);
+  filter: blur(42px);
+}
+
+@media (min-width: 1024px) {
+  .mkt-product-tilt-bleed {
+    transform: perspective(2200px) rotateX(6deg) scale(1.02);
+    transform-origin: center top;
+  }
+
+  .mkt-product-tilt-bleed:hover {
+    transform: perspective(2200px) rotateX(3.5deg) scale(1.025);
+  }
 }
 
 .mkt-hero-wash {
@@ -715,6 +829,42 @@ button.bg-primary:hover {
   }
 }
 
+@keyframes mkt-hero-aurora {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.82;
+  }
+  to {
+    transform: translate3d(0, 1.5%, 0) scale(1.04);
+    opacity: 1;
+  }
+}
+
+@keyframes mkt-cta-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 8px 28px -10px rgba(15, 118, 110, 0.55),
+      0 0 0 1px color-mix(in srgb, #5eead4 14%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 12px 36px -8px rgba(15, 118, 110, 0.78),
+      0 0 0 1px color-mix(in srgb, #5eead4 28%, transparent);
+  }
+}
+
+@keyframes mkt-hero-visual-in {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 @keyframes mkt-rise {
   from {
     opacity: 0;
@@ -1015,7 +1165,9 @@ button.bg-primary:hover {
   }
 
   .mkt-product-tilt,
-  .mkt-product-tilt:hover {
+  .mkt-product-tilt:hover,
+  .mkt-product-tilt-bleed,
+  .mkt-product-tilt-bleed:hover {
     transform: none;
     transition: none;
   }
@@ -1025,7 +1177,10 @@ button.bg-primary:hover {
   .mkt-stagger.is-inview > *,
   .mkt-kpi-pulse,
   .mkt-status-cycle,
-  .mkt-scroll-cue-chevron {
+  .mkt-scroll-cue-chevron,
+  .mkt-hero-aurora,
+  .mkt-hero-cta-primary,
+  .mkt-hero-visual-inner {
     animation: none !important;
   }
 
